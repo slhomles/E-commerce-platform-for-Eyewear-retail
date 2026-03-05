@@ -1,0 +1,1029 @@
+openapi: 3.0.3
+info:
+  title: Optical E-commerce API System
+  description: |
+    API Contract for Glass Store System.
+    Architecture designed for scalability from Frame-only MVP to full Optical Lab integration.
+    
+    Versioning Strategy:
+    - /api/v1: Frame Only (MVP Production)
+    - /api/v2: Optical Extension (Lens + Prescription + Lab) - Reserved
+    - /api/v3: AI + AR Try On - Reserved
+  version: 1.0.0
+  contact:
+    name: Backend Architect Team
+
+servers:
+  - url: https://api.glass-store.com
+    description: Production Server
+  - url: http://localhost:8080
+    description: Local Development
+
+tags:
+  - name: Auth
+    description: Authentication & Authorization (V1)
+  - name: User
+    description: User Profile & Address Management (V1)
+  - name: Products (Frame)
+    description: Frame Product Catalog (V1)
+  - name: Cart
+    description: Shopping Cart Management (V1)
+  - name: Checkout
+    description: Order Placement & Calculation (V1)
+  - name: Order
+    description: Order Management & Tracking (V1)
+  - name: Admin
+    description: Back-office Operations (V1)
+  - name: V2-Optical
+    description: Reserved for Phase 2 (Lenses & Prescriptions)
+  - name: V3-AI
+    description: Reserved for Phase 3 (AI & AR)
+security:
+  - bearerAuth: []
+
+paths:
+  # ==========================================
+  # API V1 - FRAME ONLY (MVP)
+  # ==========================================
+
+  # --- AUTH ---
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TokenResponse'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/forgot-password:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Request password reset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/reset-password:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Reset password with token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+                newPassword: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      summary: Logout user
+      description: Revoke refresh token and invalidate session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/change-password:
+    post:
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      summary: Change password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/verify-email:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Verify email with code
+      parameters:
+        - name: token
+          in: query
+          description: Verification token sent via email
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/auth/resend-verification:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Resend verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- USER ---
+  /api/v1/users/profile:
+    get:
+      tags: [User]
+      summary: Get user profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserProfile'
+    put:
+      tags: [User]
+      summary: Update user profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/users/upload-avatar:
+    post:
+      tags: [User]
+      summary: Upload avatar image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/users/addresses:
+    get:
+      tags: [User]
+      summary: Get address book
+      responses:
+        '200':
+          description: List of addresses
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Address'
+    post:
+      tags: [User]
+      summary: Add new address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/users/addresses/{id}:
+    put:
+      tags: [User]
+      summary: Update address
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- FRAME PRODUCTS ---
+  /api/v1/products:
+    get:
+      tags: [Products (Frame)]
+      security: []
+      summary: List products with filtering
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: frameType
+          in: query
+          schema: { $ref: '#/components/schemas/FrameType' }
+        - name: faceShape
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/FrameProduct'
+
+  /api/v1/products/search:
+    get:
+      tags: [Products (Frame)]
+      security: []
+      summary: Search products
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/products/{slug}:
+    get:
+      tags: [Products (Frame)]
+      security: []
+      summary: Get product detail by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product Detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/FrameProduct'
+
+  /api/v1/products/{id}/related:
+    get:
+      tags: [Products (Frame)]
+      security: []
+      summary: Get related products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- REVIEW ---
+  /api/v1/reviews:
+    get:
+      tags: [Products (Frame)]
+      security: []
+      summary: Get reviews for product
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+    post:
+      tags: [Products (Frame)]
+      summary: Post a review
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/reviews/upload:
+    post:
+      tags: [Products (Frame)]
+      summary: Upload review image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- CART ---
+  /api/v1/cart:
+    get:
+      tags: [Cart]
+      summary: Get current cart
+      responses:
+        '200':
+          description: Cart details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Cart'
+
+  /api/v1/cart/add:
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemReq'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/cart/update:
+    put:
+      tags: [Cart]
+      summary: Update cart item quantity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemReq'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/cart/remove:
+    delete:
+      tags: [Cart]
+      summary: Remove item from cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sku: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/cart/voucher:
+    post:
+      tags: [Cart]
+      summary: Apply voucher
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- CHECKOUT ---
+  /api/v1/checkout/shipping-fee:
+    post:
+      tags: [Checkout]
+      summary: Calculate shipping fee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addressId: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/checkout/preview:
+    post:
+      tags: [Checkout]
+      summary: Preview order before placement
+      responses:
+        '200':
+          description: Order preview with totals
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/OrderPreview'
+
+  /api/v1/checkout/place-order:
+    post:
+      tags: [Checkout]
+      summary: Place order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderReq'
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- ORDER ---
+  /api/v1/orders:
+    get:
+      tags: [Order]
+      summary: Get order history
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Order'
+
+  /api/v1/orders/{code}:
+    get:
+      tags: [Order]
+      summary: Get order detail
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Order'
+
+  /api/v1/orders/{code}/cancel:
+    put:
+      tags: [Order]
+      summary: Cancel order
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/orders/{code}/track:
+    get:
+      tags: [Order]
+      summary: Track order status
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # --- ADMIN ---
+  /api/v1/admin/products:
+    post:
+      tags: [Admin]
+      summary: Create product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrameProduct'
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/admin/products/{id}:
+    put:
+      tags: [Admin]
+      summary: Update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrameProduct'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+    delete:
+      tags: [Admin]
+      summary: Soft delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/admin/categories:
+    post:
+      tags: [Admin]
+      summary: Create category
+      responses:
+        '201':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/admin/inventory/import:
+    post:
+      tags: [Admin]
+      summary: Import inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sku: { type: string }
+                quantity: { type: integer }
+                warehouseId: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /api/v1/admin/stats/revenue:
+    get:
+      tags: [Admin]
+      summary: Get revenue stats
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  # ==========================================
+  # API V2 - OPTICAL EXTENSION (RESERVED)
+  # ==========================================
+  /api/v2/lenses:
+    get:
+      tags: [V2-Optical]
+      summary: Reserved - Get lens catalog
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+  /api/v2/prescriptions:
+    get:
+      tags: [V2-Optical]
+      summary: Reserved - Get user prescriptions
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+    post:
+      tags: [V2-Optical]
+      summary: Reserved - Upload prescription
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+  /api/v2/cart/add:
+    post:
+      tags: [V2-Optical]
+      summary: Reserved - Add Optical Combo (Frame + Lens)
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+  /api/v2/admin/lab/orders:
+    get:
+      tags: [V2-Optical]
+      summary: Reserved - Lab Workflow
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+  # ==========================================
+  # API V3 - AI & AR (RESERVED)
+  # ==========================================
+  /api/v3/try-on:
+    post:
+      tags: [V3-AI]
+      summary: Reserved - Virtual Try On
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+  /api/v3/chat/message:
+    post:
+      tags: [V3-AI]
+      summary: Reserved - AI Assistant
+      deprecated: true
+      responses:
+        '501':
+          description: Not Implemented
+
+# ==========================================
+# COMPONENTS & SCHEMAS
+# ==========================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    SuccessResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+
+  schemas:
+    # --- COMMON WRAPPER ---
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Success"
+        data:
+          type: object
+          nullable: true
+        errors:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              code: { type: string }
+              detail: { type: string }
+
+    # --- ENUMS ---
+    ProductType:
+      type: string
+      enum: [FRAME, LENS, SERVICE]
+      default: FRAME
+
+    FrameType:
+      type: string
+      enum: [OPTICAL, SUNGLASS, SPORT]
+
+    Material:
+      type: string
+      enum: [ACETATE, TITANIUM, METAL, PLASTIC, MIXED]
+
+    RimType:
+      type: string
+      enum: [FULL_RIM, HALF_RIM, RIMLESS]
+
+    OrderStatus:
+      type: string
+      enum: 
+        - PENDING
+        - PAID
+        - WAITING_LENS    # Reserved for V2
+        - CUTTING         # Reserved for V2
+        - ASSEMBLING      # Reserved for V2
+        - QC              # Reserved for V2
+        - PACKING
+        - SHIPPING
+        - DELIVERED
+        - CANCELLED
+
+    # --- AUTH & USER ---
+    RegisterRequest:
+      type: object
+      required: [email, password, fullName]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        fullName: { type: string }
+        phone: { type: string }
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        tokenType: { type: string, example: "Bearer" }
+        expiresIn: { type: integer, example: 3600 }
+
+    ChangePasswordRequest:
+      type: object
+      required: [oldPassword, newPassword, confirmPassword]
+      properties:
+        oldPassword: { type: string }
+        newPassword: { type: string, minLength: 8 }
+        confirmPassword: { type: string }
+
+    UserProfile:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        fullName: { type: string }
+        avatar: { type: string }
+        phone: { type: string }
+
+    Address:
+      type: object
+      properties:
+        id: { type: string }
+        recipientName: { type: string }
+        phone: { type: string }
+        street: { type: string }
+        city: { type: string }
+        district: { type: string }
+        ward: { type: string }
+        isDefault: { type: boolean }
+
+    # --- PRODUCT (CORE FRAME SCHEMA) ---
+    FrameProduct:
+      type: object
+      description: Core V1 Product Schema with Optical placeholders
+      properties:
+        id: { type: string }
+        sku: { type: string }
+        name: { type: string }
+        brand: { type: string }
+        category: { type: string }
+        type: { $ref: '#/components/schemas/ProductType' }
+        description: { type: string }
+        price: { type: number }
+        salePrice: { type: number, nullable: true }
+        stock: { type: integer }
+        status: { type: string, enum: [ACTIVE, INACTIVE, OUT_OF_STOCK] }
+        images: 
+          type: array
+          items: { type: string }
+        
+        # Optical Ready Fields (Nullable in V1)
+        opticalSpec:
+          type: object
+          nullable: true
+          properties:
+            frameType: { $ref: '#/components/schemas/FrameType' }
+            material: { $ref: '#/components/schemas/Material' }
+            rimType: { $ref: '#/components/schemas/RimType' }
+            hingeType: { type: string }
+            nosePadType: { type: string }
+            # Dimensions (mm)
+            lensWidth: { type: integer, example: 52 }
+            bridgeWidth: { type: integer, example: 18 }
+            templeLength: { type: integer, example: 140 }
+            frameWidth: { type: integer, example: 135 }
+            frameHeight: { type: integer, example: 40 }
+            weight: { type: number, description: "Weight in grams" }
+            # Fit & Support
+            faceShapeFit: 
+              type: array
+              items: { type: string, enum: [ROUND, OVAL, SQUARE, HEART, DIAMOND] }
+            frameSize: { type: string, enum: [S, M, L, XL] }
+            supportPrescription: { type: boolean, default: false }
+            supportProgressive: { type: boolean, default: false }
+
+    # --- CART & ORDER ---
+    Cart:
+      type: object
+      properties:
+        id: { type: string }
+        items: 
+          type: array
+          items: { $ref: '#/components/schemas/CartItem' }
+        subTotal: { type: number }
+        total: { type: number }
+        voucherCode: { type: string, nullable: true }
+
+    CartItemReq:
+      type: object
+      required: [sku, quantity]
+      properties:
+        sku: { type: string }
+        quantity: { type: integer, minimum: 1 }
+
+    CartItem:
+      type: object
+      properties:
+        sku: { type: string }
+        name: { type: string }
+        image: { type: string }
+        price: { type: number }
+        quantity: { type: integer }
+        total: { type: number }
+
+    PlaceOrderReq:
+      type: object
+      required: [addressId, paymentMethod]
+      properties:
+        addressId: { type: string }
+        paymentMethod: { type: string, enum: [COD, BANK_TRANSFER, VNPAY] }
+        note: { type: string }
+
+    OrderPreview:
+      type: object
+      properties:
+        subTotal: { type: number }
+        shippingFee: { type: number }
+        discount: { type: number }
+        total: { type: number }
+        items: 
+          type: array
+          items: { $ref: '#/components/schemas/CartItem' }
+
+    Order:
+      type: object
+      properties:
+        code: { type: string }
+        createdAt: { type: string, format: date-time }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        total: { type: number }
+        shippingAddress: { $ref: '#/components/schemas/Address' }
+        items:
+          type: array
+          items: 
+            $ref: '#/components/schemas/OrderItem'
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              time: { type: string, format: date-time }
+
+    OrderItem:
+      type: object
+      properties:
+        sku: { type: string }
+        name: { type: string }
+        priceSnapshot: { type: number }
+        quantity: { type: integer }
+        # Placeholder for V2 Optical Data
+        opticalData:
+          type: object
+          nullable: true
+          description: Reserved for V2 (Lens info + Prescription snapshot)
+
+    # --- REVIEW ---
+    ReviewRequest:
+      type: object
+      required: [productId, rating, content]
+      properties:
+        productId: { type: string }
+        orderId: { type: string }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        content: { type: string }
+        images: 
+          type: array
+          items: { type: string }

@@ -6,3 +6,9 @@ dist/
 .firebase/
 package-lock.json
 debug.log
+
+### AI-generated debug/log files ###
+run*.log
+run*.txt
+server_log.txt
+startup.log

@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AI-generated debug/log files ###
+run*.log
+run*.txt
+run_*.log
+run_*.txt
+server_log.txt
+startup.log
+docker_up.log
+hs_err_pid*.log
+replay_pid*.log
