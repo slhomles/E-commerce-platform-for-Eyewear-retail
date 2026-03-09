@@ -133,8 +133,13 @@ public class AuthServiceImpl implements AuthService {
             verificationTokenRepository.save(verificationToken);
 
             // Send email
-            emailService.sendPasswordResetEmail(user.getEmail(), token);
-            log.info("Password reset email sent to: {}", user.getEmail());
+            try {
+                emailService.sendPasswordResetEmail(user.getEmail(), token);
+                log.info("Password reset email sent to: {}", user.getEmail());
+            } catch (Exception e) {
+                log.error("Failed to send password reset email to: {}. Error: {}", user.getEmail(), e.getMessage());
+                // Silently catch to not reveal if the email exists, and to prevent 500 errors
+            }
         });
 
         // Always return success (security: don't reveal if email exists)
@@ -248,6 +253,8 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirationSeconds())
+                .userId(user.getId() != null ? user.getId().toString() : "")
+                .role(user.getRole().name())
                 .build();
     }
 
@@ -276,6 +283,15 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         verificationTokenRepository.save(verificationToken);
-        emailService.sendVerificationEmail(user.getEmail(), token);
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), token);
+            log.info("Verification email sent to: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send verification email to: {}. Error: {}", user.getEmail(), e.getMessage());
+            // We intentionally catch this exception so the registration process
+            // still succeeds even if the email service is temporarily down or
+            // misconfigured.
+        }
     }
 }
