@@ -473,6 +473,142 @@ const cartAPI = {
     },
 };
 
+// ============ ORDER API ============
+
+const orderAPI = {
+    /**
+     * POST /api/v1/orders — Đặt hàng từ giỏ hàng.
+     * @param {object} data - { paymentMethod, shippingAddress, customerNote, voucherCode }
+     */
+    placeOrder: async (data) => {
+        const response = await request('/orders', {
+            method: 'POST',
+            body: data,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    /**
+     * GET /api/v1/orders — Danh sách đơn hàng của tôi.
+     * @param {object} filters - { status, paymentStatus, keyword, fromDate, toDate, page, size, sortBy }
+     */
+    getMyOrders: async (filters = {}) => {
+        const params = new URLSearchParams();
+        const { page = 0, size = 10, sortBy = 'newest', ...rest } = filters;
+        params.set('page', page);
+        params.set('size', size);
+        params.set('sortBy', sortBy);
+
+        Object.entries(rest).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                params.set(key, value);
+            }
+        });
+
+        const response = await request(`/orders?${params.toString()}`, { auth: true });
+        const pageData = response.data;
+        return {
+            orders: pageData.content || [],
+            totalPages: pageData.totalPages || 0,
+            totalElements: pageData.totalElements || 0,
+            currentPage: pageData.number || 0,
+        };
+    },
+
+    /**
+     * GET /api/v1/orders/{id} — Chi tiết đơn hàng.
+     */
+    getOrderDetail: async (orderId) => {
+        const response = await request(`/orders/${orderId}`, { auth: true });
+        return response.data;
+    },
+
+    /**
+     * PUT /api/v1/orders/{id}/cancel — Hủy đơn hàng.
+     */
+    cancelOrder: async (orderId) => {
+        const response = await request(`/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            auth: true,
+        });
+        return response.data;
+    },
+
+    // ---- Admin Order APIs ----
+
+    /**
+     * GET /api/v1/admin/orders — Tất cả đơn hàng (admin).
+     */
+    getAdminOrders: async (filters = {}) => {
+        const params = new URLSearchParams();
+        const { page = 0, size = 20, sortBy = 'newest', ...rest } = filters;
+        params.set('page', page);
+        params.set('size', size);
+        params.set('sortBy', sortBy);
+
+        Object.entries(rest).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                params.set(key, value);
+            }
+        });
+
+        const response = await request(`/admin/orders?${params.toString()}`, { auth: true });
+        const pageData = response.data;
+        return {
+            orders: pageData.content || [],
+            totalPages: pageData.totalPages || 0,
+            totalElements: pageData.totalElements || 0,
+            currentPage: pageData.number || 0,
+        };
+    },
+
+    /**
+     * GET /api/v1/admin/orders/{id} — Chi tiết đơn hàng (admin).
+     */
+    getAdminOrderDetail: async (orderId) => {
+        const response = await request(`/admin/orders/${orderId}`, { auth: true });
+        return response.data;
+    },
+
+    /**
+     * PUT /api/v1/admin/orders/{id}/status — Cập nhật trạng thái (admin).
+     */
+    updateOrderStatus: async (orderId, data) => {
+        const response = await request(`/admin/orders/${orderId}/status`, {
+            method: 'PUT',
+            body: data,
+            auth: true,
+        });
+        return response.data;
+    },
+};
+
+// ============ REVIEW API ============
+
+const reviewAPI = {
+    /**
+     * GET /api/v1/reviews/product/{productId}
+     */
+    getProductReviews: async (productId, page = 0, size = 5) => {
+        const response = await request(`/reviews/product/${productId}?page=${page}&size=${size}`);
+        return response.data;
+    },
+
+    /**
+     * POST /api/v1/reviews
+     * data: { productId, orderId, rating, content, images }
+     */
+    addReview: async (data) => {
+        const response = await request('/reviews', {
+            method: 'POST',
+            body: data,
+            auth: true,
+        });
+        return response.data;
+    }
+};
+
 // ============ ADMIN API ============
 
 const adminAPI = {
@@ -558,6 +694,8 @@ const api = {
     ...authAPI,
     ...productAPI,
     ...cartAPI,
+    ...orderAPI,
+    ...reviewAPI,
     ...adminAPI,
     ...profileAPI,
     TokenManager,
@@ -565,3 +703,4 @@ const api = {
 
 export { TokenManager };
 export default api;
+

@@ -38,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
+    private final com.e_commerce.glasses_store.modules.review.repository.ReviewRepository reviewRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -173,6 +174,8 @@ public class ProductServiceImpl implements ProductService {
                 p.getStatus() != null ? p.getStatus().name() : null,
                 inStock,
                 stockQuantity,
+                reviewRepository.getAverageRatingByProductId(p.getId()),
+                reviewRepository.countReviewsByProductId(p.getId()),
                 p.getCreatedAt());
     }
 
@@ -239,6 +242,8 @@ public class ProductServiceImpl implements ProductService {
                 Boolean.TRUE.equals(p.getSupportPrescription()),
                 Boolean.TRUE.equals(p.getSupportProgressive()),
                 brandInfo, categoryInfo, specInfo, variantInfos,
+                reviewRepository.getAverageRatingByProductId(p.getId()),
+                reviewRepository.countReviewsByProductId(p.getId()),
                 p.getCreatedAt());
     }
 

@@ -4,6 +4,7 @@ import cartReducer from './cartReducer';
 import checkoutReducer from './checkoutReducer';
 import filterReducer from './filterReducer';
 import miscReducer from './miscReducer';
+import orderReducer from './orderReducer';
 import productReducer from './productReducer';
 import profileReducer from './profileReducer';
 import userReducer from './userReducer';
@@ -17,7 +18,9 @@ const rootReducer = {
   filter: filterReducer,
   users: userReducer,
   checkout: checkoutReducer,
+  orders: orderReducer,
   app: miscReducer
 };
 
 export default rootReducer;
+

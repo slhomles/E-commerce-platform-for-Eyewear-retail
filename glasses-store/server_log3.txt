@@ -1,0 +1,1749 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.e-commerce:glasses-store >--------------------
+[INFO] Building glasses-store 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ glasses-store ---
+[INFO] Deleting D:\tailieuhoctap\Nam4Ky2\Develop_an_e-commerce_system\e-commerce\glasses-store\target
+[INFO] 
+[INFO] >>> spring-boot:4.0.2:run (default-cli) > test-compile @ glasses-store >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ glasses-store ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 10 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ glasses-store ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 161 source files with javac [debug parameters release 21] to target\classes
+[WARNING] /D:/tailieuhoctap/Nam4Ky2/Develop_an_e-commerce_system/e-commerce/glasses-store/src/main/java/com/e_commerce/glasses_store/modules/auth/dto/response/TokenResponse.java:[20,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ glasses-store ---
+[INFO] skip non existing resourceDirectory D:\tailieuhoctap\Nam4Ky2\Develop_an_e-commerce_system\e-commerce\glasses-store\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ glasses-store ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:4.0.2:run (default-cli) < test-compile @ glasses-store <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.2:run (default-cli) @ glasses-store ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-03-11T21:39:08.368+07:00  INFO 12716 --- [glasses-store] [           main] c.e.g.GlassesStoreApplication            : Starting GlassesStoreApplication using Java 22.0.1 with PID 12716 (D:\tailieuhoctap\Nam4Ky2\Develop_an_e-commerce_system\e-commerce\glasses-store\target\classes started by AD in D:\tailieuhoctap\Nam4Ky2\Develop_an_e-commerce_system\e-commerce\glasses-store)
+2026-03-11T21:39:08.371+07:00 DEBUG 12716 --- [glasses-store] [           main] c.e.g.GlassesStoreApplication            : Running with Spring Boot v4.0.2, Spring v7.0.3
+2026-03-11T21:39:08.372+07:00  INFO 12716 --- [glasses-store] [           main] c.e.g.GlassesStoreApplication            : No active profile set, falling back to 1 default profile: "default"
+2026-03-11T21:39:08.611+07:00  INFO 12716 --- [glasses-store] [           main] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file D:\tailieuhoctap\Nam4Ky2\Develop_an_e-commerce_system\e-commerce\glasses-store\compose.yaml
+2026-03-11T21:39:10.496+07:00  INFO 12716 --- [glasses-store] [           main] .s.b.d.c.l.DockerComposeLifecycleManager : There are already Docker Compose services running, skipping startup
+2026-03-11T21:39:13.939+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-03-11T21:39:13.942+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-11T21:39:14.414+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 454 ms. Found 15 JPA repository interfaces.
+2026-03-11T21:39:14.500+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-03-11T21:39:14.502+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-03-11T21:39:14.576+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.auth.repository.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.577+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.auth.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.577+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.auth.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.579+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.cart.repository.CartItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.579+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.cart.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.579+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.cart.repository.VoucherRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.579+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.order.repository.OrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.order.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.order.repository.OrderStatusHistoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.product.repository.BrandRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.product.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.product.repository.InventoryStockRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.product.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.product.repository.ProductVariantRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.581+07:00  INFO 12716 --- [glasses-store] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.e_commerce.glasses_store.modules.review.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-03-11T21:39:14.582+07:00  INFO 12716 --- [glasses-store] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 64 ms. Found 0 Redis repository interfaces.
+2026-03-11T21:39:15.587+07:00  INFO 12716 --- [glasses-store] [cTaskExecutor-1] com.tngtech.archunit.core.PluginLoader   : Detected Java version 22.0.1
+2026-03-11T21:39:19.732+07:00  INFO 12716 --- [glasses-store] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-03-11T21:39:19.757+07:00  INFO 12716 --- [glasses-store] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-11T21:39:19.757+07:00  INFO 12716 --- [glasses-store] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-03-11T21:39:19.895+07:00  INFO 12716 --- [glasses-store] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 9096 ms
+2026-03-11T21:39:21.538+07:00  INFO 12716 --- [glasses-store] [           main] o.f.c.i.resource.ResourceNameValidator   : 1 SQL migrations were detected but not run because they did not follow the filename convention.
+2026-03-11T21:39:21.538+07:00  INFO 12716 --- [glasses-store] [           main] o.f.c.i.resource.ResourceNameValidator   : Set 'validateMigrationNaming' to true to fail fast and see a list of the invalid file names.
+2026-03-11T21:39:21.676+07:00  INFO 12716 --- [glasses-store] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:3307/glasses_store (MySQL 8.4)
+2026-03-11T21:39:21.777+07:00  WARN 12716 --- [glasses-store] [           main] o.f.c.internal.database.base.Database    : Using MySQL 8.4 which is newer than the version Flyway has been verified with. The latest verified version of MySQL is 8.1.
+2026-03-11T21:39:21.937+07:00  INFO 12716 --- [glasses-store] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 8 migrations (execution time 00:00.116s)
+2026-03-11T21:39:21.986+07:00  INFO 12716 --- [glasses-store] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `glasses_store`: 8
+2026-03-11T21:39:21.995+07:00  INFO 12716 --- [glasses-store] [           main] o.f.core.internal.command.DbMigrate      : Schema `glasses_store` is up to date. No migration necessary.
+2026-03-11T21:39:22.278+07:00  INFO 12716 --- [glasses-store] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-11T21:39:22.398+07:00  INFO 12716 --- [glasses-store] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-03-11T21:39:23.255+07:00  INFO 12716 --- [glasses-store] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-11T21:39:23.334+07:00  INFO 12716 --- [glasses-store] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-11T21:39:23.436+07:00  INFO 12716 --- [glasses-store] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@195d4780
+2026-03-11T21:39:23.444+07:00  INFO 12716 --- [glasses-store] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-11T21:39:23.549+07:00  WARN 12716 --- [glasses-store] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-11T21:39:23.594+07:00  INFO 12716 --- [glasses-store] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/glasses_store]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.4.8
+	Default catalog/schema: glasses_store/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-11T21:39:25.885+07:00  INFO 12716 --- [glasses-store] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-11T21:39:25.896+07:00  INFO 12716 --- [glasses-store] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-11T21:39:26.121+07:00  INFO 12716 --- [glasses-store] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-11T21:39:28.628+07:00  WARN 12716 --- [glasses-store] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-11T21:39:29.139+07:00  INFO 12716 --- [glasses-store] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2026-03-11T21:39:29.458+07:00 DEBUG 12716 --- [glasses-store] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-03-11T21:39:31.979+07:00  INFO 12716 --- [glasses-store] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-03-11T21:39:32.214+07:00  INFO 12716 --- [glasses-store] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-03-11T21:39:32.237+07:00  INFO 12716 --- [glasses-store] [           main] o.s.s.config.TaskSchedulerRouter         : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2026-03-11T21:39:32.245+07:00  INFO 12716 --- [glasses-store] [           main] c.e.g.GlassesStoreApplication            : Started GlassesStoreApplication in 25.166 seconds (process running for 26.358)
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-03-11T21:39:32.654+07:00 DEBUG 12716 --- [glasses-store] [           main] c.e.glasses_store.config.AdminSeeder     : ?? Admin account already exists (admin@gmail.com). Skipping seeding.
+Hibernate: 
+    select
+        count(*) 
+    from
+        brands b1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        categories c1_0
+2026-03-11T21:39:34.609+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-11T21:39:34.609+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-11T21:39:34.615+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+2026-03-11T21:39:34.637+07:00 DEBUG 12716 --- [glasses-store] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /api/v1/reviews/seed-mock-data
+2026-03-11T21:39:34.660+07:00 DEBUG 12716 --- [glasses-store] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-03-11T21:39:34.664+07:00 DEBUG 12716 --- [glasses-store] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured POST /api/v1/reviews/seed-mock-data
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.base_price,
+        p1_0.brand_id,
+        p1_0.category_id,
+        p1_0.created_at,
+        p1_0.created_by,
+        p1_0.description,
+        p1_0.face_shape_fit,
+        p1_0.frame_material,
+        p1_0.frame_shape,
+        p1_0.frame_size,
+        p1_0.gender,
+        p1_0.hinge_type,
+        p1_0.is_active,
+        p1_0.is_deleted,
+        p1_0.name,
+        p1_0.nose_pad_type,
+        p1_0.rim_type,
+        p1_0.sale_price,
+        p1_0.slug,
+        p1_0.status,
+        p1_0.style,
+        p1_0.support_prescription,
+        p1_0.support_progressive,
+        p1_0.type,
+        p1_0.updated_at,
+        p1_0.updated_by 
+    from
+        products p1_0
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        ps1_0.product_id,
+        ps1_0.bridge_width,
+        ps1_0.frame_width,
+        ps1_0.lens_height,
+        ps1_0.lens_width,
+        ps1_0.temple_length,
+        ps1_0.weight_gram 
+    from
+        product_specs ps1_0 
+    where
+        ps1_0.product_id=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.email_verified,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.password,
+        u1_0.phone,
+        u1_0.role,
+        u1_0.updated_at 
+    from
+        users u1_0
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.920+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 4 reviews for product p0000000-0000-0000-0000-000000000001
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.938+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 5 reviews for product p0000000-0000-0000-0000-000000000002
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.948+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 2 reviews for product p0000000-0000-0000-0000-000000000003
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.963+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 7 reviews for product p0000000-0000-0000-0000-000000000004
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+2026-03-11T21:39:34.967+07:00  WARN 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Skipping product p0000000-0000-0000-0000-000000000005 - no variants found
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.987+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 10 reviews for product p0000000-0000-0000-0000-000000000006
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:34.998+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 2 reviews for product p0000000-0000-0000-0000-000000000007
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:35.034+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 10 reviews for product p0000000-0000-0000-0000-000000000008
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:35.048+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 8 reviews for product p0000000-0000-0000-0000-000000000009
+Hibernate: 
+    select
+        v1_0.product_id,
+        v1_0.id,
+        v1_0.color_hex,
+        v1_0.color_name,
+        v1_0.created_at,
+        v1_0.image_gallery,
+        v1_0.image_url,
+        v1_0.is_active,
+        v1_0.price_adjustment,
+        v1_0.sku,
+        v1_0.updated_at 
+    from
+        product_variants v1_0 
+    where
+        v1_0.product_id=?
+Hibernate: 
+    select
+        is1_0.id,
+        is1_0.product_variant_id,
+        is1_0.quantity_on_hand,
+        is1_0.quantity_reserved,
+        is1_0.updated_at,
+        is1_0.version,
+        is1_0.warehouse_location 
+    from
+        inventory_stocks is1_0 
+    where
+        is1_0.product_variant_id=?
+2026-03-11T21:39:35.062+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Seeded 5 reviews for product p0000000-0000-0000-0000-000000000010
+2026-03-11T21:39:35.062+07:00  INFO 12716 --- [glasses-store] [nio-8080-exec-1] c.e.g.m.r.s.impl.ReviewServiceImpl       : Finished seeding mock reviews for all products.
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        orders
+        (code, created_at, customer_note, discount_amount, final_amount, payment_method, payment_status, shipping_address_json, shipping_fee, status, total_amount, tracking_number, updated_at, user_id, voucher_code, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        order_items
+        (optical_data_json, order_id, product_id, product_name, product_variant_id, quantity, sku, subtotal, unit_price, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        reviews
+        (content, created_at, images, is_deleted, is_verified_purchase, order_id, product_id, rating, user_id, id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:42 min
+[INFO] Finished at: 2026-03-11T21:40:15+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.0.2:run (default-cli) on project glasses-store: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

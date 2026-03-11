@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Select from 'react-select';
+import ProductReviews from './components/ProductReviews';
 
 const ViewProduct = () => {
   const { id } = useParams();
@@ -142,7 +143,12 @@ const ViewProduct = () => {
               </div>
             </div>
           </div>
-          <div style={{ marginTop: '10rem' }}>
+          <ProductReviews
+            productId={product.id}
+            averageRating={product.averageRating}
+            reviewCount={product.reviewCount}
+          />
+          <div style={{ marginTop: '5rem' }}>
             <div className="display-header">
               <h1>Recommended</h1>
               <Link to={RECOMMENDED_PRODUCTS}>See All</Link>
