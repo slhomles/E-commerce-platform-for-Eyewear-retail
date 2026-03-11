@@ -8,19 +8,21 @@ import java.time.LocalDateTime;
  * Chỉ trả fields cần thiết để render card, tối ưu bandwidth.
  */
 public record ProductListResponse(
-        String id,
-        String name,
-        String slug,
-        String imageUrl,
-        BigDecimal basePrice,
-        BigDecimal salePrice,
-        Integer discountPercent,
-        String brandName,
-        String categoryName,
-        String gender,
-        String frameShape,
-        String type,
-        String status,
-        boolean inStock,
-        LocalDateTime createdAt) {
+                String id,
+                String name,
+                String slug,
+                String imageUrl,
+                BigDecimal basePrice,
+                BigDecimal salePrice,
+                Integer discountPercent,
+                String brandName,
+                String categoryName,
+                String gender,
+                String frameShape,
+                String type,
+                String status,
+                boolean inStock,
+                Double averageRating,
+                Integer reviewCount,
+                LocalDateTime createdAt) {
 }

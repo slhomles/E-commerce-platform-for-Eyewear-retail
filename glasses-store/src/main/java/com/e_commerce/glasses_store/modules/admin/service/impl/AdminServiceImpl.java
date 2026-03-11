@@ -249,6 +249,6 @@ public class AdminServiceImpl implements AdminService {
                 p.getFrameShape(),
                 p.getType() != null ? p.getType().name() : null,
                 p.getStatus() != null ? p.getStatus().name() : null,
-                true, p.getCreatedAt());
+                true, null, 0, p.getCreatedAt());
     }
 }

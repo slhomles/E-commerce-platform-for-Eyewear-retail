@@ -22,151 +22,171 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // ==================== Auth Exceptions ====================
+        // ==================== Auth Exceptions ====================
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthException(AuthException ex) {
-        log.warn("Auth exception: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(401, ex.getMessage()));
-    }
+        @ExceptionHandler(AuthException.class)
+        public ResponseEntity<ApiResponse<Void>> handleAuthException(AuthException ex) {
+                log.warn("Auth exception: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiResponse.error(401, ex.getMessage()));
+        }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
-        log.warn("Invalid credentials: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(401, ex.getMessage()));
-    }
+        @ExceptionHandler(InvalidCredentialsException.class)
+        public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
+                log.warn("Invalid credentials: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiResponse.error(401, ex.getMessage()));
+        }
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
-        log.warn("Email already exists: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(409, ex.getMessage()));
-    }
+        @ExceptionHandler(EmailAlreadyExistsException.class)
+        public ResponseEntity<ApiResponse<Void>> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
+                log.warn("Email already exists: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(ApiResponse.error(409, ex.getMessage()));
+        }
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTokenExpired(TokenExpiredException ex) {
-        log.warn("Token expired: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(401, ex.getMessage()));
-    }
+        @ExceptionHandler(TokenExpiredException.class)
+        public ResponseEntity<ApiResponse<Void>> handleTokenExpired(TokenExpiredException ex) {
+                log.warn("Token expired: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiResponse.error(401, ex.getMessage()));
+        }
 
-    @ExceptionHandler(UserNotVerifiedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserNotVerified(UserNotVerifiedException ex) {
-        log.warn("User not verified: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error(403, ex.getMessage()));
-    }
+        @ExceptionHandler(UserNotVerifiedException.class)
+        public ResponseEntity<ApiResponse<Void>> handleUserNotVerified(UserNotVerifiedException ex) {
+                log.warn("User not verified: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.FORBIDDEN)
+                                .body(ApiResponse.error(403, ex.getMessage()));
+        }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
-        log.warn("User not found: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(404, ex.getMessage()));
-    }
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
+                log.warn("User not found: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(404, ex.getMessage()));
+        }
 
-    @ExceptionHandler(PasswordMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handlePasswordMismatch(PasswordMismatchException ex) {
-        log.warn("Password mismatch: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, ex.getMessage()));
-    }
+        @ExceptionHandler(PasswordMismatchException.class)
+        public ResponseEntity<ApiResponse<Void>> handlePasswordMismatch(PasswordMismatchException ex) {
+                log.warn("Password mismatch: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage()));
+        }
 
-    // ==================== Spring Security Exceptions ====================
+        // ==================== Spring Security Exceptions ====================
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
-        log.warn("Authentication failed: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(401, "Authentication required"));
-    }
+        @ExceptionHandler(AuthenticationException.class)
+        public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(AuthenticationException ex) {
+                log.warn("Authentication failed: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiResponse.error(401, "Authentication required"));
+        }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
-        log.warn("Access denied: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error(403, "Access denied"));
-    }
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+                log.warn("Access denied: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.FORBIDDEN)
+                                .body(ApiResponse.error(403, "Access denied"));
+        }
 
-    // ==================== Validation Exceptions ====================
+        // ==================== Validation Exceptions ====================
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
-        List<ApiResponse.ErrorDetail> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(this::mapFieldError)
-                .collect(Collectors.toList());
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+                List<ApiResponse.ErrorDetail> errors = ex.getBindingResult().getFieldErrors().stream()
+                                .map(this::mapFieldError)
+                                .collect(Collectors.toList());
 
-        log.warn("Validation failed: {}", errors);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, "Validation failed", errors));
-    }
+                log.warn("Validation failed: {}", errors);
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, "Validation failed", errors));
+        }
 
-    // ==================== Generic Exceptions ====================
+        // ==================== Generic Exceptions ====================
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
-        log.warn("Bad request: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, ex.getMessage()));
-    }
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+                log.warn("Bad request: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage()));
+        }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
-        log.error("Unexpected error: ", ex);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(500, "An unexpected error occurred"));
-    }
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+                log.error("Unexpected error: ", ex);
+                return ResponseEntity
+                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(ApiResponse.error(500, "An unexpected error occurred"));
+        }
 
-    // ==================== Product Exceptions ====================
+        // ==================== Product Exceptions ====================
 
-    @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleProductNotFound(
-            com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException ex) {
-        log.warn("Product not found: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(404, ex.getMessage()));
-    }
+        @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleProductNotFound(
+                        com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException ex) {
+                log.warn("Product not found: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(404, ex.getMessage()));
+        }
 
-    @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCategoryNotFound(
-            com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException ex) {
-        log.warn("Category not found: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(404, ex.getMessage()));
-    }
+        @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleCategoryNotFound(
+                        com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException ex) {
+                log.warn("Category not found: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(404, ex.getMessage()));
+        }
 
-    // ==================== Cart Exceptions ====================
+        // ==================== Cart Exceptions ====================
 
-    @ExceptionHandler(com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInsufficientStock(
-            com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException ex) {
-        log.warn("Insufficient stock: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, ex.getMessage()));
-    }
+        @ExceptionHandler(com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException.class)
+        public ResponseEntity<ApiResponse<Void>> handleInsufficientStock(
+                        com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException ex) {
+                log.warn("Insufficient stock: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage()));
+        }
 
-    // ==================== Helper Methods ====================
+        // ==================== Order Exceptions ====================
 
-    private ApiResponse.ErrorDetail mapFieldError(FieldError fieldError) {
-        return ApiResponse.ErrorDetail.builder()
-                .code(fieldError.getField())
-                .detail(fieldError.getDefaultMessage())
-                .build();
-    }
+        @ExceptionHandler(com.e_commerce.glasses_store.modules.order.exception.OrderNotFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(
+                        com.e_commerce.glasses_store.modules.order.exception.OrderNotFoundException ex) {
+                log.warn("Order not found: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(404, ex.getMessage()));
+        }
+
+        @ExceptionHandler(com.e_commerce.glasses_store.modules.order.exception.InvalidOrderStateException.class)
+        public ResponseEntity<ApiResponse<Void>> handleInvalidOrderState(
+                        com.e_commerce.glasses_store.modules.order.exception.InvalidOrderStateException ex) {
+                log.warn("Invalid order state: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage()));
+        }
+
+        // ==================== Helper Methods ====================
+
+        private ApiResponse.ErrorDetail mapFieldError(FieldError fieldError) {
+                return ApiResponse.ErrorDetail.builder()
+                                .code(fieldError.getField())
+                                .detail(fieldError.getDefaultMessage())
+                                .build();
+        }
 }
