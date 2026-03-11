@@ -129,12 +129,15 @@ public class CartServiceImpl implements CartService {
      * Validate tồn kho — throw InsufficientStockException nếu không đủ.
      */
     private void validateStock(ProductVariant variant, int requestedQty) {
+        // Tạm thời bỏ qua kiểm tra tồn kho theo yêu cầu của user
+        /*
         InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
                 .orElse(null);
         if (stock == null || !stock.hasStock(requestedQty)) {
             int available = stock != null ? stock.getAvailableQuantity() : 0;
             throw new InsufficientStockException(variant.getSku(), requestedQty, available);
         }
+        */
     }
 
     /**

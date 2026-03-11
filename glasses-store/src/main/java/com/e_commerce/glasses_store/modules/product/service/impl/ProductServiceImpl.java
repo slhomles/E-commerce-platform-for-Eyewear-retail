@@ -176,6 +176,10 @@ public class ProductServiceImpl implements ProductService {
                 stockQuantity,
                 reviewRepository.getAverageRatingByProductId(p.getId()),
                 reviewRepository.countReviewsByProductId(p.getId()),
+                (p.getVariants() != null && !p.getVariants().isEmpty())
+                        ? p.getVariants().stream().filter(ProductVariant::getIsActive)
+                                .findFirst().map(ProductVariant::getId).orElse(p.getVariants().get(0).getId())
+                        : null,
                 p.getCreatedAt());
     }
 

@@ -326,6 +326,8 @@ public class AdminServiceImpl implements AdminService {
                 p.getFrameShape(),
                 p.getType() != null ? p.getType().name() : null,
                 p.getStatus() != null ? p.getStatus().name() : null,
-                inStock, stockQuantity, null, 0, p.getCreatedAt());
+                inStock, stockQuantity, null, 0,
+                (p.getVariants() != null && !p.getVariants().isEmpty()) ? p.getVariants().get(0).getId() : null,
+                p.getCreatedAt());
     }
 }

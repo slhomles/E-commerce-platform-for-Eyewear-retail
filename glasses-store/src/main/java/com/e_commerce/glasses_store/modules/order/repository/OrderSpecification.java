@@ -22,7 +22,7 @@ public final class OrderSpecification {
      */
     public static Specification<Order> hasUser(String userId) {
         if (!StringUtils.hasText(userId))
-            return null;
+            return (root, query, cb) -> cb.conjunction();
         return (root, query, cb) -> cb.equal(root.get("userId"), userId);
     }
 
@@ -31,7 +31,7 @@ public final class OrderSpecification {
      */
     public static Specification<Order> hasStatus(String status) {
         if (!StringUtils.hasText(status))
-            return null;
+            return (root, query, cb) -> cb.conjunction();
         return (root, query, cb) -> cb.equal(root.get("status"),
                 Order.OrderStatus.valueOf(status.toUpperCase()));
     }
@@ -41,7 +41,7 @@ public final class OrderSpecification {
      */
     public static Specification<Order> hasPaymentStatus(String paymentStatus) {
         if (!StringUtils.hasText(paymentStatus))
-            return null;
+            return (root, query, cb) -> cb.conjunction();
         return (root, query, cb) -> cb.equal(root.get("paymentStatus"),
                 Order.PaymentStatus.valueOf(paymentStatus.toUpperCase()));
     }
@@ -58,7 +58,7 @@ public final class OrderSpecification {
             } else if (to != null) {
                 return cb.lessThanOrEqualTo(root.get("createdAt"), to);
             }
-            return null;
+            return cb.conjunction();
         };
     }
 
@@ -67,7 +67,7 @@ public final class OrderSpecification {
      */
     public static Specification<Order> hasKeyword(String keyword) {
         if (!StringUtils.hasText(keyword))
-            return null;
+            return (root, query, cb) -> cb.conjunction();
         return (root, query, cb) -> cb.like(
                 cb.lower(root.get("code")),
                 "%" + keyword.toLowerCase() + "%");
@@ -85,7 +85,7 @@ public final class OrderSpecification {
             } else if (max != null) {
                 return cb.lessThanOrEqualTo(root.get("finalAmount"), max);
             }
-            return null;
+            return cb.conjunction();
         };
     }
 
@@ -94,7 +94,7 @@ public final class OrderSpecification {
      */
     public static Specification<Order> hasPaymentMethod(String paymentMethod) {
         if (!StringUtils.hasText(paymentMethod))
-            return null;
+            return (root, query, cb) -> cb.conjunction();
         return (root, query, cb) -> cb.equal(root.get("paymentMethod"),
                 Order.PaymentMethod.valueOf(paymentMethod.toUpperCase()));
     }

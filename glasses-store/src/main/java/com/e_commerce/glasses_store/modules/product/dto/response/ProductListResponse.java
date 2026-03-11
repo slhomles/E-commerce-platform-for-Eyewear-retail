@@ -25,5 +25,6 @@ public record ProductListResponse(
         Integer stockQuantity,
         Double averageRating,
         Integer reviewCount,
+        String defaultVariantId,
         LocalDateTime createdAt) {
 }
