@@ -50,7 +50,17 @@ const ViewProduct = () => {
   };
 
   const handleAddToBasket = () => {
-    addToBasket({ ...product, selectedColor, selectedSize: selectedSize || product.sizes[0] });
+    // Tìm variant phù hợp dựa trên màu đã chọn, hoặc dùng variant đầu tiên
+    const matchedVariant = product.variants?.find((v) =>
+      v.colorHex === selectedColor || v.colorName === selectedColor
+    ) || product.variants?.[0];
+    const selectedVariantId = matchedVariant?.id;
+    addToBasket({
+      ...product,
+      selectedColor,
+      selectedSize: selectedSize || product.sizes[0],
+      selectedVariantId
+    });
   };
 
   return (

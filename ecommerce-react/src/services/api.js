@@ -182,6 +182,7 @@ const productAPI = {
                 description: p.name || '',
                 quantity: 1,
                 maxQuantity: p.stockQuantity || 0,
+                defaultVariantId: p.defaultVariantId || null,
                 dateAdded: new Date(p.createdAt || Date.now()).getTime(),
                 keywords: [p.categoryName, p.brandName, p.gender, p.frameShape, p.type].filter(Boolean)
             })),
