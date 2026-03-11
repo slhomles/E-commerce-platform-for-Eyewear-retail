@@ -1,6 +1,5 @@
 -- Flyway Migration: V2__create_event_publication.sql
 -- Creates table for Spring Modulith Event Publication Registry
-DROP TABLE IF EXISTS event_publication;
 CREATE TABLE IF NOT EXISTS event_publication (
   id VARCHAR(36) NOT NULL,
   listener_id VARCHAR(512) NOT NULL,
