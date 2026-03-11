@@ -387,26 +387,13 @@ const productAPI = {
             const formData = new FormData();
             formData.append('file', imageFile);
 
-            const token = TokenManager.getAccessToken();
-            const config = {
+            const response = await request('/admin/products/upload', {
                 method: 'POST',
                 body: formData,
-            };
+                auth: true,
+            });
 
-            if (token) {
-                config.headers = {
-                    'Authorization': `Bearer ${token}`
-                };
-            }
-
-            const response = await fetch(`${API_BASE_URL}/admin/products/upload`, config);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Image upload failed');
-            }
-
-            return data.data || '/static/salt-image-1.png';
+            return response.data;
         } catch (e) {
             console.error('Image upload failed, fallback to default', e);
             return '/static/salt-image-1.png';
@@ -669,22 +656,8 @@ const profileAPI = {
         return Promise.resolve();
     },
 
-    storeImage: async (id, folder, imageFile) => {
-        try {
-            const formData = new FormData();
-            formData.append('file', imageFile);
-
-            const response = await request('/admin/products/upload', {
-                method: 'POST',
-                body: formData,
-                auth: true,
-            });
-
-            return response.data;
-        } catch (e) {
-            console.error('Image upload failed, fallback to default', e);
-            return '/static/default-avatar.png';
-        }
+    storeImage: async (imageFile) => {
+        return productAPI.storeImage(imageFile);
     },
 };
 

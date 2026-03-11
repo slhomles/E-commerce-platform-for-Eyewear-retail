@@ -18,10 +18,12 @@ export const displayDate = (timestamp) => {
 export const displayMoney = (n) => {
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    useGrouping: false
   });
 
-  // or use toLocaleString()
   return format.format(n);
 };
 

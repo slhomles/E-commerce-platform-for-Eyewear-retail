@@ -1,0 +1,40 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.e-commerce:glasses-store >--------------------
+[INFO] Building glasses-store 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ glasses-store ---
+[INFO] Deleting C:\Users\QAC\OneDrive - ptit.edu.vn\Desktop\EyseGlass\E-commerce-platform-for-Eyewear-retail\glasses-store\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ glasses-store ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 10 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ glasses-store ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 165 source files with javac [debug parameters release 21] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/QAC/OneDrive - ptit.edu.vn/Desktop/EyseGlass/E-commerce-platform-for-Eyewear-retail/glasses-store/src/main/java/com/e_commerce/glasses_store/modules/admin/controller/FileUploadController.java:[38,9] class, interface, enum, or record expected
+[ERROR] /C:/Users/QAC/OneDrive - ptit.edu.vn/Desktop/EyseGlass/E-commerce-platform-for-Eyewear-retail/glasses-store/src/main/java/com/e_commerce/glasses_store/modules/admin/controller/FileUploadController.java:[42,9] class, interface, enum, or record expected
+[INFO] 2 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.929 s
+[INFO] Finished at: 2026-03-11T23:21:01+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project glasses-store: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/QAC/OneDrive - ptit.edu.vn/Desktop/EyseGlass/E-commerce-platform-for-Eyewear-retail/glasses-store/src/main/java/com/e_commerce/glasses_store/modules/admin/controller/FileUploadController.java:[38,9] class, interface, enum, or record expected
+[ERROR] /C:/Users/QAC/OneDrive - ptit.edu.vn/Desktop/EyseGlass/E-commerce-platform-for-Eyewear-retail/glasses-store/src/main/java/com/e_commerce/glasses_store/modules/admin/controller/FileUploadController.java:[42,9] class, interface, enum, or record expected
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
