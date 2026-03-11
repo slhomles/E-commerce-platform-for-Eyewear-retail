@@ -23,9 +23,9 @@ public interface ProductService {
             Pageable pageable);
 
     /**
-     * Lấy chi tiết sản phẩm theo slug (SEO-friendly).
+     * Lấy chi tiết sản phẩm theo slug hoặc id.
      */
-    ProductDetailResponse getProductBySlug(String slug);
+    ProductDetailResponse getProductByIdOrSlug(String idOrSlug);
 
     /**
      * Fulltext search sản phẩm.

@@ -91,12 +91,12 @@ public class ProductController {
     }
 
     /**
-     * GET /api/v1/products/{slug}
+     * GET /api/v1/products/{idOrSlug}
      */
-    @GetMapping("/api/v1/products/{slug}")
-    public ResponseEntity<ApiResponse<ProductDetailResponse>> getProductBySlug(
-            @PathVariable String slug) {
-        return ResponseEntity.ok(ApiResponse.success(productService.getProductBySlug(slug)));
+    @GetMapping("/api/v1/products/{idOrSlug}")
+    public ResponseEntity<ApiResponse<ProductDetailResponse>> getProductByIdOrSlug(
+            @PathVariable String idOrSlug) {
+        return ResponseEntity.ok(ApiResponse.success(productService.getProductByIdOrSlug(idOrSlug)));
     }
 
     /**

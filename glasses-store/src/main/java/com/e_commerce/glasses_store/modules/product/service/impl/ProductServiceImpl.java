@@ -79,9 +79,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDetailResponse getProductBySlug(String slug) {
-        Product product = productRepository.findBySlugAndIsDeletedFalse(slug)
-                .orElseThrow(() -> new ProductNotFoundException(slug));
+    public ProductDetailResponse getProductByIdOrSlug(String idOrSlug) {
+        Product product = productRepository.findByIdAndIsDeletedFalse(idOrSlug)
+                .orElseGet(() -> productRepository.findBySlugAndIsDeletedFalse(idOrSlug)
+                        .orElseThrow(() -> new ProductNotFoundException(idOrSlug)));
         return toDetailResponse(product);
     }
 

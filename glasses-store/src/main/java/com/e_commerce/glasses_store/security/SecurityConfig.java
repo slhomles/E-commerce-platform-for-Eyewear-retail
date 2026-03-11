@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,7 +26,6 @@ import java.util.List;
 
 /**
  * Spring Security configuration for JWT-based authentication.
- * NOTE: JWT filter temporarily disabled for debugging.
  */
 @Configuration
 @EnableWebSecurity
@@ -33,9 +33,15 @@ import java.util.List;
 public class SecurityConfig {
 
         private final UserRepository userRepository;
+        private final JwtService jwtService;
 
-        public SecurityConfig(UserRepository userRepository) {
+        public SecurityConfig(UserRepository userRepository, JwtService jwtService) {
                 this.userRepository = userRepository;
+                this.jwtService = jwtService;
+        }
+
+        public JwtAuthenticationFilter jwtAuthenticationFilter() {
+                return new JwtAuthenticationFilter(jwtService, userRepository);
         }
 
         @Bean
@@ -44,10 +50,11 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
-                                                // Allow all for now - JWT filter disabled for debugging
+                                                .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .anyRequest().permitAll())
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }

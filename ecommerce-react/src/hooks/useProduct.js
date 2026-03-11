@@ -5,7 +5,8 @@ import api from '@/services/api';
 
 const useProduct = (id) => {
   // get and check if product exists in store
-  const storeProduct = useSelector((state) => state.products.items.find((item) => item.id === id));
+  const storeProductList = useSelector((state) => state.products.items);
+  const storeProduct = storeProductList.find((item) => item.id === id);
 
   const [product, setProduct] = useState(storeProduct);
   const [isLoading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ const useProduct = (id) => {
       try {
         if (!product || product.id !== id) {
           setLoading(true);
-          const data = await api.getSingleProduct(id);
+          const data = await api.getSingleProduct(id, storeProductList);
 
           if (data) {
             if (didMount) {

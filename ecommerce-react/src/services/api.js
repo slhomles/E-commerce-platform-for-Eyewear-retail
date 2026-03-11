@@ -168,22 +168,71 @@ const productAPI = {
         const response = await request(`/products?${params.toString()}`);
         const pageData = response.data;
         return {
-            products: pageData.content || [],
+            products: (pageData.content || []).map(p => ({
+                ...p,
+                price: p.salePrice || p.basePrice || 0,
+                brand: p.brandName || '',
+                image: p.imageUrl || '',
+                description: p.name || '',
+                keywords: [p.categoryName, p.brandName, p.gender, p.frameShape, p.type].filter(Boolean)
+            })),
             lastKey: pageData.last ? null : pageData.number + 1,
             total: pageData.totalElements || 0,
         };
     },
 
-    getSingleProduct: async (slugOrId) => {
-        const response = await request(`/products/${slugOrId}`);
-        return response.data;
+    getSingleProduct: async (slugOrId, reduxStoreProducts = []) => {
+        // Find by ID in redux to get the slug, or just use slugOrId if it's already a slug
+        let queryVal = slugOrId;
+        const fromStore = reduxStoreProducts.find(p => p.id === slugOrId);
+        if (fromStore && fromStore.slug) {
+            queryVal = fromStore.slug;
+        }
+
+        const response = await request(`/products/${queryVal}`);
+        const p = response.data;
+        if (!p) return null;
+
+        const price = p.salePrice || p.basePrice || 0;
+        const brand = p.brand?.name || '';
+        const image = p.variants?.length > 0 ? p.variants[0].imageUrl : '';
+        const availableColors = p.variants ? p.variants.map(v => v.colorHex || v.colorName) : [];
+        const sizes = p.specs?.lensWidth ? [p.specs.lensWidth] : [50, 52, 54, 56];
+        let imageCollection = [];
+        if (p.variants) {
+            p.variants.forEach(v => {
+                if (v.imageUrl) imageCollection.push({ id: v.id + '-main', url: v.imageUrl });
+                if (v.imageGallery) {
+                    v.imageGallery.forEach((url, i) => imageCollection.push({ id: v.id + '-' + i, url }));
+                }
+            });
+        }
+
+        return {
+            ...p,
+            price,
+            brand,
+            image,
+            availableColors,
+            sizes,
+            imageCollection,
+            maxQuantity: p.variants?.length > 0 ? p.variants[0].stockAvailable : 100,
+            keywords: [p.category?.name, p.brand?.name, p.gender, p.frameShape, p.type].filter(Boolean)
+        };
     },
 
     searchProducts: async (searchKey) => {
         const response = await request(`/products/search?keyword=${encodeURIComponent(searchKey)}`);
         const pageData = response.data;
         return {
-            products: pageData.content || [],
+            products: (pageData.content || []).map(p => ({
+                ...p,
+                price: p.salePrice || p.basePrice || 0,
+                brand: p.brandName || '',
+                image: p.imageUrl || '',
+                description: p.name || '',
+                keywords: [p.categoryName, p.brandName, p.gender, p.frameShape, p.type].filter(Boolean)
+            })),
             lastKey: null,
             total: pageData.totalElements || 0,
         };
@@ -191,17 +240,20 @@ const productAPI = {
 
     getFeaturedProducts: async (itemsCount = 8) => {
         const response = await request(`/products/featured?limit=${itemsCount}`);
-        return response.data || [];
+        const items = response.data || [];
+        return items.map(p => ({ ...p, price: p.salePrice || p.basePrice || 0, brand: p.brandName || '', image: p.imageUrl || '' }));
     },
 
     getRecommendedProducts: async (itemsCount = 8) => {
         const response = await request(`/products/recommended?limit=${itemsCount}`);
-        return response.data || [];
+        const items = response.data || [];
+        return items.map(p => ({ ...p, price: p.salePrice || p.basePrice || 0, brand: p.brandName || '', image: p.imageUrl || '' }));
     },
 
     getRelatedProducts: async (productId, limit = 6) => {
         const response = await request(`/products/${productId}/related?limit=${limit}`);
-        return response.data || [];
+        const items = response.data || [];
+        return items.map(p => ({ ...p, price: p.salePrice || p.basePrice || 0, brand: p.brandName || '', image: p.imageUrl || '' }));
     },
 
     getCategories: async () => {
@@ -234,7 +286,7 @@ const productAPI = {
             description: product.description || '',
             brandId: defaultBrandId,
             categoryId: defaultCategoryId,
-            type: "SUNGLASSES", // default
+            type: "FRAME", // FIX: Using correct ENUM
             basePrice: product.price || 0,
             salePrice: null,
             gender: "UNISEX",
@@ -370,7 +422,17 @@ const adminAPI = {
 
     getAllProducts: async (page = 0, size = 20) => {
         const response = await request(`/admin/products?page=${page}&size=${size}`, { auth: true });
-        return response.data;
+        const pageData = response.data;
+        if (pageData && pageData.content) {
+            pageData.content = pageData.content.map(p => ({
+                ...p,
+                price: p.salePrice || p.basePrice || 0,
+                brand: p.brandName || '',
+                image: p.imageUrl || '',
+                maxQuantity: p.inStock ? 100 : 0
+            }));
+        }
+        return pageData;
     },
 };
 
