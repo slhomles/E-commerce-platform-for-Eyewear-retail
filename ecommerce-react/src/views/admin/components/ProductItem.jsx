@@ -65,7 +65,7 @@ const ProductItem = ({ product }) => {
             </span>
           </div>
           <div className="grid-col">
-            <span>{product.maxQuantity || <Skeleton width={20} />}</span>
+            <span>{typeof product.maxQuantity !== 'undefined' && product.maxQuantity !== null ? product.maxQuantity : <Skeleton width={20} />}</span>
           </div>
         </div>
         {product.id && (

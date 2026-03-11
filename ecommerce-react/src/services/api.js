@@ -40,7 +40,13 @@ const request = async (endpoint, options = {}) => {
     }
 
     if (body) {
-        config.body = JSON.stringify(body);
+        if (body instanceof FormData) {
+            config.body = body;
+            // Let the browser set Content-Type with boundary for FormData
+            delete config.headers['Content-Type'];
+        } else {
+            config.body = JSON.stringify(body);
+        }
     }
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
@@ -174,6 +180,9 @@ const productAPI = {
                 brand: p.brandName || '',
                 image: p.imageUrl || '',
                 description: p.name || '',
+                quantity: 1,
+                maxQuantity: p.stockQuantity || 0,
+                dateAdded: new Date(p.createdAt || Date.now()).getTime(),
                 keywords: [p.categoryName, p.brandName, p.gender, p.frameShape, p.type].filter(Boolean)
             })),
             lastKey: pageData.last ? null : pageData.number + 1,
@@ -212,10 +221,13 @@ const productAPI = {
             ...p,
             price,
             brand,
+            brandId: p.brand?.id || '',
+            categoryId: p.category?.id || '',
             image,
             availableColors,
             sizes,
             imageCollection,
+            quantity: 1,
             maxQuantity: p.variants?.length > 0 ? p.variants[0].stockAvailable : 100,
             keywords: [p.category?.name, p.brand?.name, p.gender, p.frameShape, p.type].filter(Boolean)
         };
@@ -231,6 +243,9 @@ const productAPI = {
                 brand: p.brandName || '',
                 image: p.imageUrl || '',
                 description: p.name || '',
+                quantity: 1,
+                maxQuantity: p.stockQuantity || 0,
+                dateAdded: new Date(p.createdAt || Date.now()).getTime(),
                 keywords: [p.categoryName, p.brandName, p.gender, p.frameShape, p.type].filter(Boolean)
             })),
             lastKey: null,
@@ -268,38 +283,32 @@ const productAPI = {
 
     // Admin product operations
     addProduct: async (product) => {
-        let defaultBrandId = null;
-        let defaultCategoryId = null;
-
-        try {
-            const brandsRes = await productAPI.getBrands();
-            const categoriesRes = await productAPI.getCategories();
-            if (brandsRes && brandsRes.length > 0) defaultBrandId = brandsRes[0].id;
-            if (categoriesRes && categoriesRes.length > 0) defaultCategoryId = categoriesRes[0].id;
-        } catch (e) {
-            console.error("Could not fetch brands/categories initially", e);
-        }
-
         const payload = {
             name: product.name,
             slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
             description: product.description || '',
-            brandId: defaultBrandId,
-            categoryId: defaultCategoryId,
-            type: "FRAME", // FIX: Using correct ENUM
-            basePrice: product.price || 0,
-            salePrice: null,
-            gender: "UNISEX",
+            brandId: product.brandId,
+            categoryId: product.categoryId,
+            type: product.type || 'FRAME',
+            basePrice: product.basePrice || 0,
+            salePrice: product.salePrice || null,
+            gender: product.gender || 'UNISEX',
+            frameShape: product.frameShape || null,
+            frameMaterial: product.frameMaterial || null,
+            lensWidth: product.lensWidth || null,
+            bridgeWidth: product.bridgeWidth || null,
+            templeLength: product.templeLength || null,
+            weightGram: product.weightGram || null,
 
             variants: [
                 {
                     sku: "SKU-" + Date.now(),
-                    colorName: product.availableColors?.[0] || 'Default',
-                    colorHex: product.availableColors?.[0] || '#000000',
+                    colorName: product.colorName || 'Default',
+                    colorHex: product.colorHex || '#000000',
                     imageUrl: product.image || '',
                     imageGallery: (product.imageCollection || []).map(img => img.url),
                     priceAdjustment: 0,
-                    initialStock: product.maxQuantity || 0
+                    initialStock: product.initialStock || 0
                 }
             ]
         };
@@ -313,12 +322,56 @@ const productAPI = {
     },
 
     editProduct: async (id, updates) => {
+        const payload = {
+            name: updates.name || 'Updated Product',
+            slug: (updates.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            description: updates.description || '',
+            brandId: updates.brandId,
+            categoryId: updates.categoryId,
+            type: updates.type || "FRAME",
+            basePrice: updates.basePrice || 0,
+            salePrice: updates.salePrice || null,
+            gender: updates.gender || "UNISEX",
+            frameShape: updates.frameShape || null,
+            frameMaterial: updates.frameMaterial || null,
+            lensWidth: updates.lensWidth || null,
+            bridgeWidth: updates.bridgeWidth || null,
+            templeLength: updates.templeLength || null,
+            weightGram: updates.weightGram || null,
+
+            variants: [
+                {
+                    sku: "SKU-" + Date.now(),
+                    colorName: updates.colorName || 'Default',
+                    colorHex: updates.colorHex || '#000000',
+                    imageUrl: updates.image || '',
+                    imageGallery: (updates.imageCollection || []).map(img => img.url || img),
+                    priceAdjustment: 0,
+                    initialStock: updates.initialStock || updates.maxQuantity || 0
+                }
+            ]
+        };
+
         const response = await request(`/admin/products/${id}`, {
             method: 'PUT',
-            body: updates,
+            body: payload,
             auth: true,
         });
-        return response.data;
+
+        // Return a mapped version of the response so the Redux store seamlessly updates
+        const p = response.data;
+        return {
+            ...updates, // keep original UI state elements like imageCollection files that aren't on backend
+            id: p.id,
+            name: p.name,
+            brand: p.brand?.name || '',
+            price: p.salePrice || p.basePrice || 0,
+            description: p.description || '',
+            image: p.imageUrl || '',
+            maxQuantity: p.stockQuantity || 0,
+            quantity: 1,
+            availableColors: [p.variants?.[0]?.colorHex || '#000000']
+        };
     },
 
     removeProduct: async (id) => {
@@ -330,8 +383,34 @@ const productAPI = {
     },
 
     storeImage: async (imageFile) => {
-        // TODO: Implement file upload endpoint
-        return '/static/salt-image-1.png';
+        try {
+            const formData = new FormData();
+            formData.append('file', imageFile);
+
+            const token = TokenManager.getAccessToken();
+            const config = {
+                method: 'POST',
+                body: formData,
+            };
+
+            if (token) {
+                config.headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+
+            const response = await fetch(`${API_BASE_URL}/admin/products/upload`, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Image upload failed');
+            }
+
+            return data.data || '/static/salt-image-1.png';
+        } catch (e) {
+            console.error('Image upload failed, fallback to default', e);
+            return '/static/salt-image-1.png';
+        }
     },
 
     deleteImage: async (id) => {
@@ -429,7 +508,7 @@ const adminAPI = {
                 price: p.salePrice || p.basePrice || 0,
                 brand: p.brandName || '',
                 image: p.imageUrl || '',
-                maxQuantity: p.inStock ? 100 : 0
+                maxQuantity: p.stockQuantity || 0
             }));
         }
         return pageData;
@@ -455,8 +534,21 @@ const profileAPI = {
     },
 
     storeImage: async (id, folder, imageFile) => {
-        // TODO: Replace with actual file upload
-        return '/static/salt-image-1.png';
+        try {
+            const formData = new FormData();
+            formData.append('file', imageFile);
+
+            const response = await request('/admin/products/upload', {
+                method: 'POST',
+                body: formData,
+                auth: true,
+            });
+
+            return response.data;
+        } catch (e) {
+            console.error('Image upload failed, fallback to default', e);
+            return '/static/default-avatar.png';
+        }
     },
 };
 

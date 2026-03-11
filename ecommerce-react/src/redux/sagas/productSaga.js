@@ -50,8 +50,8 @@ function* productSaga({ type, payload }) {
         } else {
           yield put(getProductsSuccess({
             products: result.products,
-            lastKey: result.lastKey ? result.lastKey : state.products.lastRefKey,
-            total: result.total ? result.total : state.products.total
+            lastKey: result.lastKey !== undefined ? result.lastKey : state.products.lastRefKey,
+            total: result.total !== undefined ? result.total : state.products.total
           }));
           yield put(setRequestStatus(''));
         }
@@ -144,10 +144,10 @@ function* productSaga({ type, payload }) {
           };
         }
 
-        yield call(api.editProduct, payload.id, newUpdates);
+        const serverPatchedProduct = yield call(api.editProduct, payload.id, newUpdates);
         yield put(editProductSuccess({
           id: payload.id,
-          updates: newUpdates
+          updates: serverPatchedProduct
         }));
         yield handleAction(ADMIN_PRODUCTS, 'Item succesfully edited', 'success');
         yield put(setLoading(false));
@@ -185,8 +185,8 @@ function* productSaga({ type, payload }) {
         } else {
           yield put(searchProductSuccess({
             products: result.products,
-            lastKey: result.lastKey ? result.lastKey : state.products.searchedProducts.lastRefKey,
-            total: result.total ? result.total : state.products.searchedProducts.total
+            lastKey: result.lastKey !== undefined ? result.lastKey : state.products.searchedProducts.lastRefKey,
+            total: result.total !== undefined ? result.total : state.products.searchedProducts.total
           }));
           yield put(setRequestStatus(''));
         }

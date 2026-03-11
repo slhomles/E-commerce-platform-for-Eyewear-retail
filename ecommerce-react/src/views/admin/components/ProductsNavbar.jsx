@@ -1,5 +1,7 @@
-import { FilterOutlined, PlusOutlined } from '@ant-design/icons';
-import { FiltersToggle, SearchBar } from '@/components/common';
+import { FilterOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { FiltersToggle } from '@/components/common';
+import { useDispatch } from 'react-redux';
+import { setTextFilter } from '@/redux/actions/filterActions';
 import { ADD_PRODUCT } from '@/constants/routes';
 import PropType from 'prop-types';
 import React from 'react';
@@ -8,6 +10,11 @@ import { useHistory } from 'react-router-dom';
 const ProductsNavbar = (props) => {
   const { productsCount, totalProductsCount } = props;
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleSearchChange = (e) => {
+    dispatch(setTextFilter(e.target.value));
+  };
 
   return (
     <div className="product-admin-header">
@@ -17,8 +24,16 @@ const ProductsNavbar = (props) => {
         {`${productsCount} / ${totalProductsCount}`}
         )
       </h3>
-      <SearchBar />
-            &nbsp;
+      <div className="searchbar">
+        <SearchOutlined className="searchbar-icon" />
+        <input
+          className="search-input searchbar-input"
+          onChange={handleSearchChange}
+          placeholder="Search products..."
+          type="text"
+        />
+      </div>
+      &nbsp;
       <FiltersToggle>
         <button className="button-muted button-small" type="button">
           <FilterOutlined />

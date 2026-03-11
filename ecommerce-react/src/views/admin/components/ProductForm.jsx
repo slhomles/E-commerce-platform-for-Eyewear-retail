@@ -2,65 +2,125 @@
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ImageLoader } from '@/components/common';
 import {
-  CustomColorInput, CustomCreatableSelect, CustomInput, CustomTextarea
+  CustomColorInput, CustomCreatableSelect, CustomInput, CustomTextarea, CustomSelect
 } from '@/components/formik';
 import {
   Field, FieldArray, Form, Formik
 } from 'formik';
 import { useFileHandler } from '@/hooks';
 import PropType from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import api from '@/services/api';
 
-// Default brand names that I used. You can use what you want
-const brandOptions = [
-  { value: 'Salt Maalat', label: 'Salt Maalat' },
-  { value: 'Betsin Maalat', label: 'Betsin Maalat' },
-  { value: 'Sexbomb', label: 'Sexbomb' },
-  { value: 'Black Kibal', label: 'Black Kibal' }
+const typeOptions = [
+  { value: 'FRAME', label: 'Frame' },
+  { value: 'LENS', label: 'Lens' },
+  { value: 'SERVICE', label: 'Service' }
+];
+
+const genderOptions = [
+  { value: 'UNISEX', label: 'Unisex' },
+  { value: 'MEN', label: 'Men' },
+  { value: 'WOMEN', label: 'Women' },
+  { value: 'KIDS', label: 'Kids' }
+];
+
+const shapeOptions = [
+  { value: 'ROUND', label: 'Round' },
+  { value: 'SQUARE', label: 'Square' },
+  { value: 'RECTANGLE', label: 'Rectangle' },
+  { value: 'AVIATOR', label: 'Aviator' },
+  { value: 'CAT_EYE', label: 'Cat Eye' },
+  { value: 'OVAL', label: 'Oval' },
+  { value: 'WAYFARER', label: 'Wayfarer' }
+];
+
+const materialOptions = [
+  { value: 'ACETATE', label: 'Acetate' },
+  { value: 'METAL', label: 'Metal' },
+  { value: 'PLASTIC', label: 'Plastic' },
+  { value: 'WOOD', label: 'Wood' },
+  { value: 'TITANIUM', label: 'Titanium' }
 ];
 
 const FormSchema = Yup.object().shape({
   name: Yup.string()
     .required('Product name is required.')
-    .max(60, 'Product name must only be less than 60 characters.'),
-  brand: Yup.string()
-    .required('Brand name is required.'),
-  price: Yup.number()
+    .max(100, 'Product name must only be less than 100 characters.'),
+  brandId: Yup.string().required('Brand is required.'),
+  categoryId: Yup.string().required('Category is required.'),
+  type: Yup.string().required('Type is required.'),
+  gender: Yup.string().required('Gender is required.'),
+  frameShape: Yup.string(),
+  frameMaterial: Yup.string(),
+
+  basePrice: Yup.number()
     .positive('Price is invalid.')
-    .integer('Price should be an integer.')
-    .required('Price is required.'),
+    .required('Base Price is required.'),
+  salePrice: Yup.number()
+    .min(0, 'Sale Price is invalid.')
+    .nullable(),
+
   description: Yup.string()
     .required('Description is required.'),
-  maxQuantity: Yup.number()
-    .positive('Max quantity is invalid.')
-    .integer('Max quantity should be an integer.')
-    .required('Max quantity is required.'),
-  keywords: Yup.array()
-    .of(Yup.string())
-    .min(1, 'Please enter at least 1 keyword for this product.'),
-  sizes: Yup.array()
-    .of(Yup.number())
-    .min(1, 'Please enter a size for this product.'),
-  isFeatured: Yup.boolean(),
-  isRecommended: Yup.boolean(),
-  availableColors: Yup.array()
-    .of(Yup.string().required())
-    .min(1, 'Please add a default color for this product.')
+
+  // Specs
+  lensWidth: Yup.number().positive('Must be positive').nullable(),
+  bridgeWidth: Yup.number().positive('Must be positive').nullable(),
+  templeLength: Yup.number().positive('Must be positive').nullable(),
+  weightGram: Yup.number().positive('Must be positive').nullable(),
+
+  initialStock: Yup.number()
+    .positive('Initial stock is invalid.')
+    .integer('Initial stock should be an integer.')
+    .required('Initial stock is required.'),
+
+  colorName: Yup.string().required('Color name is required'),
+  colorHex: Yup.string()
 });
 
 const ProductForm = ({ product, onSubmit, isLoading }) => {
+  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [brandsRes, catRes] = await Promise.all([
+          api.getBrands(),
+          api.getCategories()
+        ]);
+        setBrands(brandsRes.map(b => ({ value: b.id, label: b.name })));
+        setCategories(catRes.map(c => ({ value: c.id, label: c.name })));
+      } catch (error) {
+        console.error("Failed to load select options", error);
+      }
+    };
+    fetchOptions();
+  }, []);
+
   const initFormikValues = {
     name: product?.name || '',
-    brand: product?.brand || '',
-    price: product?.price || 0,
-    maxQuantity: product?.maxQuantity || 0,
+    brandId: product?.brandId || '',
+    categoryId: product?.categoryId || '',
+    type: product?.type || 'FRAME',
+    gender: product?.gender || 'UNISEX',
+    frameShape: product?.frameShape || '',
+    frameMaterial: product?.frameMaterial || '',
+
+    basePrice: product?.basePrice || product?.price || 0,
+    salePrice: product?.salePrice || 0,
     description: product?.description || '',
-    keywords: product?.keywords || [],
-    sizes: product?.sizes || [],
-    isFeatured: product?.isFeatured || false,
-    isRecommended: product?.isRecommended || false,
-    availableColors: product?.availableColors || []
+
+    lensWidth: product?.specs?.lensWidth || product?.sizes?.[0] || 0,
+    bridgeWidth: product?.specs?.bridgeWidth || 0,
+    templeLength: product?.specs?.templeLength || 0,
+    weightGram: product?.specs?.weightGram || 0,
+
+    initialStock: product?.maxQuantity || product?.variants?.[0]?.initialStock || product?.variants?.[0]?.stockAvailable || 0,
+    colorName: product?.variants?.[0]?.colorName || product?.availableColors?.[0] || '',
+    colorHex: product?.variants?.[0]?.colorHex || product?.availableColors?.[0] || '#000000'
   };
 
   const {
@@ -68,20 +128,16 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
     isFileLoading,
     onFileChange,
     removeImage
-  } = useFileHandler({ image: {}, imageCollection: product?.imageCollection || [] });
+  } = useFileHandler({ image: {}, imageCollection: product?.imageCollection || product?.variants?.[0]?.imageGallery?.map((url, i) => ({ id: i, url })) || [] });
 
   const onSubmitForm = (form) => {
-    if (imageFile.image.file || product.imageUrl) {
+    if (imageFile.image.file || product?.image || product?.imageUrl) {
       onSubmit({
         ...form,
-        quantity: 1,
-        name_lower: form.name.toLowerCase(),
-        dateAdded: new Date().getTime(),
-        image: imageFile?.image?.file || product.imageUrl,
+        image: imageFile?.image?.file || product?.imageUrl || product?.image,
         imageCollection: imageFile.imageCollection
       });
     } else {
-      // eslint-disable-next-line no-alert
       alert('Product thumbnail image is required.');
     }
   };
@@ -89,6 +145,7 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
   return (
     <div>
       <Formik
+        enableReinitialize
         initialValues={initFormikValues}
         validateOnChange
         validationSchema={FormSchema}
@@ -104,24 +161,57 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                     name="name"
                     type="text"
                     label="* Product Name"
-                    placeholder="Gago"
+                    placeholder="E.g. RayBan Wayfarer Classic"
                     style={{ textTransform: 'capitalize' }}
                     component={CustomInput}
                   />
                 </div>
+              </div>
+
+              <div className="d-flex">
+                <div className="product-form-field">
+                  <CustomSelect
+                    name="categoryId"
+                    options={categories}
+                    disabled={isLoading || categories.length === 0}
+                    placeholder="Select Category"
+                    label="* Category"
+                  />
+                </div>
                 &nbsp;
                 <div className="product-form-field">
-                  <CustomCreatableSelect
-                    defaultValue={{ label: values.brand, value: values.brand }}
-                    name="brand"
-                    iid="brand"
-                    options={brandOptions}
-                    disabled={isLoading}
-                    placeholder="Select/Create Brand"
+                  <CustomSelect
+                    name="brandId"
+                    options={brands}
+                    disabled={isLoading || brands.length === 0}
+                    placeholder="Select Brand"
                     label="* Brand"
                   />
                 </div>
               </div>
+
+              <div className="d-flex">
+                <div className="product-form-field">
+                  <CustomSelect
+                    name="type"
+                    options={typeOptions}
+                    disabled={isLoading}
+                    placeholder="Select Type"
+                    label="* Type"
+                  />
+                </div>
+                &nbsp;
+                <div className="product-form-field">
+                  <CustomSelect
+                    name="gender"
+                    options={genderOptions}
+                    disabled={isLoading}
+                    placeholder="Select Gender"
+                    label="* Gender"
+                  />
+                </div>
+              </div>
+
               <div className="product-form-field">
                 <Field
                   disabled={isLoading}
@@ -132,14 +222,14 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                   component={CustomTextarea}
                 />
               </div>
+
               <div className="d-flex">
                 <div className="product-form-field">
                   <Field
                     disabled={isLoading}
-                    name="price"
-                    id="price"
+                    name="basePrice"
                     type="number"
-                    label="* Price"
+                    label="* Base Price"
                     component={CustomInput}
                   />
                 </div>
@@ -147,49 +237,117 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                 <div className="product-form-field">
                   <Field
                     disabled={isLoading}
-                    name="maxQuantity"
+                    name="salePrice"
                     type="number"
-                    id="maxQuantity"
-                    label="* Max Quantity"
+                    label="Sale Price (Optional)"
                     component={CustomInput}
                   />
                 </div>
               </div>
+
+              <h4 className="margin-top-s">Physical Specifications</h4>
               <div className="d-flex">
                 <div className="product-form-field">
-                  <CustomCreatableSelect
-                    defaultValue={values.keywords.map((key) => ({ value: key, label: key }))}
-                    name="keywords"
-                    iid="keywords"
-                    isMulti
+                  <CustomSelect
+                    name="frameShape"
+                    options={shapeOptions}
                     disabled={isLoading}
-                    placeholder="Create/Select Keywords"
-                    label="* Keywords"
+                    placeholder="Select Shape"
+                    label="Frame Shape"
                   />
                 </div>
                 &nbsp;
                 <div className="product-form-field">
-                  <CustomCreatableSelect
-                    defaultValue={values.keywords.map((key) => ({ value: key, label: key }))}
-                    name="sizes"
-                    iid="sizes"
-                    type="number"
-                    isMulti
+                  <CustomSelect
+                    name="frameMaterial"
+                    options={materialOptions}
                     disabled={isLoading}
-                    placeholder="Create/Select Sizes"
-                    label="* Sizes (Millimeter)"
+                    placeholder="Select Material"
+                    label="Frame Material"
                   />
                 </div>
               </div>
-              <div className="product-form-field">
-                <FieldArray
-                  name="availableColors"
-                  disabled={isLoading}
-                  component={CustomColorInput}
-                />
+
+              <div className="d-flex">
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="lensWidth"
+                    type="number"
+                    label="Lens Width (mm)"
+                    component={CustomInput}
+                  />
+                </div>
+                &nbsp;
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="bridgeWidth"
+                    type="number"
+                    label="Bridge Width (mm)"
+                    component={CustomInput}
+                  />
+                </div>
               </div>
+
+              <div className="d-flex">
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="templeLength"
+                    type="number"
+                    label="Temple Length (mm)"
+                    component={CustomInput}
+                  />
+                </div>
+                &nbsp;
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="weightGram"
+                    type="number"
+                    label="Weight (g)"
+                    component={CustomInput}
+                  />
+                </div>
+              </div>
+
+              <h4 className="margin-top-s">Initial Variant Information</h4>
+              <div className="d-flex">
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="colorName"
+                    type="text"
+                    label="* Color Name"
+                    placeholder="E.g. Matte Black"
+                    component={CustomInput}
+                  />
+                </div>
+                &nbsp;
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="colorHex"
+                    type="color"
+                    label="Color Hex"
+                    component={CustomInput}
+                  />
+                </div>
+                &nbsp;
+                <div className="product-form-field">
+                  <Field
+                    disabled={isLoading}
+                    name="initialStock"
+                    type="number"
+                    label="* Initial Stock Qty"
+                    component={CustomInput}
+                  />
+                </div>
+              </div>
+
               <div className="product-form-field">
-                <span className="d-block padding-s">Image Collection</span>
+                <span className="d-block padding-s">Image Collection (Gallery)</span>
                 {!isFileLoading && (
                   <label htmlFor="product-input-file-collection">
                     <input
@@ -231,39 +389,6 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                 </>
               </div>
               <br />
-              <div className="d-flex">
-                <div className="product-form-field">
-                  <input
-                    checked={values.isFeatured}
-                    className=""
-                    id="featured"
-                    onChange={(e) => setValues({ ...values, isFeatured: e.target.checked })}
-                    type="checkbox"
-                  />
-                  <label htmlFor="featured">
-                    <h5 className="d-flex-grow-1 margin-0">
-                      &nbsp; Add to Featured &nbsp;
-                    </h5>
-                  </label>
-                </div>
-                <div className="product-form-field">
-                  <input
-                    checked={values.isRecommended}
-                    className=""
-                    id="recommended"
-                    onChange={(e) => setValues({ ...values, isRecommended: e.target.checked })}
-                    type="checkbox"
-                  />
-                  <label htmlFor="recommended">
-                    <h5 className="d-flex-grow-1 margin-0">
-                      &nbsp; Add to Recommended &nbsp;
-                    </h5>
-                  </label>
-                </div>
-              </div>
-              <br />
-              <br />
-              <br />
               <div className="product-form-field product-form-submit">
                 <button
                   className="button"
@@ -272,14 +397,14 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                 >
                   {isLoading ? <LoadingOutlined /> : <CheckOutlined />}
                   &nbsp;
-                  {isLoading ? 'Saving Product' : 'Save Product'}
+                  {isLoading ? 'Saving Product...' : 'Save Product'}
                 </button>
               </div>
             </div>
-            {/* ----THUBMNAIL ---- */}
+            {/* ----THUMBNAIL ---- */}
             <div className="product-form-file">
               <div className="product-form-field">
-                <span className="d-block padding-s">* Thumbnail</span>
+                <span className="d-block padding-s">* Thumbnail / Main Image</span>
                 {!isFileLoading && (
                   <label htmlFor="product-input-file">
                     <input
@@ -295,11 +420,11 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                 )}
               </div>
               <div className="product-form-image-wrapper">
-                {(imageFile.image.url || product.image) && (
+                {(imageFile.image.url || product?.image || product?.imageUrl) && (
                   <ImageLoader
                     alt=""
                     className="product-form-image-preview"
-                    src={imageFile.image.url || product.image}
+                    src={imageFile.image.url || product?.image || product?.imageUrl}
                   />
                 )}
               </div>
@@ -314,19 +439,25 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
 ProductForm.propTypes = {
   product: PropType.shape({
     name: PropType.string,
-    brand: PropType.string,
-    price: PropType.number,
-    maxQuantity: PropType.number,
+    brandId: PropType.string,
+    categoryId: PropType.string,
     description: PropType.string,
-    keywords: PropType.arrayOf(PropType.string),
-    imageCollection: PropType.arrayOf(PropType.object),
-    sizes: PropType.arrayOf(PropType.string),
+    price: PropType.number,
+    basePrice: PropType.number,
+    salePrice: PropType.number,
+    type: PropType.string,
+    gender: PropType.string,
+    frameShape: PropType.string,
+    frameMaterial: PropType.string,
+    specs: PropType.object,
+    sizes: PropType.array,
+    variants: PropType.array,
+    availableColors: PropType.array,
     image: PropType.string,
     imageUrl: PropType.string,
-    isFeatured: PropType.bool,
-    isRecommended: PropType.bool,
-    availableColors: PropType.arrayOf(PropType.string)
-  }).isRequired,
+    imageCollection: PropType.array,
+    maxQuantity: PropType.number
+  }),
   onSubmit: PropType.func.isRequired,
   isLoading: PropType.bool.isRequired
 };

@@ -45,7 +45,7 @@ const BasketItem = ({ product }) => {
             <div>
               <span className="spec-title">Color</span>
               <div style={{
-                backgroundColor: product.selectedColor || product.availableColors[0],
+                backgroundColor: product.selectedColor || (product.availableColors ? product.availableColors[0] : '#000000'),
                 width: '15px',
                 height: '15px',
                 borderRadius: '50%'

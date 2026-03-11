@@ -19,7 +19,7 @@ const ProductList = (props) => {
   };
 
   useEffect(() => {
-    if (products.items.length === 0 || !products.lastRefKey) {
+    if (products.items.length === 0) {
       fetchProducts();
     }
 

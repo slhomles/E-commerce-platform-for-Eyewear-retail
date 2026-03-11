@@ -4,11 +4,9 @@ import { useSelector } from 'react-redux';
 import api from '@/services/api';
 
 const useProduct = (id) => {
-  // get and check if product exists in store
   const storeProductList = useSelector((state) => state.products.items);
-  const storeProduct = storeProductList.find((item) => item.id === id);
 
-  const [product, setProduct] = useState(storeProduct);
+  const [product, setProduct] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const didMount = useDidMount(true);
@@ -36,9 +34,10 @@ const useProduct = (id) => {
         }
       }
     })();
-  }, [id]);
+  }, [id, didMount, storeProductList]);
 
   return { product, isLoading, error };
 };
 
 export default useProduct;
+

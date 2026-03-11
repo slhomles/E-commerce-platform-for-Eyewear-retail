@@ -137,9 +137,9 @@ public class ProductServiceImpl implements ProductService {
     // ==================== Private Mapping Methods ====================
 
     private ProductListResponse toListResponse(Product p) {
-        // Lấy image từ variant đầu tiên (nếu có)
         String imageUrl = null;
         boolean inStock = false;
+        Integer stockQuantity = 0;
         if (p.getVariants() != null && !p.getVariants().isEmpty()) {
             ProductVariant firstVariant = p.getVariants().stream()
                     .filter(ProductVariant::getIsActive)
@@ -150,6 +150,11 @@ public class ProductServiceImpl implements ProductService {
             inStock = p.getVariants().stream()
                     .filter(v -> v.getIsActive() && v.getInventoryStock() != null)
                     .anyMatch(v -> v.getInventoryStock().getAvailableQuantity() > 0);
+
+            stockQuantity = p.getVariants().stream()
+                    .filter(ProductVariant::getIsActive)
+                    .mapToInt(v -> v.getInventoryStock() != null ? v.getInventoryStock().getAvailableQuantity() : 0)
+                    .sum();
         }
 
         return new ProductListResponse(
@@ -167,6 +172,7 @@ public class ProductServiceImpl implements ProductService {
                 p.getType() != null ? p.getType().name() : null,
                 p.getStatus() != null ? p.getStatus().name() : null,
                 inStock,
+                stockQuantity,
                 p.getCreatedAt());
     }
 

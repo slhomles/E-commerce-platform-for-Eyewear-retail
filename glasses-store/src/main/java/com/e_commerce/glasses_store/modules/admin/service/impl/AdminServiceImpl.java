@@ -205,7 +205,77 @@ public class AdminServiceImpl implements AdminService {
         if (req.gender() != null)
             product.setGender(Product.Gender.valueOf(req.gender().toUpperCase()));
 
+        // Update Specs
+        if (hasSpecs(req)) {
+            ProductSpec spec = product.getProductSpec();
+            if (spec == null) {
+                spec = ProductSpec.builder().product(product).build();
+                product.setProductSpec(spec);
+            }
+            spec.setLensWidth(req.lensWidth());
+            spec.setBridgeWidth(req.bridgeWidth());
+            spec.setTempleLength(req.templeLength());
+            spec.setLensHeight(req.lensHeight());
+            spec.setFrameWidth(req.frameWidth());
+            spec.setWeightGram(req.weightGram());
+        }
+
         product = productRepository.save(product);
+
+        // Update Variants and Inventory (only handling the first variant for Admin CRUD
+        // simplicity)
+        if (req.variants() != null && !req.variants().isEmpty()) {
+            CreateProductRequest.VariantRequest vr = req.variants().get(0);
+            if (product.getVariants() != null && !product.getVariants().isEmpty()) {
+                ProductVariant variant = product.getVariants().get(0);
+                variant.setColorName(vr.colorName());
+                if (vr.colorHex() != null)
+                    variant.setColorHex(vr.colorHex());
+                if (vr.imageUrl() != null && !vr.imageUrl().isEmpty()) {
+                    variant.setImageUrl(vr.imageUrl());
+                }
+
+                if (vr.imageGallery() != null) {
+                    try {
+                        variant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
+                    } catch (Exception e) {
+                    }
+                }
+                variantRepository.save(variant);
+
+                // Update stock
+                InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
+                        .orElseGet(() -> InventoryStock.builder().productVariant(variant).quantityOnHand(0).build());
+                stock.setQuantityOnHand(vr.initialStock());
+                inventoryStockRepository.save(stock);
+            } else {
+                // If there were no variants before, create one
+                ProductVariant variant = ProductVariant.builder()
+                        .product(product)
+                        .sku(vr.sku())
+                        .colorName(vr.colorName())
+                        .colorHex(vr.colorHex())
+                        .imageUrl(vr.imageUrl())
+                        .priceAdjustment(vr.priceAdjustment() != null ? vr.priceAdjustment() : BigDecimal.ZERO)
+                        .build();
+                if (vr.imageGallery() != null) {
+                    try {
+                        variant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
+                    } catch (Exception e) {
+                    }
+                }
+                variant = variantRepository.save(variant);
+
+                if (vr.initialStock() > 0) {
+                    InventoryStock stock = InventoryStock.builder()
+                            .productVariant(variant)
+                            .quantityOnHand(vr.initialStock())
+                            .build();
+                    inventoryStockRepository.save(stock);
+                }
+            }
+        }
+
         return toListResponse(product);
     }
 
@@ -237,8 +307,15 @@ public class AdminServiceImpl implements AdminService {
 
     private ProductListResponse toListResponse(Product p) {
         String imageUrl = null;
+        boolean inStock = false;
+        Integer stockQuantity = 0;
         if (p.getVariants() != null && !p.getVariants().isEmpty()) {
-            imageUrl = p.getVariants().get(0).getImageUrl();
+            ProductVariant firstVariant = p.getVariants().get(0);
+            imageUrl = firstVariant.getImageUrl();
+            if (firstVariant.getInventoryStock() != null) {
+                stockQuantity = firstVariant.getInventoryStock().getQuantityOnHand();
+            }
+            inStock = stockQuantity > 0;
         }
         return new ProductListResponse(
                 p.getId(), p.getName(), p.getSlug(), imageUrl,
@@ -249,6 +326,6 @@ public class AdminServiceImpl implements AdminService {
                 p.getFrameShape(),
                 p.getType() != null ? p.getType().name() : null,
                 p.getStatus() != null ? p.getStatus().name() : null,
-                true, p.getCreatedAt());
+                inStock, stockQuantity, p.getCreatedAt());
     }
 }
