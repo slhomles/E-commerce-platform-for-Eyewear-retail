@@ -57,3 +57,23 @@ export const EDIT_USER = 'EDIT_USER';
 export const LOADING = 'LOADING';
 export const IS_AUTHENTICATING = 'IS_AUTHENTICATING';
 export const SET_REQUEST_STATUS = 'SET_REQUEST_STATUS';
+
+// ==================== Server Cart (synced with backend) ====================
+export const SYNC_CART = 'SYNC_CART';
+export const SYNC_CART_SUCCESS = 'SYNC_CART_SUCCESS';
+export const SYNC_CART_FAILURE = 'SYNC_CART_FAILURE';
+export const SERVER_ADD_TO_CART = 'SERVER_ADD_TO_CART';
+export const SERVER_UPDATE_CART_ITEM = 'SERVER_UPDATE_CART_ITEM';
+export const SERVER_REMOVE_CART_ITEM = 'SERVER_REMOVE_CART_ITEM';
+export const SERVER_APPLY_VOUCHER = 'SERVER_APPLY_VOUCHER';
+
+// ==================== Admin ====================
+export const ADMIN_CREATE_CATEGORY = 'ADMIN_CREATE_CATEGORY';
+export const ADMIN_IMPORT_INVENTORY = 'ADMIN_IMPORT_INVENTORY';
+export const ADMIN_GET_STATS = 'ADMIN_GET_STATS';
+export const ADMIN_GET_STATS_SUCCESS = 'ADMIN_GET_STATS_SUCCESS';
+
+// ==================== Category / Brand Filter ====================
+export const SET_CATEGORY_FILTER = 'SET_CATEGORY_FILTER';
+export const SET_GENDER_FILTER = 'SET_GENDER_FILTER';
+export const SET_SORT_FILTER = 'SET_SORT_FILTER';

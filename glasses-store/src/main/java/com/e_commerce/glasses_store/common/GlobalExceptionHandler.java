@@ -130,6 +130,37 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(500, "An unexpected error occurred"));
     }
 
+    // ==================== Product Exceptions ====================
+
+    @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProductNotFound(
+            com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException ex) {
+        log.warn("Product not found: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(404, ex.getMessage()));
+    }
+
+    @ExceptionHandler(com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCategoryNotFound(
+            com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException ex) {
+        log.warn("Category not found: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(404, ex.getMessage()));
+    }
+
+    // ==================== Cart Exceptions ====================
+
+    @ExceptionHandler(com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInsufficientStock(
+            com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException ex) {
+        log.warn("Insufficient stock: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(400, ex.getMessage()));
+    }
+
     // ==================== Helper Methods ====================
 
     private ApiResponse.ErrorDetail mapFieldError(FieldError fieldError) {

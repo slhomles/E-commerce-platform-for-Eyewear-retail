@@ -1,5 +1,6 @@
 import authReducer from './authReducer';
 import basketReducer from './basketReducer';
+import cartReducer from './cartReducer';
 import checkoutReducer from './checkoutReducer';
 import filterReducer from './filterReducer';
 import miscReducer from './miscReducer';
@@ -10,6 +11,7 @@ import userReducer from './userReducer';
 const rootReducer = {
   products: productReducer,
   basket: basketReducer,
+  cart: cartReducer,
   auth: authReducer,
   profile: profileReducer,
   filter: filterReducer,

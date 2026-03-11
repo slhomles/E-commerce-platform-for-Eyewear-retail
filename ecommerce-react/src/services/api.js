@@ -1,5 +1,5 @@
 // API Service Layer - REST API client for Spring Boot backend
-// Replaces Firebase service with HTTP calls to /api/v1/*
+// Connects to /api/v1/* endpoints
 
 const API_BASE_URL = '/api/v1';
 
@@ -64,7 +64,6 @@ const authAPI = {
             method: 'POST',
             body: { email, password },
         });
-        // response.data = { accessToken, refreshToken, tokenType, expiresIn }
         if (response.data) {
             TokenManager.setTokens(response.data);
         }
@@ -144,103 +143,252 @@ const authAPI = {
 };
 
 // ============ PRODUCT API ============
-// NOTE: Backend product API is not yet implemented (skeleton only).
-// These functions return mock data for now and will be updated
-// when backend product endpoints are ready.
 
 const productAPI = {
-    getProducts: async (lastKey) => {
-        // TODO: Replace with actual API call when backend is ready
-        // return request('/products', { method: 'GET', auth: true });
+    /**
+     * GET /api/v1/products — List + filter + paginate
+     * @param {object} filters - { brand, category, gender, type, minPrice, maxPrice, ... }
+     * @param {number} page
+     * @param {number} size
+     * @param {string} sortBy - price_asc, price_desc, newest, name_asc, name_desc
+     */
+    getProducts: async (lastRef, filters = {}) => {
+        const params = new URLSearchParams();
+        const { page = 0, size = 12, sortBy = 'newest', ...rest } = filters;
+        params.set('page', page);
+        params.set('size', size);
+        params.set('sortBy', sortBy);
+
+        Object.entries(rest).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                params.set(key, value);
+            }
+        });
+
+        const response = await request(`/products?${params.toString()}`);
+        const pageData = response.data;
         return {
-            products: [],
-            lastKey: null,
-            total: 0,
+            products: pageData.content || [],
+            lastKey: pageData.last ? null : pageData.number + 1,
+            total: pageData.totalElements || 0,
         };
     },
 
-    getSingleProduct: async (id) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/${id}`, { method: 'GET' });
-        return null;
+    getSingleProduct: async (slugOrId) => {
+        const response = await request(`/products/${slugOrId}`);
+        return response.data;
     },
 
     searchProducts: async (searchKey) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/search?q=${searchKey}`, { method: 'GET' });
+        const response = await request(`/products/search?keyword=${encodeURIComponent(searchKey)}`);
+        const pageData = response.data;
         return {
-            products: [],
+            products: pageData.content || [],
             lastKey: null,
-            total: 0,
+            total: pageData.totalElements || 0,
         };
     },
 
-    getFeaturedProducts: async (itemsCount) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/featured?limit=${itemsCount}`, { method: 'GET' });
-        return [];
+    getFeaturedProducts: async (itemsCount = 8) => {
+        const response = await request(`/products/featured?limit=${itemsCount}`);
+        return response.data || [];
     },
 
-    getRecommendedProducts: async (itemsCount) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/recommended?limit=${itemsCount}`, { method: 'GET' });
-        return [];
+    getRecommendedProducts: async (itemsCount = 8) => {
+        const response = await request(`/products/recommended?limit=${itemsCount}`);
+        return response.data || [];
     },
 
+    getRelatedProducts: async (productId, limit = 6) => {
+        const response = await request(`/products/${productId}/related?limit=${limit}`);
+        return response.data || [];
+    },
+
+    getCategories: async () => {
+        const response = await request('/categories');
+        return response.data || [];
+    },
+
+    getBrands: async () => {
+        const response = await request('/brands');
+        return response.data || [];
+    },
+
+    // Admin product operations
     addProduct: async (product) => {
-        // TODO: Replace with actual API call
-        // return request('/products', { method: 'POST', body: product, auth: true });
-        return { id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, ...product };
+        let defaultBrandId = null;
+        let defaultCategoryId = null;
+
+        try {
+            const brandsRes = await productAPI.getBrands();
+            const categoriesRes = await productAPI.getCategories();
+            if (brandsRes && brandsRes.length > 0) defaultBrandId = brandsRes[0].id;
+            if (categoriesRes && categoriesRes.length > 0) defaultCategoryId = categoriesRes[0].id;
+        } catch (e) {
+            console.error("Could not fetch brands/categories initially", e);
+        }
+
+        const payload = {
+            name: product.name,
+            slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            description: product.description || '',
+            brandId: defaultBrandId,
+            categoryId: defaultCategoryId,
+            type: "SUNGLASSES", // default
+            basePrice: product.price || 0,
+            salePrice: null,
+            gender: "UNISEX",
+
+            variants: [
+                {
+                    sku: "SKU-" + Date.now(),
+                    colorName: product.availableColors?.[0] || 'Default',
+                    colorHex: product.availableColors?.[0] || '#000000',
+                    imageUrl: product.image || '',
+                    imageGallery: (product.imageCollection || []).map(img => img.url),
+                    priceAdjustment: 0,
+                    initialStock: product.maxQuantity || 0
+                }
+            ]
+        };
+
+        const response = await request('/admin/products', {
+            method: 'POST',
+            body: payload,
+            auth: true,
+        });
+        return response.data;
     },
 
     editProduct: async (id, updates) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/${id}`, { method: 'PUT', body: updates, auth: true });
-        return { id, ...updates };
+        const response = await request(`/admin/products/${id}`, {
+            method: 'PUT',
+            body: updates,
+            auth: true,
+        });
+        return response.data;
     },
 
     removeProduct: async (id) => {
-        // TODO: Replace with actual API call
-        // return request(`/products/${id}`, { method: 'DELETE', auth: true });
+        await request(`/admin/products/${id}`, {
+            method: 'DELETE',
+            auth: true,
+        });
         return { id };
     },
 
     storeImage: async (imageFile) => {
-        // TODO: Replace with actual file upload API call
-        // const formData = new FormData();
-        // formData.append('file', imageFile);
-        // return request('/upload', { method: 'POST', body: formData, auth: true });
+        // TODO: Implement file upload endpoint
         return '/static/salt-image-1.png';
     },
 
     deleteImage: async (id) => {
-        // TODO: Replace with actual API call
         return Promise.resolve();
     },
 
     generateKey: () => `${Date.now()}-${Math.random().toString(16).slice(2)}`,
 };
 
+// ============ CART API ============
+
+const cartAPI = {
+    getCart: async () => {
+        const response = await request('/cart', { auth: true });
+        return response.data;
+    },
+
+    addToCart: async (variantId, quantity = 1) => {
+        const response = await request('/cart/add', {
+            method: 'POST',
+            body: { variantId, quantity },
+            auth: true,
+        });
+        return response.data;
+    },
+
+    updateCartItem: async (itemId, quantity) => {
+        const response = await request('/cart/update', {
+            method: 'PUT',
+            body: { itemId, quantity },
+            auth: true,
+        });
+        return response.data;
+    },
+
+    removeCartItem: async (itemId) => {
+        const response = await request(`/cart/remove?itemId=${itemId}`, {
+            method: 'DELETE',
+            auth: true,
+        });
+        return response.data;
+    },
+
+    applyVoucher: async (code) => {
+        const response = await request('/cart/voucher', {
+            method: 'POST',
+            body: { code },
+            auth: true,
+        });
+        return response.data;
+    },
+
+    saveBasketItems: async (basket, userId) => {
+        // Sync local basket to server
+        for (const item of basket) {
+            if (item.selectedVariantId) {
+                await cartAPI.addToCart(item.selectedVariantId, item.quantity || 1);
+            }
+        }
+    },
+};
+
+// ============ ADMIN API ============
+
+const adminAPI = {
+    createCategory: async (categoryData) => {
+        const response = await request('/admin/categories', {
+            method: 'POST',
+            body: categoryData,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    importInventory: async (items) => {
+        const response = await request('/admin/inventory/import', {
+            method: 'POST',
+            body: { items },
+            auth: true,
+        });
+        return response;
+    },
+
+    getRevenueStats: async () => {
+        const response = await request('/admin/stats/revenue', { auth: true });
+        return response.data;
+    },
+
+    getAllProducts: async (page = 0, size = 20) => {
+        const response = await request(`/admin/products?page=${page}&size=${size}`, { auth: true });
+        return response.data;
+    },
+};
+
 // ============ PROFILE API ============
-// NOTE: Backend profile API is not yet implemented.
-// These functions are stubs that will be updated when ready.
 
 const profileAPI = {
     getUser: async () => {
         // TODO: Replace with actual API call
-        // return request('/users/me', { method: 'GET', auth: true });
         return null;
     },
 
     updateProfile: async (id, updates) => {
         // TODO: Replace with actual API call
-        // return request('/users/me', { method: 'PUT', body: updates, auth: true });
         return updates;
     },
 
     updateEmail: async (password, newEmail) => {
         // TODO: Replace with actual API call
-        // return request('/users/me/email', { method: 'PUT', body: { password, newEmail }, auth: true });
         return Promise.resolve();
     },
 
@@ -250,23 +398,14 @@ const profileAPI = {
     },
 };
 
-// ============ BASKET API ============
-
-const basketAPI = {
-    saveBasketItems: async (basket, userId) => {
-        // TODO: Replace with actual API call when cart API is ready
-        // return request('/cart', { method: 'PUT', body: { items: basket }, auth: true });
-        return Promise.resolve();
-    },
-};
-
 // ============ EXPORTS ============
 
 const api = {
     ...authAPI,
     ...productAPI,
+    ...cartAPI,
+    ...adminAPI,
     ...profileAPI,
-    ...basketAPI,
     TokenManager,
 };
 

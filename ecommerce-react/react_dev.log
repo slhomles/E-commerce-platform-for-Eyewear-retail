@@ -1,0 +1,17 @@
+
+> ecommerce-react@1.2.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v3.0.2[39m  [2mready in [37m[1m3215[22m[2m[39m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [37m[1m--host[22m[2m[39m to expose[22m
+(node:12868) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2m10:55:58 PM[22m [36m[1m[vite][22m[39m [32mvite.config.js changed, restarting server...[39m
+Port 3001 is in use, trying another one...
+[2m10:55:58 PM[22m [36m[1m[vite][22m[39m server restarted.
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3002[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [37m[1m--host[22m[2m[39m to expose[22m
