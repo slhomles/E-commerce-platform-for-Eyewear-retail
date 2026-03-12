@@ -4,6 +4,7 @@ import api from '@/services/api';
 import { setOrders, setOrderLoading, setOrderError } from '@/redux/actions/orderActions';
 import { displayMoney } from '@/helpers/utils';
 import ReviewModal from './ReviewModal';
+import Modal from '@/components/common/Modal';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Tất cả' },
@@ -30,6 +31,11 @@ const UserOrdersTab = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(0);
   const [reviewOrderId, setReviewOrderId] = useState(null);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [selectedOrderCode, setSelectedOrderCode] = useState('');
 
   const fetchOrders = useCallback(async () => {
     dispatch(setOrderLoading(true));
@@ -68,6 +74,28 @@ const UserOrdersTab = () => {
   const handleStatusFilterChange = (e) => {
     setStatusFilter(e.target.value);
     setPage(0);
+  };
+
+  const handleViewOrder = async (order) => {
+    setSelectedOrderCode(order.code);
+    setModalOpen(true);
+    setLoadingDetails(true);
+    setOrderDetails(null);
+    try {
+      const data = await api.getOrderDetail(order.id);
+      if (data && data.success) {
+         setOrderDetails(data.data);
+      } else {
+         setOrderDetails(data);
+      }
+    } catch (err) {
+      alert('Failed to fetch order details');
+    }
+    setLoadingDetails(false);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   const formatDate = (dateStr) => {
@@ -133,9 +161,12 @@ const UserOrdersTab = () => {
                 transition: 'box-shadow 0.2s',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div 
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', cursor: 'pointer' }}
+                onClick={() => handleViewOrder(order)}
+              >
                 <div>
-                  <span style={{ fontWeight: 600, fontSize: '15px' }}>{order.code}</span>
+                  <span style={{ fontWeight: 600, fontSize: '15px', color: '#1a1a1a', textDecoration: 'underline' }}>{order.code}</span>
                   <span style={{ marginLeft: '12px', fontSize: '13px', color: '#888' }}>
                     {formatDate(order.createdAt)}
                   </span>
@@ -251,9 +282,65 @@ const UserOrdersTab = () => {
         <ReviewModal
           orderId={reviewOrderId}
           onClose={() => setReviewOrderId(null)}
-          onSuccess={() => { }}
+          onSuccess={() => { fetchOrders(); }}
         />
       )}
+
+      {/* Chi tiết đơn hàng Modal */}
+      <Modal isOpen={isModalOpen} onRequestClose={closeModal} overrideStyle={{ width: '80%', maxWidth: '900px' }}>
+        <div style={{ padding: '10px' }}>
+          <div className="d-flex" style={{ justifyContent: 'space-between', borderBottom: '1px solid #e1e1e1', paddingBottom: '15px', marginBottom: '15px' }}>
+             <h3>Order Details {selectedOrderCode && `- ${selectedOrderCode}`}</h3>
+             <button className="button button-border button-small" onClick={closeModal} type="button">Close</button>
+          </div>
+          
+          {loadingDetails ? (
+            <p>Loading details...</p>
+          ) : orderDetails ? (
+            <div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px' }}>
+                <div style={{ flex: '1', minWidth: '300px' }}>
+                  <p><strong>Note:</strong> {orderDetails.customerNote || 'None'}</p>
+                </div>
+                <div style={{ flex: '1', minWidth: '300px' }}>
+                  <p><strong>Shipping Info:</strong></p>
+                  <p>{orderDetails.shippingAddress ? `${orderDetails.shippingAddress.address}, ${orderDetails.shippingAddress.wardName}, ${orderDetails.shippingAddress.districtName}, ${orderDetails.shippingAddress.provinceName}` : 'N/A'}</p>
+                </div>
+              </div>
+
+              <h4>Products</h4>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: '#f2f2f2', borderBottom: '1px solid #e1e1e1' }}>
+                    <th style={{ padding: '10px' }}>Product</th>
+                    <th style={{ padding: '10px' }}>Unit Price</th>
+                    <th style={{ padding: '10px' }}>Qty</th>
+                    <th style={{ padding: '10px' }}>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderDetails.items && orderDetails.items.map((item) => (
+                    <tr key={item.id} style={{ borderBottom: '1px solid #e1e1e1' }}>
+                      <td style={{ padding: '10px' }}>{item.productName}</td>
+                      <td style={{ padding: '10px' }}>{displayMoney(item.unitPrice)}</td>
+                      <td style={{ padding: '10px' }}>{item.quantity}</td>
+                      <td style={{ padding: '10px' }}>{displayMoney(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div style={{ textAlign: 'right', marginTop: '15px' }}>
+                <p><strong>Shipping Fee:</strong> {displayMoney(orderDetails.shippingFee || 0)}</p>
+                <p><strong>Discount (Voucher):</strong> - {displayMoney(orderDetails.discountAmount || 0)}</p>
+                <h3 style={{ margin: '10px 0 0 0' }}>Total: {displayMoney(orderDetails.finalAmount)}</h3>
+              </div>
+            </div>
+          ) : (
+            <p>Details not available.</p>
+          )}
+        </div>
+      </Modal>
+
     </div>
   );
 };

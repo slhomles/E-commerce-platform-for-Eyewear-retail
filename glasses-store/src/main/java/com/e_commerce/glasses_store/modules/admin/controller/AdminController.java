@@ -146,4 +146,13 @@ public class AdminController {
             @Valid @RequestBody UpdateOrderStatusRequest request) {
         return ResponseEntity.ok(ApiResponse.success(orderService.updateOrderStatus(id, request)));
     }
+
+    /**
+     * DELETE /api/v1/admin/orders/{id} — Xóa đơn hàng.
+     */
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable String id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok(ApiResponse.success("Order deleted successfully", null));
+    }
 }

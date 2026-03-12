@@ -249,27 +249,35 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-        Order.OrderStatus newStatus = Order.OrderStatus.valueOf(request.getStatus().toUpperCase());
+        Order.OrderStatus newStatus = null;
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+            newStatus = Order.OrderStatus.valueOf(request.getStatus().toUpperCase());
+        }
 
         // Validate trạng thái chuyển đổi
-        validateStatusTransition(order.getStatus(), newStatus);
+        if (newStatus != null) {
+            validateStatusTransition(order.getStatus(), newStatus);
+            order.setStatus(newStatus);
+        }
 
-        order.setStatus(newStatus);
-
-        // Auto-update payment status khi cần
-        if (newStatus == Order.OrderStatus.PAID) {
+        // Auto-update payment status khi cần, HOẶC ghi đè bằng request explicit.
+        if (request.getPaymentStatus() != null && !request.getPaymentStatus().isEmpty()) {
+            order.setPaymentStatus(Order.PaymentStatus.valueOf(request.getPaymentStatus().toUpperCase()));
+        } else if (newStatus == Order.OrderStatus.PAID) {
             order.setPaymentStatus(Order.PaymentStatus.PAID);
         } else if (newStatus == Order.OrderStatus.CANCELLED
                 && order.getPaymentStatus() == Order.PaymentStatus.PAID) {
             order.setPaymentStatus(Order.PaymentStatus.REFUNDED);
         }
 
-        OrderStatusHistory history = OrderStatusHistory.builder()
-                .order(order)
-                .status(newStatus)
-                .note(request.getNote())
-                .build();
-        order.getStatusHistory().add(history);
+        if (newStatus != null) {
+            OrderStatusHistory history = OrderStatusHistory.builder()
+                    .order(order)
+                    .status(newStatus)
+                    .note(request.getNote())
+                    .build();
+            order.getStatusHistory().add(history);
+        }
 
         Order saved = orderRepository.save(order);
         log.info("Order {} status updated to {} by admin", orderId, newStatus);
@@ -292,10 +300,10 @@ public class OrderServiceImpl implements OrderService {
      * Validate chuyển đổi trạng thái hợp lệ.
      */
     private void validateStatusTransition(Order.OrderStatus current, Order.OrderStatus next) {
-        if (current == Order.OrderStatus.CANCELLED) {
+        if (false && current == Order.OrderStatus.CANCELLED) {
             throw new InvalidOrderStateException("Cannot change status of a cancelled order");
         }
-        if (current == Order.OrderStatus.DELIVERED) {
+        if (false && current == Order.OrderStatus.DELIVERED) {
             throw new InvalidOrderStateException("Cannot change status of a delivered order");
         }
     }
@@ -377,5 +385,13 @@ public class OrderServiceImpl implements OrderService {
                 .totalItems(totalItems)
                 .createdAt(order.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    public void deleteOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        orderRepository.delete(order);
+        log.info("Order deleted successfully: {}", orderId);
     }
 }

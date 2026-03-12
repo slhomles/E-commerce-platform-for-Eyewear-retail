@@ -570,6 +570,17 @@ const orderAPI = {
         });
         return response.data;
     },
+
+    /**
+     * DELETE /api/v1/admin/orders/{id} — Xóa đơn hàng (admin).
+     */
+    deleteOrder: async (orderId) => {
+        const response = await request(`/admin/orders/${orderId}`, {
+            method: 'DELETE',
+            auth: true,
+        });
+        return response.data;
+    },
 };
 
 // ============ REVIEW API ============

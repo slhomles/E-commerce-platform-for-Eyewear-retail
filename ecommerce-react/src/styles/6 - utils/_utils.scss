@@ -233,6 +233,12 @@
   grid-template-columns: repeat(6, 1fr);
 }
 
+.grid-count-7 {
+  display: grid;
+  grid-gap: $s-size;
+  grid-template-columns: repeat(7, 1fr);
+}
+
 .position-relative {
   position: relative;
 }

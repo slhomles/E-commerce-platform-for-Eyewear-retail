@@ -56,5 +56,13 @@ public interface OrderService {
     /**
      * Admin: Cập nhật trạng thái đơn hàng.
      */
+    /**
+     * Admin: Cập nhật trạng thái đơn hàng.
+     */
     OrderResponse updateOrderStatus(String orderId, UpdateOrderStatusRequest request);
+
+    /**
+     * Admin: Xóa đơn hàng.
+     */
+    void deleteOrder(String orderId);
 }
