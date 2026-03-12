@@ -1,4 +1,4 @@
-import { ADMIN_PRODUCTS } from '@/constants/routes';
+import * as ROUTES from '@/constants/routes';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -9,13 +9,19 @@ const SideNavigation = () => (
         <NavLink
           activeClassName="sidenavigation-menu-active"
           className="sidenavigation-menu"
-          to={ADMIN_PRODUCTS}
+          to={ROUTES.ADMIN_PRODUCTS}
         >
           Products
         </NavLink>
       </div>
       <div className="sidenavigation-item">
-        <h4 className="sidenavigation-menu my-0">Users</h4>
+        <NavLink
+          activeClassName="sidenavigation-menu-active"
+          className="sidenavigation-menu"
+          to={ROUTES.ADMIN_USERS}
+        >
+          Users
+        </NavLink>
       </div>
     </div>
   </aside>

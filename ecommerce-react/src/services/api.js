@@ -636,6 +636,25 @@ const adminAPI = {
         }
         return pageData;
     },
+
+    getAllUsers: async (page = 0, size = 10) => {
+        const response = await request(`/admin/users?page=${page}&size=${size}`, { auth: true });
+        return response.data;
+    },
+
+    getUserDetail: async (id) => {
+        const response = await request(`/admin/users/${id}`, { auth: true });
+        return response.data;
+    },
+
+    updateUser: async (id, userData) => {
+        const response = await request(`/admin/users/${id}`, {
+            method: 'PUT',
+            body: userData,
+            auth: true,
+        });
+        return response.data;
+    },
 };
 
 // ============ PROFILE API ============
