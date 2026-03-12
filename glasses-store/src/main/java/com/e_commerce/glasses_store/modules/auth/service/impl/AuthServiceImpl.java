@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .role(Role.USER)
-                .emailVerified(false)
+                .emailVerified(true)
                 .enabled(true)
                 .build();
 
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("User registered: {}", user.getEmail());
 
         // Send verification email
-        sendEmailVerificationToken(user);
+        // sendEmailVerificationToken(user);
     }
 
     @Override

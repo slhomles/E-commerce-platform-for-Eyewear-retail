@@ -82,7 +82,7 @@ function* authSaga({ type, payload }) {
           success: true,
           type: 'auth',
           isError: false,
-          message: 'Registration successful! Please check your email to verify your account, then sign in.'
+          message: 'Registration successful! You can now sign in to your account.'
         }));
         yield put(setAuthenticating(false));
       } catch (e) {

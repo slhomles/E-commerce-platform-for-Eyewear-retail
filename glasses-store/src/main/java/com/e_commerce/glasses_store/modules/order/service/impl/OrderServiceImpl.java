@@ -20,6 +20,8 @@ import com.e_commerce.glasses_store.modules.order.repository.OrderSpecification;
 import com.e_commerce.glasses_store.modules.order.service.OrderService;
 import com.e_commerce.glasses_store.modules.product.entity.Product;
 import com.e_commerce.glasses_store.modules.product.entity.ProductVariant;
+import com.e_commerce.glasses_store.modules.auth.entity.User;
+import com.e_commerce.glasses_store.modules.auth.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final VoucherRepository voucherRepository;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ==================== User APIs ====================
@@ -375,9 +378,33 @@ public class OrderServiceImpl implements OrderService {
                 .mapToInt(OrderItem::getQuantity)
                 .sum();
 
+        String fullName = null;
+        if (order.getShippingAddressJson() != null) {
+            try {
+                OrderResponse.ShippingAddressResponse shippingAddress = objectMapper.readValue(
+                        order.getShippingAddressJson(),
+                        OrderResponse.ShippingAddressResponse.class);
+                if (shippingAddress != null && shippingAddress.getFullName() != null) {
+                    fullName = shippingAddress.getFullName();
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse shipping address JSON for order list: {}", order.getId());
+            }
+        }
+
+        // Fallback to registered User's name if shipping name is missing
+        if ((fullName == null || fullName.equals("Unknown")) && order.getUserId() != null) {
+            fullName = userRepository.findById(order.getUserId())
+                    .map(User::getFullName)
+                    .orElse("Unknown Customer");
+        }
+
+        if (fullName == null) fullName = "Unknown";
+
         return OrderListResponse.builder()
                 .id(order.getId())
                 .code(order.getCode())
+                .userFullName(fullName)
                 .status(order.getStatus().name())
                 .paymentStatus(order.getPaymentStatus().name())
                 .paymentMethod(order.getPaymentMethod() != null ? order.getPaymentMethod().name() : null)

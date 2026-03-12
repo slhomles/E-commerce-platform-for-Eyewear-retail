@@ -19,6 +19,7 @@ public class OrderListResponse {
 
     private String id;
     private String code;
+    private String userFullName;
     private String status;
     private String paymentStatus;
     private String paymentMethod;
