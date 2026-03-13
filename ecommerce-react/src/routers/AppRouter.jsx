@@ -101,6 +101,10 @@ const AppRouter = () => (
           path={ROUTES.ADMIN_USERS}
         />
         <AdminRoute
+          component={view.Reviews}
+          path={ROUTES.ADMIN_REVIEWS}
+        />
+        <AdminRoute
           component={view.AddProduct}
           path={ROUTES.ADD_PRODUCT}
         />

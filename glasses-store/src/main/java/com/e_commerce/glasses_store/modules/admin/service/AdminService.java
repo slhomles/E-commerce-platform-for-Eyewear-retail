@@ -20,5 +20,5 @@ public interface AdminService {
 
     void deleteProduct(String id);
 
-    Page<ProductListResponse> getAllProducts(Pageable pageable);
+    Page<ProductListResponse> getAllProducts(String keyword, Pageable pageable);
 }

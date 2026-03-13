@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.criteria.*;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
@@ -125,15 +127,15 @@ public class ReviewServiceImpl implements ReviewService {
 
         return ReviewResponse.builder()
                 .id(r.getId())
-                .productId(r.getProduct().getId())
-                .userId(r.getUser().getId())
-                .userFullName(r.getUser().getFullName())
-                .userAvatar(r.getUser().getAvatar())
-                .orderId(r.getOrder().getId())
+                .productId(r.getProduct() != null ? r.getProduct().getId() : null)
+                .userId(r.getUser() != null ? r.getUser().getId() : null)
+                .userFullName(r.getUser() != null ? r.getUser().getFullName() : "Unknown User")
+                .userAvatar(r.getUser() != null ? r.getUser().getAvatar() : null)
+                .orderId(r.getOrder() != null ? r.getOrder().getId() : null)
                 .rating(r.getRating())
                 .content(r.getContent())
-                .images(imagesList)
-                .isVerifiedPurchase(r.getIsVerifiedPurchase())
+                .images(imagesList != null ? imagesList : java.util.Collections.emptyList())
+                .isVerifiedPurchase(r.getIsVerifiedPurchase() != null ? r.getIsVerifiedPurchase() : true)
                 .createdAt(r.getCreatedAt() != null ? r.getCreatedAt() : LocalDateTime.now())
                 .build();
     }
@@ -218,5 +220,45 @@ public class ReviewServiceImpl implements ReviewService {
             log.info("Seeded {} reviews for product {}", numReviews, product.getId());
         }
         log.info("Finished seeding mock reviews for all products.");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> getAllReviews(String keyword, Pageable pageable) {
+        return reviewRepository.findAll((root, query, cb) -> {
+            // Eagerly fetch relations to avoid N+1 and LazyInitializationException
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("user", JoinType.LEFT);
+                root.fetch("product", JoinType.LEFT);
+                root.fetch("order", JoinType.LEFT);
+            }
+
+            Predicate predicate = cb.isFalse(root.get("isDeleted"));
+
+            if (keyword != null && !keyword.isBlank()) {
+                String pattern = "%" + keyword.toLowerCase() + "%";
+                
+                // Use joins for filtering
+                Join<Review, User> userJoin = root.join("user", JoinType.LEFT);
+                Join<Review, Product> productJoin = root.join("product", JoinType.LEFT);
+
+                Predicate searchPredicate = cb.or(
+                        cb.like(cb.lower(root.get("content")), pattern),
+                        cb.like(cb.lower(userJoin.get("fullName")), pattern),
+                        cb.like(cb.lower(productJoin.get("name")), pattern)
+                );
+                predicate = cb.and(predicate, searchPredicate);
+            }
+            return predicate;
+        }, pageable).map(this::toResponse);
+    }
+
+    @Override
+    public void deleteReview(String id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        review.setIsDeleted(true);
+        reviewRepository.save(review);
+        log.info("Admin deleted review: {}", id);
     }
 }

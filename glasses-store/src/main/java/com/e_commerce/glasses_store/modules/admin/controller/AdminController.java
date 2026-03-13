@@ -69,10 +69,11 @@ public class AdminController {
 
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<Page<ProductListResponse>>> getAllProducts(
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<ProductListResponse> result = adminService.getAllProducts(
-                PageRequest.of(page, size, Sort.by("createdAt").descending()));
+                keyword, PageRequest.of(page, size, Sort.by("createdAt").descending()));
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
