@@ -1,5 +1,6 @@
 import { Basket } from '@/components/basket';
 import { Footer, Navigation } from '@/components/common';
+import OAuth2RedirectHandler from '@/components/common/OAuth2RedirectHandler';
 import * as ROUTES from '@/constants/routes';
 import { createBrowserHistory } from 'history';
 import React from 'react';
@@ -43,6 +44,11 @@ const AppRouter = () => (
           component={view.RecommendedProducts}
           exact
           path={ROUTES.RECOMMENDED_PRODUCTS}
+        />
+        <Route
+          component={OAuth2RedirectHandler}
+          exact
+          path={ROUTES.OAUTH2_REDIRECT}
         />
         <PublicRoute
           component={view.SignUp}
