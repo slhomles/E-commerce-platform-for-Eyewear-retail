@@ -71,7 +71,7 @@ function* authSaga({ type, payload }) {
 
         const fullname = payload.fullname.split(' ').map((name) => name[0].toUpperCase().concat(name.substring(1))).join(' ');
 
-        yield call(api.register, {
+        const response = yield call(api.register, {
           email: payload.email,
           password: payload.password,
           fullName: fullname,
@@ -82,7 +82,7 @@ function* authSaga({ type, payload }) {
           success: true,
           type: 'auth',
           isError: false,
-          message: 'Registration successful! You can now sign in to your account.'
+          message: response.message || 'Registration successful! Please check your email for verification.'
         }));
         yield put(setAuthenticating(false));
       } catch (e) {

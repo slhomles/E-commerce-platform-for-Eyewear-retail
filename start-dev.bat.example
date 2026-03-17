@@ -4,6 +4,7 @@ echo Starting E-commerce Application...
 echo.
 echo =======================================================
 echo Setting local Environment Variables for OAuth2...
+echo NOTE: Fill in your actual credentials here and DO NOT commit this file.
 set GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
 set GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 set FACEBOOK_CLIENT_ID=YOUR_FACEBOOK_CLIENT_ID

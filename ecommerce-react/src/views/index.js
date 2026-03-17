@@ -9,6 +9,8 @@ export { default as AddOrder } from './admin/add_order';
 export { default as Users } from './admin/users';
 export { default as Reviews } from './admin/reviews';
 export { default as ForgotPassword } from './auth/forgot_password';
+export { default as ResetPassword } from './auth/reset_password';
+export { default as VerifyEmail } from './auth/verify_email';
 export { default as SignIn } from './auth/signin';
 export { default as SignUp } from './auth/signup';
 export { default as CheckOutStep1 } from './checkout/step1';

@@ -22,3 +22,5 @@ export const CHECKOUT_STEP_2 = '/checkout/step2';
 export const CHECKOUT_STEP_3 = '/checkout/step3';
 export const VIEW_PRODUCT = '/product/:id';
 export const OAUTH2_REDIRECT = '/oauth2/redirect';
+export const RESET_PASSWORD = '/reset-password';
+export const VERIFY_EMAIL = '/verify-email';
