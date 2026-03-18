@@ -130,7 +130,7 @@ const OrderItem = ({ order }) => {
           </div>
           
           {/* Cột 7: Actions */}
-          <div className="grid-col item-action-grid flex-justify-end d-flex-center">
+          <div className="grid-col item-action-grid flex-justify-end d-flex-center" style={{ position: 'relative' }}>
             {order.id && (
               <>
                 <button
@@ -145,12 +145,11 @@ const OrderItem = ({ order }) => {
                   className="button button-border button-small button-danger"
                   onClick={onDeleteOrder}
                   type="button"
-                  style={{ whiteSpace: 'nowrap' }}
                 >
                   Delete
                 </button>
-                <div className="item-action-confirm" style={{ right: 0, top: '100%', padding: '10px' }}>
-                  <h5 style={{ fontSize: '12px' }}>Confirm Delete?</h5>
+                <div className="item-action-confirm" style={{ right: 0, top: 0, height: '100%', width: 'auto', minWidth: '180px', position: 'absolute', background: 'white', zindex: 10, justifyContent: 'flex-end', padding: '0 10px' }}>
+                  <h5 style={{ fontSize: '12px', margin: 0, marginRight: '10px' }}>Confirm?</h5>
                   <button className="button button-small button-border" onClick={onCancelDelete} type="button">No</button>
                   &nbsp;
                   <button className="button button-small button-danger" onClick={onConfirmDelete} type="button">Yes</button>

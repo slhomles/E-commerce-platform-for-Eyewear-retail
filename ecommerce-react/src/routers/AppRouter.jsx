@@ -1,5 +1,6 @@
 import { Basket } from '@/components/basket';
 import { Footer, Navigation } from '@/components/common';
+import OAuth2RedirectHandler from '@/components/common/OAuth2RedirectHandler';
 import * as ROUTES from '@/constants/routes';
 import { createBrowserHistory } from 'history';
 import React from 'react';
@@ -44,6 +45,11 @@ const AppRouter = () => (
           exact
           path={ROUTES.RECOMMENDED_PRODUCTS}
         />
+        <Route
+          component={OAuth2RedirectHandler}
+          exact
+          path={ROUTES.OAUTH2_REDIRECT}
+        />
         <PublicRoute
           component={view.SignUp}
           path={ROUTES.SIGNUP}
@@ -56,6 +62,14 @@ const AppRouter = () => (
         <PublicRoute
           component={view.ForgotPassword}
           path={ROUTES.FORGOT_PASSWORD}
+        />
+        <PublicRoute
+          component={view.ResetPassword}
+          path={ROUTES.RESET_PASSWORD}
+        />
+        <PublicRoute
+          component={view.VerifyEmail}
+          path={ROUTES.VERIFY_EMAIL}
         />
         <Route
           component={view.ViewProduct}
@@ -99,6 +113,10 @@ const AppRouter = () => (
         <AdminRoute
           component={view.Users}
           path={ROUTES.ADMIN_USERS}
+        />
+        <AdminRoute
+          component={view.Reviews}
+          path={ROUTES.ADMIN_REVIEWS}
         />
         <AdminRoute
           component={view.AddProduct}

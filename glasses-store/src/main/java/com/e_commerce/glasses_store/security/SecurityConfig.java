@@ -2,7 +2,6 @@ package com.e_commerce.glasses_store.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,12 +19,14 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.e_commerce.glasses_store.modules.auth.repository.UserRepository;
+import com.e_commerce.glasses_store.security.oauth2.CustomOAuth2UserService;
+import com.e_commerce.glasses_store.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Spring Security configuration for JWT-based authentication.
+ * Spring Security configuration for JWT-based authentication and OAuth2 Social Login.
  */
 @Configuration
 @EnableWebSecurity
@@ -34,10 +35,17 @@ public class SecurityConfig {
 
         private final UserRepository userRepository;
         private final JwtService jwtService;
+        private final CustomOAuth2UserService customOAuth2UserService;
+        private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-        public SecurityConfig(UserRepository userRepository, JwtService jwtService) {
+        public SecurityConfig(UserRepository userRepository,
+                        JwtService jwtService,
+                        CustomOAuth2UserService customOAuth2UserService,
+                        OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
                 this.userRepository = userRepository;
                 this.jwtService = jwtService;
+                this.customOAuth2UserService = customOAuth2UserService;
+                this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         }
 
         public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -51,9 +59,14 @@ public class SecurityConfig {
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                                                 .anyRequest().permitAll())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .oauth2Login(oauth2 -> oauth2
+                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                .userService(customOAuth2UserService))
+                                                .successHandler(oAuth2AuthenticationSuccessHandler))
                                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
@@ -91,3 +104,4 @@ public class SecurityConfig {
                 return new BCryptPasswordEncoder();
         }
 }
+

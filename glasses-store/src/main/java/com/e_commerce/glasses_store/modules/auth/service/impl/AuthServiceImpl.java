@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .role(Role.USER)
-                .emailVerified(true)
+                .emailVerified(false)
                 .enabled(true)
                 .build();
 
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("User registered: {}", user.getEmail());
 
         // Send verification email
-        // sendEmailVerificationToken(user);
+        sendEmailVerificationToken(user);
     }
 
     @Override
@@ -80,9 +80,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // Optional: Check if email is verified (uncomment if required)
-        // if (!user.isEmailVerified()) {
-        // throw new UserNotVerifiedException();
-        // }
+        if (!user.isEmailVerified()) {
+            throw new UserNotVerifiedException();
+        }
 
         // Generate tokens
         return generateTokenResponse(user);
@@ -284,14 +284,7 @@ public class AuthServiceImpl implements AuthService {
 
         verificationTokenRepository.save(verificationToken);
 
-        try {
-            emailService.sendVerificationEmail(user.getEmail(), token);
-            log.info("Verification email sent to: {}", user.getEmail());
-        } catch (Exception e) {
-            log.error("Failed to send verification email to: {}. Error: {}", user.getEmail(), e.getMessage());
-            // We intentionally catch this exception so the registration process
-            // still succeeds even if the email service is temporarily down or
-            // misconfigured.
-        }
+        emailService.sendVerificationEmail(user.getEmail(), token);
+        log.info("Verification email sent to: {}", user.getEmail());
     }
 }

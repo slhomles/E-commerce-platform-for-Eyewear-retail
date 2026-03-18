@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendVerificationEmail(String to, String token) {
-        log.info("📧 Sending actual verification email to: {} with token: {}", to, token);
+        log.info("Sending actual verification email to: {} with token: {}", to, token);
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
                     + "<p>Thank you for registering. Please use the following token to verify your email address:</p>"
                     + "<h3 style=\"background-color: #f4f4f4; padding: 10px; display: inline-block;\">" + token
                     + "</h3>"
-                    + "<p>Or click this link: <a href=\"http://localhost:8080/api/v1/auth/verify-email?token=" + token
+                    + "<p>Or click this link: <a href=\"http://localhost:3001/verify-email?token=" + token
                     + "\">Verify Email</a></p>"
                     + "<p>This token will expire in 24 hours.</p>"
                     + "</div>";
@@ -44,16 +44,16 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(htmlContent, true);
             mailSender.send(message);
 
-            log.info("✅ Verification email sent successfully to {}", to);
+            log.info("Verification email sent successfully to {}", to);
         } catch (MessagingException e) {
-            log.error("❌ Failed to send verification email to {}", to, e);
+            log.error("Failed to send verification email to {}", to, e);
             throw new RuntimeException("Failed to send verification email", e);
         }
     }
 
     @Override
     public void sendPasswordResetEmail(String to, String token) {
-        log.info("📧 Sending actual password reset email to: {} with token: {}", to, token);
+        log.info("Sending actual password reset email to: {} with token: {}", to, token);
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -64,19 +64,22 @@ public class EmailServiceImpl implements EmailService {
 
             String htmlContent = "<div style=\"font-family: Arial, sans-serif; padding: 20px;\">"
                     + "<h2>Password Reset Request</h2>"
-                    + "<p>We received a request to reset your password. Here is your reset token:</p>"
+                    + "<p>We received a request to reset your password. Click the link below to set a new password:</p>"
+                    + "<p><a href=\"http://localhost:3001/reset-password?token=" + token
+                    + "\" style=\"background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 5px;\">Reset Password</a></p>"
+                    + "<p>Or copy and paste this token if the button doesn't work:</p>"
                     + "<h3 style=\"background-color: #f4f4f4; padding: 10px; display: inline-block;\">" + token
                     + "</h3>"
                     + "<p>If you didn't request this, please ignore this email.</p>"
-                    + "<p>This token will expire in 1 hour.</p>"
+                    + "<p>This link will expire in 1 hour.</p>"
                     + "</div>";
 
             helper.setText(htmlContent, true);
             mailSender.send(message);
 
-            log.info("✅ Password reset email sent successfully to {}", to);
+            log.info("Password reset email sent successfully to {}", to);
         } catch (MessagingException e) {
-            log.error("❌ Failed to send password reset email to {}", to, e);
+            log.error("Failed to send password reset email to {}", to, e);
             throw new RuntimeException("Failed to send password reset email", e);
         }
     }

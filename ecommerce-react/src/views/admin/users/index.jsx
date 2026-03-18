@@ -110,6 +110,7 @@ const Users = () => {
                     className="button button-small button-muted"
                     disabled={currentPage === 0}
                     onClick={() => setCurrentPage(prev => prev - 1)}
+                    type="button"
                 >
                     Previous
                 </button>
@@ -120,6 +121,7 @@ const Users = () => {
                     className="button button-small button-muted"
                     disabled={currentPage >= totalPages - 1}
                     onClick={() => setCurrentPage(prev => prev + 1)}
+                    type="button"
                 >
                     Next
                 </button>

@@ -307,11 +307,20 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getAllProducts(Pageable pageable) {
-        // Admin sees all products including inactive, but not deleted
-        return productRepository.findAll(
-                (root, query, cb) -> cb.isFalse(root.get("isDeleted")),
-                pageable).map(this::toListResponse);
+    public Page<ProductListResponse> getAllProducts(String keyword, Pageable pageable) {
+        return productRepository.findAll((root, query, cb) -> {
+            var predicate = cb.isFalse(root.get("isDeleted"));
+            if (keyword != null && !keyword.isBlank()) {
+                String pattern = "%" + keyword.toLowerCase() + "%";
+                var searchPredicate = cb.or(
+                        cb.like(cb.lower(root.get("name")), pattern),
+                        cb.like(cb.lower(root.join("category").get("name")), pattern),
+                        cb.like(cb.lower(root.join("brand").get("name")), pattern)
+                );
+                predicate = cb.and(predicate, searchPredicate);
+            }
+            return predicate;
+        }, pageable).map(this::toListResponse);
     }
 
     // ==================== Private ====================

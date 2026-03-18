@@ -92,6 +92,10 @@ public class Order extends BaseEntity {
     @Builder.Default
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<com.e_commerce.glasses_store.modules.review.entity.Review> reviews = new ArrayList<>();
+
     // ==================== Enums ====================
 
     public enum OrderStatus {

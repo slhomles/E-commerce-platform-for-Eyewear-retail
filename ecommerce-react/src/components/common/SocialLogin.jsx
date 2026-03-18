@@ -2,32 +2,38 @@ import { FacebookOutlined, GithubFilled, GoogleOutlined } from '@ant-design/icon
 import PropType from 'prop-types';
 import React from 'react';
 
+const BACKEND_URL = 'http://localhost:8080';
+
 const SocialLogin = ({ isLoading }) => {
+  const handleSocialLogin = (provider) => {
+    window.location.href = `${BACKEND_URL}/oauth2/authorization/${provider}`;
+  };
+
   return (
     <div className="auth-provider">
       <button
         className="button auth-provider-button provider-facebook"
-        disabled
+        disabled={isLoading}
         type="button"
-        title="Coming soon"
+        onClick={() => handleSocialLogin('facebook')}
       >
         <FacebookOutlined />
         Continue with Facebook
       </button>
       <button
         className="button auth-provider-button provider-google"
-        disabled
+        disabled={isLoading}
         type="button"
-        title="Coming soon"
+        onClick={() => handleSocialLogin('google')}
       >
         <GoogleOutlined />
         Continue with Google
       </button>
       <button
         className="button auth-provider-button provider-github"
-        disabled
+        disabled={isLoading}
         type="button"
-        title="Coming soon"
+        onClick={() => handleSocialLogin('github')}
       >
         <GithubFilled />
         Continue with GitHub
@@ -41,3 +47,4 @@ SocialLogin.propTypes = {
 };
 
 export default SocialLogin;
+

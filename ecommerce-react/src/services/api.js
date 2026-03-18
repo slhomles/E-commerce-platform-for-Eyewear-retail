@@ -634,8 +634,8 @@ const adminAPI = {
         return response.data;
     },
 
-    getAllProducts: async (page = 0, size = 20) => {
-        const response = await request(`/admin/products?page=${page}&size=${size}`, { auth: true });
+    getAllProducts: async (page = 0, size = 20, keyword = '') => {
+        const response = await request(`/admin/products?page=${page}&size=${size}&keyword=${keyword}`, { auth: true });
         const pageData = response.data;
         if (pageData && pageData.content) {
             pageData.content = pageData.content.map(p => ({
@@ -657,6 +657,16 @@ const adminAPI = {
     getUserDetail: async (id) => {
         const response = await request(`/admin/users/${id}`, { auth: true });
         return response.data;
+    },
+
+    getAdminReviews: async (page = 0, size = 12, keyword = '') => {
+        const response = await request(`/admin/reviews?page=${page}&size=${size}&keyword=${keyword}`, { auth: true });
+        return response.data;
+    },
+
+    deleteAdminReview: async (id) => {
+        const response = await request(`/admin/reviews/${id}`, { method: 'DELETE', auth: true });
+        return response.status === 200;
     },
 
     updateUser: async (id, userData) => {

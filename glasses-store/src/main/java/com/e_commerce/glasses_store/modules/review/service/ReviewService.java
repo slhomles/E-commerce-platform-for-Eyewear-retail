@@ -22,4 +22,14 @@ public interface ReviewService {
      * Randomly generate 1-10 mock reviews for all products
      */
     void seedMockReviews();
+
+    /**
+     * Admin: Get all reviews with pagination and keyword search.
+     */
+    Page<ReviewResponse> getAllReviews(String keyword, Pageable pageable);
+
+    /**
+     * Admin: Delete (soft-delete) a review.
+     */
+    void deleteReview(String id);
 }
