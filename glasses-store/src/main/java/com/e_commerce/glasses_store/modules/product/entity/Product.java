@@ -86,7 +86,7 @@ public class Product extends BaseEntity {
     @Column(name = "nose_pad_type", length = 50)
     private String nosePadType;
 
-    @Column(name = "frame_size", length = 5)
+    @Column(name = "frame_size", length = 20)
     private String frameSize;
 
     @Column(name = "face_shape_fit", columnDefinition = "JSON")

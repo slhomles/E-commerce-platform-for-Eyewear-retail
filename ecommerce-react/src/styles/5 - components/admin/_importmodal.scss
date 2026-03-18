@@ -1,0 +1,58 @@
+.import-modal {
+    width: 100%;
+    max-width: 500px;
+    padding: 2.4rem;
+
+    &-header {
+        margin-bottom: 2.4rem;
+
+        h3 {
+            margin-bottom: 0.8rem;
+            color: var(--black);
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: var(--text-color-subtle);
+        }
+    }
+
+    &-content {
+        .input-group {
+            margin-bottom: 2rem;
+
+            label {
+                display: block;
+                font-size: 1.3rem;
+                font-weight: 500;
+                margin-bottom: 0.8rem;
+                color: var(--text-color);
+            }
+
+            input[type="file"] {
+                width: 100%;
+                padding: 1rem;
+                border: 1px dashed var(--border-color);
+                border-radius: 4px;
+                background: var(--background-color-light);
+                cursor: pointer;
+                transition: border-color 0.3s ease;
+
+                &:hover {
+                    border-color: var(--primary-color);
+                }
+            }
+        }
+    }
+
+    &-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1.2rem;
+        margin-top: 3.2rem;
+
+        button {
+            min-width: 100px;
+        }
+    }
+}

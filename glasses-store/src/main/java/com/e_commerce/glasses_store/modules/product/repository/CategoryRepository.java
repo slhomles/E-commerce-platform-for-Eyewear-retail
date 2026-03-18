@@ -14,5 +14,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     Optional<Category> findBySlugAndIsDeletedFalse(String slug);
 
+    Optional<Category> findByName(String name);
+
     boolean existsBySlug(String slug);
 }

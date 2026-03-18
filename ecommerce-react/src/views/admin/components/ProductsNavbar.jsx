@@ -41,6 +41,15 @@ const ProductsNavbar = (props) => {
         </button>
       </FiltersToggle>
       <button
+        className="button button-small button-muted"
+        onClick={props.onImportClick}
+        type="button"
+      >
+        <PlusOutlined />
+        &nbsp; Import Excel
+      </button>
+      &nbsp;
+      <button
         className="button button-small"
         onClick={() => history.push(ADD_PRODUCT)}
         type="button"

@@ -97,6 +97,14 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
     }
 
+    @PostMapping(value = "/products/import", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<Void>> importProducts(
+            @Valid @ModelAttribute ProductImportRequest request) {
+        System.out.println(">>> RECEIVED IMPORT REQUEST: " + (request != null ? request.getFile().getOriginalFilename() : "NULL"));
+        adminService.importProducts(request);
+        return ResponseEntity.ok(ApiResponse.success("Products imported/updated successfully", null));
+    }
+
     // ==================== Order Management ====================
 
     /**

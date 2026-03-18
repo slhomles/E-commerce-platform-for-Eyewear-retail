@@ -10,4 +10,6 @@ import java.util.List;
 public interface BrandRepository extends JpaRepository<Brand, String> {
 
     List<Brand> findByIsDeletedFalseOrderByNameAsc();
+
+    java.util.Optional<Brand> findByName(String name);
 }

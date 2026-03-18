@@ -667,6 +667,16 @@ const adminAPI = {
         });
         return response.data;
     },
+
+    importProducts: async (formData) => {
+        const response = await request('/admin/products/import', {
+            method: 'POST',
+            body: formData,
+            auth: true,
+            isFormData: true
+        });
+        return response.data;
+    },
 };
 
 // ============ PROFILE API ============

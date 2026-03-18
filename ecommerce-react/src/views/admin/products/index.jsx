@@ -8,10 +8,13 @@ import { withRouter } from 'react-router-dom';
 import { selectFilter } from '@/selectors/selector';
 import { ProductsNavbar } from '../components';
 import ProductsTable from '../components/ProductsTable';
+import ImportModal from './ImportModal';
 
 const Products = () => {
   useDocumentTitle('Product List | Salinaka Admin');
   useScrollTop();
+
+  const [isImportModalOpen, setImportModalOpen] = React.useState(false);
 
   const store = useSelector((state) => ({
     filteredProducts: selectFilter(state.products.items, state.filter),
@@ -20,11 +23,15 @@ const Products = () => {
     products: state.products
   }));
 
+  const openImportModal = () => setImportModalOpen(true);
+  const closeImportModal = () => setImportModalOpen(false);
+
   return (
     <Boundary>
       <ProductsNavbar
         productsCount={store.products.items.length}
         totalProductsCount={store.products.total}
+        onImportClick={openImportModal}
       />
       <div className="product-admin-items">
         <ProductList {...store}>
@@ -32,6 +39,7 @@ const Products = () => {
           <ProductsTable filteredProducts={store.filteredProducts} />
         </ProductList>
       </div>
+      <ImportModal isOpen={isImportModalOpen} onRequestClose={closeImportModal} />
     </Boundary>
   );
 };

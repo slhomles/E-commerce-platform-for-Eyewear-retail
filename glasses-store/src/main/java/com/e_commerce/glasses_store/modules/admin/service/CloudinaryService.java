@@ -28,4 +28,16 @@ public class CloudinaryService {
         log.info("Upload successful. URL: {}", url);
         return url;
     }
+
+    public String uploadBytes(byte[] bytes, String fileName) throws IOException {
+        log.info("Uploading bytes to Cloudinary: {}", fileName);
+        Map uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.asMap(
+                "folder", "glasses-store/products",
+                "use_filename", true,
+                "unique_filename", true
+        ));
+        String url = uploadResult.get("secure_url").toString();
+        log.info("Upload successful. URL: {}", url);
+        return url;
+    }
 }

@@ -21,4 +21,6 @@ public interface AdminService {
     void deleteProduct(String id);
 
     Page<ProductListResponse> getAllProducts(Pageable pageable);
+
+    void importProducts(ProductImportRequest request);
 }
