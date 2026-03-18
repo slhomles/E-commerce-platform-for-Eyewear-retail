@@ -24,3 +24,4 @@ export const VIEW_PRODUCT = '/product/:id';
 export const OAUTH2_REDIRECT = '/oauth2/redirect';
 export const RESET_PASSWORD = '/reset-password';
 export const VERIFY_EMAIL = '/verify-email';
+export const PAYMENT_SUCCESS = '/payment-success';

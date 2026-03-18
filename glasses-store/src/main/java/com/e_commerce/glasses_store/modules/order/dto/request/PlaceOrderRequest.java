@@ -29,6 +29,8 @@ public class PlaceOrderRequest {
 
     private String voucherCode;
 
+    private String vnpaySubMethod;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

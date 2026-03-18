@@ -54,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemRepository cartItemRepository;
     private final VoucherRepository voucherRepository;
     private final UserRepository userRepository;
+    private final com.e_commerce.glasses_store.modules.payment.service.VnpayService vnpayService;
+    private final jakarta.servlet.http.HttpServletRequest httpServletRequest;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ==================== User APIs ====================
@@ -114,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
                 .shippingAddressJson(shippingAddressJson)
                 .customerNote(request.getCustomerNote())
                 .voucherCode(request.getVoucherCode())
+                .vnpaySubMethod(request.getVnpaySubMethod())
                 .build();
 
         // 6. Tạo OrderItems (snapshot data từ cart)
@@ -156,7 +159,13 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Order placed successfully: {} for user: {}", savedOrder.getCode(), userId);
 
-        return toOrderResponse(savedOrder);
+        OrderResponse response = toOrderResponse(savedOrder);
+        if (savedOrder.getPaymentMethod() != Order.PaymentMethod.COD) {
+            String paymentUrl = vnpayService.createPaymentUrl(savedOrder, httpServletRequest);
+            response.setPaymentUrl(paymentUrl);
+        }
+
+        return response;
     }
 
     @Override
@@ -367,6 +376,7 @@ public class OrderServiceImpl implements OrderService {
                 .statusHistory(historyResponses)
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .paymentUrl(null) // Sẽ được set thủ công nếu cần
                 .build();
     }
 

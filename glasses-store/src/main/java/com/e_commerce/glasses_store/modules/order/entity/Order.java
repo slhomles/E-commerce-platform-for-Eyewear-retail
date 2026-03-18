@@ -67,6 +67,9 @@ public class Order extends BaseEntity {
     @Column(name = "payment_method", length = 20)
     private PaymentMethod paymentMethod;
 
+    @Transient
+    private String vnpaySubMethod;
+
     // ==================== Address & Notes ====================
 
     @Column(name = "shipping_address_json", columnDefinition = "JSON", nullable = false)
