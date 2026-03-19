@@ -1,0 +1,12 @@
+# Local environment scripts
+start-dev.bat
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo

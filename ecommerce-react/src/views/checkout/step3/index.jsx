@@ -9,8 +9,7 @@ import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { StepTracker } from '../components';
 import withCheckout from '../hoc/withCheckout';
-import CreditPayment from './CreditPayment';
-import PayPalPayment from './PayPalPayment';
+import VNPayPayment from './VNPayPayment';
 import Total from './Total';
 import api from '@/services/api';
 import { placeOrderSuccess } from '@/redux/actions/orderActions';
@@ -18,31 +17,7 @@ import { clearBasket } from '@/redux/actions/basketActions';
 import { resetCheckout } from '@/redux/actions/checkoutActions';
 
 const FormSchema = Yup.object().shape({
-  name: Yup.string()
-    .when('type', {
-      is: 'credit',
-      then: (schema) => schema.min(4, 'Name should be at least 4 characters.').required('Name is required'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  cardnumber: Yup.string()
-    .when('type', {
-      is: 'credit',
-      then: (schema) => schema.min(13, 'Card number should be 13-19 digits long').max(19, 'Card number should only be 13-19 digits long').required('Card number is required.'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  expiry: Yup.date()
-    .when('type', {
-      is: 'credit',
-      then: (schema) => schema.required('Credit card expiry is required.'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  ccv: Yup.string()
-    .when('type', {
-      is: 'credit',
-      then: (schema) => schema.min(3, 'CCV length should be 3-4 digit').max(4, 'CCV length should only be 3-4 digit').required('CCV is required.'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  type: Yup.string().required('Please select payment mode')
+  type: Yup.string().required('Vui lòng chọn phương thức thanh toán')
 });
 
 const Payment = ({ shipping, payment, subtotal, profile }) => {
@@ -53,11 +28,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const initFormikValues = {
-    name: payment.name || '',
-    cardnumber: payment.cardnumber || '',
-    expiry: payment.expiry || '',
-    ccv: payment.ccv || '',
-    type: payment.type || 'paypal'
+    type: payment.type || 'vnpay_visa'
   };
 
   const onConfirm = async (formValues) => {
@@ -66,12 +37,18 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
 
     try {
       // Map payment type to backend enum
-      let paymentMethod = 'COD';
-      if (formValues.type === 'credit') paymentMethod = 'BANK_TRANSFER';
-      else if (formValues.type === 'paypal') paymentMethod = 'VNPAY';
+      let paymentMethod = 'VNPAY';
+      let vnpaySubMethod = null;
+
+      if (formValues.type === 'cod') {
+          paymentMethod = 'COD';
+      } else {
+          vnpaySubMethod = formValues.type;
+      }
 
       const orderData = {
         paymentMethod,
+        vnpaySubMethod,
         shippingAddress: {
           fullName: shipping.fullname || profile?.fullname || '',
           phone: shipping.mobile?.value || profile?.mobile?.value || '',
@@ -89,12 +66,16 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
       dispatch(clearBasket());
       dispatch(resetCheckout());
 
-      displayActionMessage('Đặt hàng thành công!', 'success');
+      displayActionMessage('Đang chuyển hướng tới trang thanh toán...', 'success');
 
-      // Redirect to account orders tab
-      setTimeout(() => {
-        history.push('/account');
-      }, 1500);
+      if (order.paymentUrl) {
+          window.location.href = order.paymentUrl;
+      } else {
+          // Redirect to account orders tab if no payment URL (e.g. COD)
+          setTimeout(() => {
+            history.push('/account');
+          }, 1500);
+      }
     } catch (err) {
       displayActionMessage(err.message || 'Đặt hàng thất bại', 'error');
     } finally {
@@ -117,8 +98,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
       >
         {({ isSubmitting }) => (
           <Form className="checkout-step-3">
-            <CreditPayment />
-            <PayPalPayment />
+            <VNPayPayment />
             <Total
               isInternational={shipping.isInternational}
               subtotal={subtotal}

@@ -199,6 +199,12 @@
   }
 }
 
+.checkout-fieldset-collapse.is-selected-payment {
+  height: auto;
+  padding-bottom: 15px;
+  opacity: 1;
+}
+
 .checkout-checkbox-field {
   display: flex;
   align-items: center;

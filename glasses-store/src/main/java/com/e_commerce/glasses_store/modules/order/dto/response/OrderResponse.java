@@ -47,6 +47,8 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String paymentUrl;
+
     // ==================== Nested DTOs ====================
 
     @Data

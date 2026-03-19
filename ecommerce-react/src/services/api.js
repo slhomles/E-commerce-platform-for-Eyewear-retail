@@ -523,6 +523,11 @@ const orderAPI = {
         return response.data;
     },
 
+    verifyVNPay: async (queryString) => {
+        const response = await request(`/payment/vnpay-callback${queryString}`);
+        return response;
+    },
+
     // ---- Admin Order APIs ----
 
     /**
