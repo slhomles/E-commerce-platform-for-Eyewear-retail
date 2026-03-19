@@ -1,0 +1,35 @@
+﻿Total columns: 32
+
+=== FULL DATA ROW ===
+  [ 0] Header=Name               | Value=Kinh Gong Acetate AF1037G
+  [ 1] Header=Slug               | Value=NONE
+  [ 2] Header=Description        | Value=San pham Kinh Gong Acetate AF1037G chat luong cao, thiet ke 
+  [ 3] Header=Brand              | Value=Afflelou
+  [ 4] Header=Category           | Value=Gong Kinh
+  [ 5] Header=Type               | Value=FRAME
+  [ 6] Header=Base Price         | Value=1850000
+  [ 7] Header=Sale Price         | Value=1599000 <-- KEY
+  [ 8] Header=Gender             | Value=UNISEX
+  [ 9] Header=Frame Material     | Value=Acetate
+  [10] Header=Frame Shape        | Value=SQUARE
+  [11] Header=Rim Type           | Value=Full
+  [12] Header=Hinge Type         | Value=Standard
+  [13] Header=Nose Pad Type      | Value=Fixed
+  [14] Header=Frame Size         | Value=54-17-145
+  [15] Header=Style              | Value=Classic
+  [16] Header=Ke Don?            | Value=TRUE
+  [17] Header=Luy Tien?          | Value=FALSE
+  [18] Header=SKU (*)            | Value=AF1037G-5S <-- KEY
+  [19] Header=Color Name         | Value=Light Brown <-- KEY
+  [20] Header=Color Hex          | Value=#A0785A <-- KEY
+  [21] Header=Price Adjust       | Value=0 <-- KEY
+  [22] Header=Initial Stock      | Value=40 <-- KEY
+  [23] Header=Lens Width (mm)    | Value=54 <-- KEY
+  [24] Header=Bridge Width (mm)  | Value=17
+  [25] Header=Temple Len (mm)    | Value=145
+  [26] Header=Weight (g)         | Value=24 <-- KEY
+  [27] Header=THUMBNAIL URL [AB] | Value=https://res.cloudinary.com/dfk16iu6d/image/upload/v177385474 <-- KEY
+  [28] Header=Gallery 1 URL [AC] | Value=https://res.cloudinary.com/dfk16iu6d/image/upload/v177385474 <-- KEY
+  [29] Header=Gallery 2 URL [AD] | Value=https://res.cloudinary.com/dfk16iu6d/image/upload/v177385474 <-- KEY
+  [30] Header=Gallery 3 URL [AE] | Value=https://res.cloudinary.com/dfk16iu6d/image/upload/v177385474
+  [31] Header=Gallery 4 URL [AF] | Value=https://res.cloudinary.com/dfk16iu6d/image/upload/v177385474
