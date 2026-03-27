@@ -6,14 +6,22 @@ import PropType from 'prop-types';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { removeFromBasket } from '@/redux/actions/basketActions';
+import { removeFromBasket, toggleBasketItemSelect } from '@/redux/actions/basketActions';
 
 const BasketItem = ({ product }) => {
   const dispatch = useDispatch();
   const onRemoveFromBasket = () => dispatch(removeFromBasket(product.id));
+  const onToggleSelect = () => dispatch(toggleBasketItemSelect(product.id));
 
   return (
-    <div className="basket-item">
+    <div className={`basket-item ${product.selected === false ? 'basket-item--unselected' : ''}`}>
+      <div className="basket-item-checkbox">
+        <input
+          type="checkbox"
+          checked={product.selected !== false}
+          onChange={onToggleSelect}
+        />
+      </div>
       <BasketItemControl product={product} />
       <div className="basket-item-wrapper">
         <div className="basket-item-img-wrapper">
@@ -87,7 +95,8 @@ BasketItem.propTypes = {
     imageUrl: PropType.string,
     isFeatured: PropType.bool,
     isRecommended: PropType.bool,
-    availableColors: PropType.arrayOf(PropType.string)
+    availableColors: PropType.arrayOf(PropType.string),
+    selected: PropType.bool
   }).isRequired
 };
 

@@ -7,7 +7,7 @@ import { useDidMount, useModal } from '@/hooks';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { clearBasket } from '@/redux/actions/basketActions';
+import { clearBasket, toggleAllBasketItemsSelect, removeSelectedFromBasket } from '@/redux/actions/basketActions';
 
 const Basket = () => {
   const { isOpenModal, onOpenModal, onCloseModal } = useModal();
@@ -19,8 +19,12 @@ const Basket = () => {
   const { pathname } = useLocation();
   const dispatch = useDispatch();
 
+  const selectedItems = basket.filter((product) => product.selected !== false);
+  const allSelected = basket.length > 0 && basket.every((product) => product.selected !== false);
+  const hasSelected = selectedItems.length > 0;
+
   const onCheckOut = () => {
-    if ((basket.length !== 0 && user)) {
+    if ((hasSelected && user)) {
       document.body.classList.remove('is-basket-open');
       history.push(CHECKOUT_STEP_1);
     } else {
@@ -40,13 +44,27 @@ const Basket = () => {
     }
   };
 
+  const onToggleSelectAll = () => {
+    dispatch(toggleAllBasketItemsSelect());
+  };
+
+  const onDeleteSelected = () => {
+    if (hasSelected) {
+      dispatch(removeSelectedFromBasket());
+    }
+  };
+
   return user && user.role === 'ADMIN' ? null : (
     <Boundary>
       <Modal
         isOpen={isOpenModal}
         onRequestClose={onCloseModal}
       >
-        <p className="text-center">You must sign in to continue checking out</p>
+        <p className="text-center">
+          {!user
+            ? 'You must sign in to continue checking out'
+            : 'Please select at least one item to checkout'}
+        </p>
         <br />
         <div className="d-flex-center">
           <button
@@ -56,14 +74,18 @@ const Basket = () => {
           >
             Continue shopping
           </button>
-          &nbsp;
-          <button
-            className="button button-small"
-            onClick={onSignInClick}
-            type="button"
-          >
-            Sign in to checkout
-          </button>
+          {!user && (
+            <>
+              &nbsp;
+              <button
+                className="button button-small"
+                onClick={onSignInClick}
+                type="button"
+              >
+                Sign in to checkout
+              </button>
+            </>
+          )}
         </div>
       </Modal>
       <div className="basket">
@@ -77,6 +99,14 @@ const Basket = () => {
                 )
               </span>
             </h3>
+            <button
+              className="basket-delete-selected button button-border button-small"
+              disabled={!hasSelected}
+              onClick={onDeleteSelected}
+              type="button"
+            >
+              <span>Delete Selected</span>
+            </button>
             <BasketToggle>
               {({ onClickToggle }) => (
                 <span
@@ -97,6 +127,18 @@ const Basket = () => {
               <span>Clear Basket</span>
             </button>
           </div>
+          {basket.length > 0 && (
+            <div className="basket-actions">
+              <label className="basket-select-all">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={onToggleSelectAll}
+                />
+                <span>Select All ({selectedItems.length}/{basket.length})</span>
+              </label>
+            </div>
+          )}
           {basket.length <= 0 && (
             <div className="basket-empty">
               <h5 className="basket-empty-msg">Your basket is empty</h5>
@@ -114,14 +156,18 @@ const Basket = () => {
         </div>
         <div className="basket-checkout">
           <div className="basket-total">
-            <p className="basket-total-title">Subtotal Amout:</p>
+            <p className="basket-total-title">
+              Subtotal Amount
+              {selectedItems.length < basket.length ? ` (${selectedItems.length} selected)` : ''}
+              :
+            </p>
             <h2 className="basket-total-amount">
-              {displayMoney(calculateTotal(basket.map((product) => product.price * product.quantity)))}
+              {displayMoney(calculateTotal(selectedItems.map((product) => product.price * product.quantity)))}
             </h2>
           </div>
           <button
             className="basket-checkout-button button"
-            disabled={basket.length === 0 || pathname === '/checkout'}
+            disabled={!hasSelected || pathname === '/checkout'}
             onClick={onCheckOut}
             type="button"
           >

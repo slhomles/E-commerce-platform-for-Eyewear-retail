@@ -37,15 +37,37 @@
   margin-bottom: $s-size;
   @include bezier-transition();
   animation: slide-up .5s ease;
+
+  &--unselected {
+    opacity: 0.5;
+  }
+}
+
+.basket-item-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  flex-shrink: 0;
+
+  input[type="checkbox"] {
+    display: block !important;
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #101010;
+    margin: 0;
+  }
 }
 
 .basket-item-wrapper {
-  width: 100%;
-  display: flex;
+  flex: 1;
+  min-width: 0;
+  display: grid;
   align-items: center;
   padding: 0 $s-size;
-
-  display: grid;
   grid-template-columns: 100px 1fr 80px 40px;
 }
 
@@ -75,6 +97,7 @@
 .basket-header {
   display: flex;
   align-items: center;
+  gap: 6px;
   position: sticky;
   top: -20px;
   background: $white;
@@ -166,8 +189,7 @@
 }
 
 .basket-item-control {
-  width: 30px;
-  height: 90px;
+  width: 35px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -183,4 +205,67 @@
 
 .basket-control-count {
   margin: 5px;
+}
+
+.basket-qty-input {
+  width: 35px;
+  height: 28px;
+  text-align: center;
+  border: 1px solid $border-color;
+  font-size: 12px;
+  font-weight: 600;
+  outline: none;
+  padding: 0;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    border-color: #101010;
+  }
+}
+
+.basket-actions {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.basket-select-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+
+  input[type="checkbox"] {
+    display: block !important;
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #101010;
+    margin: 0;
+  }
+}
+
+.basket-delete-selected {
+  color: #e74c3c;
+  border-color: #e74c3c !important;
+
+  &:hover:not(:disabled) {
+    background: #e74c3c;
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }

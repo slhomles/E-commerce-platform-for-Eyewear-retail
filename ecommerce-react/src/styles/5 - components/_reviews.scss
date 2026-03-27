@@ -1,0 +1,230 @@
+.reviews {
+  margin-top: $l-size;
+  padding-top: $l-size;
+  border-top: 1px solid $border-color;
+}
+
+.reviews__title {
+  font-size: $font-large;
+  font-weight: 600;
+  margin: 0 0 $m-size 0;
+  color: $heading-color;
+}
+
+// ── Summary ──────────────────────────────────────────────
+
+.reviews__summary {
+  display: flex;
+  align-items: center;
+  gap: $l-size;
+  padding: $m-size $l-size;
+  border: 1px solid $border-color;
+  margin-bottom: $l-size;
+}
+
+.reviews__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.reviews__score-number {
+  font-size: 4.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: $heading-color;
+}
+
+.reviews__score-label {
+  font-size: $font-small;
+  color: $gray-10;
+  margin-top: 4px;
+}
+
+.reviews__summary-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reviews__stars-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.reviews__count {
+  font-size: $font-medium;
+  color: $gray-10;
+}
+
+// ── List ─────────────────────────────────────────────────
+
+.reviews__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviews__loading,
+.reviews__empty {
+  padding: $l-size;
+  text-align: center;
+  color: $gray-10;
+  font-size: $font-medium;
+}
+
+// ── Card ─────────────────────────────────────────────────
+
+.reviews__card {
+  padding: $m-size 0;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.reviews__card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $s-size;
+  margin-bottom: $s-size;
+}
+
+.reviews__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $background-color-01;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid $border-color;
+}
+
+.reviews__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reviews__avatar-placeholder {
+  font-size: $font-medium;
+  font-weight: 600;
+  color: $gray-10;
+  text-transform: uppercase;
+}
+
+.reviews__user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.reviews__user-name {
+  font-weight: 600;
+  font-size: $font-medium;
+  color: $heading-color;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.reviews__meta {
+  display: flex;
+  align-items: center;
+  gap: $s-size;
+  flex-wrap: wrap;
+}
+
+.reviews__verified {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: $green;
+  background: rgba($green, .08);
+  border: 1px solid rgba($green, .25);
+  padding: 1px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.reviews__date {
+  font-size: $font-small;
+  color: $gray-20;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.reviews__content {
+  font-size: $baseFontSize;
+  line-height: 1.65;
+  color: $paragraph-color;
+  margin: 0 0 $s-size 0;
+  padding-left: 56px; // avatar width + gap
+}
+
+.reviews__images {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-left: 56px;
+}
+
+.reviews__image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid $border-color;
+  cursor: pointer;
+  @include bezier-transition;
+
+  &:hover {
+    border-color: $border-color-focus;
+    opacity: .85;
+  }
+}
+
+// ── Pagination ───────────────────────────────────────────
+
+.reviews__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: $m-size;
+  padding-top: $m-size;
+}
+
+.reviews__page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 $s-size;
+  border: 1px solid $border-color;
+  background: $white;
+  color: $paragraph-color;
+  font-size: $font-small;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include bezier-transition;
+
+  &:hover:not(:disabled):not(.reviews__page-btn--active) {
+    border-color: $border-color-focus;
+    background: $background-color;
+  }
+
+  &--active {
+    background: $button-color;
+    color: $white;
+    border-color: $button-color;
+  }
+
+  &:disabled {
+    color: $gray-20;
+    background: $background-color;
+    cursor: not-allowed;
+  }
+}

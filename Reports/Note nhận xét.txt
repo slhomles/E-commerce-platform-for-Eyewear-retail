@@ -1,0 +1,9 @@
+-trong admin khong cần ảnh -> không cần thiết, mất không gian -> kồng kềnh nếu quá nhiều đơn hàng
+-Trong giỏ hàng cần chọn được một số sản phẩm nhất định trong giỏ hàng
+Nhập só lượng qua text
+thao tác trên một số sản phẩm đã chọn
+logic tìm kiếm ( tại sao tìm "ok" lại không ra)
+tách biệt đăng nhập user và admin 
+trang review trong amdin
+Quản lý vận chuyển(shipping)
+

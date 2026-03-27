@@ -14,19 +14,21 @@ const withCheckout = (Component) => withRouter((props) => {
     profile: store.profile
   }));
 
+  // Only include selected items for checkout
+  const selectedBasket = state.basket.filter((product) => product.selected !== false);
   const shippingFee = state.shipping.isInternational ? 50 : 0;
-  const subtotal = calculateTotal(state.basket.map((product) => (product.price || 0) * (product.quantity || 1)));
+  const subtotal = calculateTotal(selectedBasket.map((product) => (product.price || 0) * (product.quantity || 1)));
 
   if (!state.isAuth) {
     return <Redirect to={SIGNIN} />;
-  } if (state.basket.length === 0) {
+  } if (selectedBasket.length === 0) {
     return <Redirect to="/" />;
-  } if (state.isAuth && state.basket.length !== 0) {
+  } if (state.isAuth && selectedBasket.length !== 0) {
     return (
       <Component
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
-        basket={state.basket}
+        basket={selectedBasket}
         payment={state.payment}
         profile={state.profile}
         shipping={state.shipping}
