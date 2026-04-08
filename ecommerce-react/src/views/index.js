@@ -8,6 +8,7 @@ export { default as Orders } from './admin/orders';
 export { default as AddOrder } from './admin/add_order';
 export { default as Users } from './admin/users';
 export { default as Reviews } from './admin/reviews';
+export { default as Banners } from './admin/banners';
 export { default as ForgotPassword } from './auth/forgot_password';
 export { default as ResetPassword } from './auth/reset_password';
 export { default as VerifyEmail } from './auth/verify_email';

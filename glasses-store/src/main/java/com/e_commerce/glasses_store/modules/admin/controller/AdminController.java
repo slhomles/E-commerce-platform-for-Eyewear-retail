@@ -3,6 +3,11 @@ package com.e_commerce.glasses_store.modules.admin.controller;
 import com.e_commerce.glasses_store.common.ApiResponse;
 import com.e_commerce.glasses_store.modules.admin.dto.*;
 import com.e_commerce.glasses_store.modules.admin.service.AdminService;
+import com.e_commerce.glasses_store.modules.admin.service.StatsService;
+import com.e_commerce.glasses_store.modules.banner.dto.BannerResponse;
+import com.e_commerce.glasses_store.modules.banner.dto.CreateBannerRequest;
+import com.e_commerce.glasses_store.modules.banner.dto.UpdateBannerRequest;
+import com.e_commerce.glasses_store.modules.banner.service.BannerService;
 import com.e_commerce.glasses_store.modules.order.dto.request.UpdateOrderStatusRequest;
 import com.e_commerce.glasses_store.modules.order.dto.response.OrderListResponse;
 import com.e_commerce.glasses_store.modules.order.dto.response.OrderResponse;
@@ -35,6 +40,8 @@ public class AdminController {
 
     private final AdminService adminService;
     private final OrderService orderService;
+    private final BannerService bannerService;
+    private final StatsService statsService;
 
     /**
      * POST /api/v1/admin/categories — Tạo danh mục mới.
@@ -58,11 +65,11 @@ public class AdminController {
     }
 
     /**
-     * GET /api/v1/admin/stats/revenue — Thống kê doanh thu.
+     * GET /api/v1/admin/stats/revenue — Comprehensive revenue analytics.
      */
     @GetMapping("/stats/revenue")
-    public ResponseEntity<ApiResponse<DashboardStatsResponse>> getRevenueStats() {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getRevenueStats()));
+    public ResponseEntity<ApiResponse<RevenueStatsResponse>> getRevenueStats() {
+        return ResponseEntity.ok(ApiResponse.success(statsService.getRevenueStats()));
     }
 
     // ==================== Product CRUD (Bổ sung) ====================
@@ -164,4 +171,56 @@ public class AdminController {
         orderService.deleteOrder(id);
         return ResponseEntity.ok(ApiResponse.success("Order deleted successfully", null));
     }
+
+    // ==================== Banner Management ====================
+
+    /**
+     * GET /api/v1/admin/banners — Danh sách tất cả banner (admin).
+     */
+    @GetMapping("/banners")
+    public ResponseEntity<ApiResponse<Page<BannerResponse>>> getAllBanners(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<BannerResponse> result = bannerService.getAllBanners(PageRequest.of(page, size));
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    /**
+     * POST /api/v1/admin/banners — Tạo banner mới.
+     */
+    @PostMapping("/banners")
+    public ResponseEntity<ApiResponse<BannerResponse>> createBanner(
+            @Valid @RequestBody CreateBannerRequest request) {
+        BannerResponse banner = bannerService.createBanner(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created(banner));
+    }
+
+    /**
+     * PUT /api/v1/admin/banners/{id} — Cập nhật banner.
+     */
+    @PutMapping("/banners/{id}")
+    public ResponseEntity<ApiResponse<BannerResponse>> updateBanner(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateBannerRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(bannerService.updateBanner(id, request)));
+    }
+
+    /**
+     * DELETE /api/v1/admin/banners/{id} — Xóa banner.
+     */
+    @DeleteMapping("/banners/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteBanner(@PathVariable String id) {
+        bannerService.deleteBanner(id);
+        return ResponseEntity.ok(ApiResponse.success("Banner deleted successfully", null));
+    }
+
+    /**
+     * PATCH /api/v1/admin/banners/{id}/toggle — Bật/tắt banner.
+     */
+    @PatchMapping("/banners/{id}/toggle")
+    public ResponseEntity<ApiResponse<BannerResponse>> toggleBanner(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success(bannerService.toggleBannerStatus(id)));
+    }
 }
+

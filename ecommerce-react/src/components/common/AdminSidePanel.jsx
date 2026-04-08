@@ -41,6 +41,15 @@ const SideNavigation = () => (
           Reviews
         </NavLink>
       </div>
+      <div className="sidenavigation-item">
+        <NavLink
+          activeClassName="sidenavigation-menu-active"
+          className="sidenavigation-menu"
+          to={ROUTES.ADMIN_BANNERS}
+        >
+          Banners
+        </NavLink>
+      </div>
     </div>
   </aside>
 );

@@ -1,11 +1,10 @@
-import { ArrowRightOutlined } from '@ant-design/icons';
 import { MessageDisplay } from '@/components/common';
 import { ProductShowcaseGrid } from '@/components/product';
-import { FEATURED_PRODUCTS, RECOMMENDED_PRODUCTS, SHOP } from '@/constants/routes';
+import { FEATURED_PRODUCTS, RECOMMENDED_PRODUCTS } from '@/constants/routes';
 import {
   useDocumentTitle, useFeaturedProducts, useRecommendedProducts, useScrollTop
 } from '@/hooks';
-import bannerImg from '@/images/banner-girl.png';
+import HeroBannerCarousel from '@/components/common/HeroBannerCarousel';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -30,25 +29,7 @@ const Home = () => {
   return (
     <main className="content">
       <div className="home">
-        <div className="banner">
-          <div className="banner-desc">
-            <h1 className="text-thin">
-              <strong>See</strong>
-              &nbsp;everything with&nbsp;
-              <strong>Clarity</strong>
-            </h1>
-            <p>
-              Buying eyewear should leave you happy and good-looking, with money in your pocket.
-              Glasses, sunglasses, and contacts—we’ve got your eyes covered.
-            </p>
-            <br />
-            <Link to={SHOP} className="button">
-              Shop Now &nbsp;
-              <ArrowRightOutlined />
-            </Link>
-          </div>
-          <div className="banner-img"><img src={bannerImg} alt="" /></div>
-        </div>
+        <HeroBannerCarousel />
         <div className="display">
           <div className="display-header">
             <h1>Featured Products</h1>
