@@ -238,56 +238,78 @@ public class AdminServiceImpl implements AdminService {
 
         product = productRepository.save(product);
 
-        // Update Variants and Inventory (only handling the first variant for Admin CRUD
-        // simplicity)
-        if (req.variants() != null && !req.variants().isEmpty()) {
-            CreateProductRequest.VariantRequest vr = req.variants().get(0);
-            if (product.getVariants() != null && !product.getVariants().isEmpty()) {
-                ProductVariant variant = product.getVariants().get(0);
-                variant.setColorName(vr.colorName());
-                if (vr.colorHex() != null)
-                    variant.setColorHex(vr.colorHex());
-                if (vr.imageUrl() != null && !vr.imageUrl().isEmpty()) {
-                    variant.setImageUrl(vr.imageUrl());
-                }
+        // Update Variants and Inventory (Full support for multiple variants)
+        if (req.variants() != null) {
+            List<String> incomingSkus = req.variants().stream()
+                    .map(CreateProductRequest.VariantRequest::sku)
+                    .toList();
 
-                if (vr.imageGallery() != null) {
-                    try {
-                        variant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
-                    } catch (Exception e) {
+            // 1. Deactivate variants not in the update request
+            if (product.getVariants() != null) {
+                for (ProductVariant existingVariant : product.getVariants()) {
+                    if (!incomingSkus.contains(existingVariant.getSku())) {
+                        existingVariant.setIsActive(false);
+                        variantRepository.save(existingVariant);
                     }
                 }
-                variantRepository.save(variant);
+            }
 
-                // Update stock
-                InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
-                        .orElseGet(() -> InventoryStock.builder().productVariant(variant).quantityOnHand(0).build());
-                stock.setQuantityOnHand(vr.initialStock());
-                inventoryStockRepository.save(stock);
-            } else {
-                // If there were no variants before, create one
-                ProductVariant variant = ProductVariant.builder()
-                        .product(product)
-                        .sku(vr.sku())
-                        .colorName(vr.colorName())
-                        .colorHex(vr.colorHex())
-                        .imageUrl(vr.imageUrl())
-                        .priceAdjustment(vr.priceAdjustment() != null ? vr.priceAdjustment() : BigDecimal.ZERO)
-                        .build();
-                if (vr.imageGallery() != null) {
-                    try {
-                        variant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
-                    } catch (Exception e) {
+            // 2. Add or update variants from the request
+            for (CreateProductRequest.VariantRequest vr : req.variants()) {
+                ProductVariant variant = variantRepository.findBySku(vr.sku()).orElse(null);
+
+                if (variant != null && variant.getProduct().getId().equals(product.getId())) {
+                    // Update existing
+                    variant.setColorName(vr.colorName());
+                    if (vr.colorHex() != null) variant.setColorHex(vr.colorHex());
+                    if (vr.imageUrl() != null && !vr.imageUrl().isEmpty()) variant.setImageUrl(vr.imageUrl());
+                    if (vr.priceAdjustment() != null) variant.setPriceAdjustment(vr.priceAdjustment());
+                    variant.setIsActive(true);
+
+                    if (vr.imageGallery() != null) {
+                        try {
+                            variant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
+                        } catch (Exception e) {
+                        }
                     }
-                }
-                variant = variantRepository.save(variant);
+                    variant = variantRepository.save(variant);
 
-                if (vr.initialStock() > 0) {
-                    InventoryStock stock = InventoryStock.builder()
-                            .productVariant(variant)
-                            .quantityOnHand(vr.initialStock())
-                            .build();
+                    // Update stock
+                    final ProductVariant finalVariant = variant;
+                    InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
+                            .orElseGet(() -> InventoryStock.builder().productVariant(finalVariant).quantityOnHand(0).build());
+                    stock.setQuantityOnHand(vr.initialStock());
                     inventoryStockRepository.save(stock);
+                } else if (variant == null) {
+                    // Create new
+                    ProductVariant newVariant = ProductVariant.builder()
+                            .product(product)
+                            .sku(vr.sku())
+                            .colorName(vr.colorName())
+                            .colorHex(vr.colorHex())
+                            .imageUrl(vr.imageUrl())
+                            .priceAdjustment(vr.priceAdjustment() != null ? vr.priceAdjustment() : BigDecimal.ZERO)
+                            .isActive(true)
+                            .build();
+
+                    if (vr.imageGallery() != null) {
+                        try {
+                            newVariant.setImageGallery(objectMapper.writeValueAsString(vr.imageGallery()));
+                        } catch (Exception e) {
+                        }
+                    }
+                    newVariant = variantRepository.save(newVariant);
+
+                    if (vr.initialStock() > 0) {
+                        InventoryStock stock = InventoryStock.builder()
+                                .productVariant(newVariant)
+                                .quantityOnHand(vr.initialStock())
+                                .build();
+                        inventoryStockRepository.save(stock);
+                    }
+                } else {
+                    // SKU already exists but belongs to a different product
+                    log.warn("SKU {} already exists for another product. Skipping variant update.", vr.sku());
                 }
             }
         }

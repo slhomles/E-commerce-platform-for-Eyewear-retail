@@ -1,6 +1,28 @@
 import { useDocumentTitle, useScrollTop } from '@/hooks';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '@/services/api';
+
+// ─── Date helpers ────────────────────────────────────────────────────────────
+const toISO = (dateStr, endOfDay) => {
+  if (!dateStr) return null;
+  return dateStr + (endOfDay ? 'T23:59:59' : 'T00:00:00');
+};
+const toDateStr = (d) => {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+const daysAgo = (n) => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return toDateStr(d);
+};
+const PRESETS = [
+  { key: '7D',  label: '7D',  from: () => daysAgo(7) },
+  { key: '30D', label: '30D', from: () => daysAgo(30) },
+  { key: '3M',  label: '3M',  from: () => daysAgo(90) },
+  { key: '12M', label: '12M', from: () => daysAgo(365) },
+  { key: 'ALL', label: 'All', from: () => '' },
+];
 
 // ─── Mock Data (remove when backend is ready) ─────────────────────────────────
 const MOCK_STATS = {
@@ -182,12 +204,20 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activePreset, setActivePreset] = useState('12M');
+  const [dateFrom, setDateFrom] = useState(daysAgo(365));
+  const [dateTo, setDateTo] = useState(toDateStr(new Date()));
+
+  const fetchStats = useCallback((from, to) => {
+    setLoading(true);
+    api.getRevenueStats(toISO(from, false), toISO(to, true))
+      .then(setStats)
+      .catch(() => setStats(MOCK_STATS))
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
-    api.getRevenueStats()
-      .then(setStats)
-      .catch(() => setStats(MOCK_STATS))   // fallback to mock when API unavailable
-      .finally(() => setLoading(false));
+    fetchStats(dateFrom, dateTo);
   }, []);
 
   if (isLoading) {
@@ -212,12 +242,68 @@ const Dashboard = () => {
   return (
     <div style={{ padding: '24px 32px', maxWidth: '1400px' }}>
 
-      {/* ── Header ── */}
-      <div style={{ marginBottom: '28px' }}>
-        <h3 style={{ margin: '0 0 4px', fontSize: '22px', color: '#1a1a1a' }}>Revenue Analytics</h3>
-        <p style={{ margin: 0, color: '#999', fontSize: '13px' }}>
-          Real-time overview of your store performance
-        </p>
+      {/* ── Header + Date Range Filter ── */}
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h3 style={{ margin: '0 0 4px', fontSize: '22px', color: '#1a1a1a' }}>Revenue Analytics</h3>
+          <p style={{ margin: 0, color: '#999', fontSize: '13px' }}>
+            {activePreset === 'ALL' ? 'All time' : `${dateFrom} → ${dateTo}`}
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Preset pills */}
+          <div style={{ display: 'flex', gap: '2px', background: '#f5f5f5', borderRadius: '8px', padding: '3px' }}>
+            {PRESETS.map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => {
+                  setActivePreset(p.key);
+                  const f = p.from();
+                  const t = toDateStr(new Date());
+                  setDateFrom(f);
+                  setDateTo(t);
+                  fetchStats(f, t);
+                }}
+                style={{
+                  padding: '5px 12px', border: 'none', borderRadius: '6px',
+                  fontSize: '12px', fontWeight: '600', cursor: 'pointer',
+                  background: activePreset === p.key ? '#1a1a1a' : 'transparent',
+                  color: activePreset === p.key ? '#fff' : '#666',
+                  transition: 'all .15s',
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          {/* Custom date inputs */}
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setActivePreset(null); }}
+            style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '5px 8px', fontSize: '12px' }}
+          />
+          <span style={{ color: '#aaa', fontSize: '12px' }}>→</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setActivePreset(null); }}
+            style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '5px 8px', fontSize: '12px' }}
+          />
+          <button
+            type="button"
+            onClick={() => { setActivePreset(null); fetchStats(dateFrom, dateTo); }}
+            disabled={isLoading}
+            style={{
+              padding: '5px 14px', border: 'none', borderRadius: '6px',
+              fontSize: '12px', fontWeight: '600', cursor: 'pointer',
+              background: '#1a1a1a', color: '#fff', opacity: isLoading ? 0.5 : 1,
+            }}
+          >
+            Apply
+          </button>
+        </div>
       </div>
 
       {/* ── KPI Cards ── */}
@@ -265,7 +351,7 @@ const Dashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '20px' }}>
 
         <Card>
-          <SectionTitle>Monthly Revenue Trend (Last 12 Months)</SectionTitle>
+          <SectionTitle>Monthly Revenue Trend</SectionTitle>
           <BarChart data={stats.monthlyTrend} />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '8px' }}>
             <span style={{ fontSize: '11px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}>

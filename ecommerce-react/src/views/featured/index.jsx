@@ -2,18 +2,33 @@ import { MessageDisplay } from '@/components/common';
 import { ProductShowcaseGrid } from '@/components/product';
 import { useDocumentTitle, useFeaturedProducts, useScrollTop } from '@/hooks';
 import bannerImg from '@/images/banner-guy.png';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '@/services/api';
 
 const FeaturedProducts = () => {
   useDocumentTitle('Featured Products | Salinaka');
   useScrollTop();
+
+  const [featuredCount, setFeaturedCount] = useState(12);
+
+  useEffect(() => {
+    api.getPublicSettings()
+      .then((settingsList) => {
+        const s = settingsList.find((x) => x.key === 'featured_page_count');
+        if (s) {
+          const val = parseInt(s.value, 10);
+          if (!isNaN(val)) setFeaturedCount(val);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const {
     featuredProducts,
     fetchFeaturedProducts,
     isLoading,
     error
-  } = useFeaturedProducts();
+  } = useFeaturedProducts(featuredCount);
 
   return (
     <main className="content">
@@ -37,7 +52,7 @@ const FeaturedProducts = () => {
             ) : (
               <ProductShowcaseGrid
                 products={featuredProducts}
-                skeletonCount={6}
+                skeletonCount={featuredCount}
               />
             )}
           </div>

@@ -3,6 +3,7 @@ package com.e_commerce.glasses_store.modules.admin.controller;
 import com.e_commerce.glasses_store.common.ApiResponse;
 import com.e_commerce.glasses_store.modules.admin.dto.*;
 import com.e_commerce.glasses_store.modules.admin.service.AdminService;
+import com.e_commerce.glasses_store.modules.admin.service.SiteSettingService;
 import com.e_commerce.glasses_store.modules.admin.service.StatsService;
 import com.e_commerce.glasses_store.modules.banner.dto.BannerResponse;
 import com.e_commerce.glasses_store.modules.banner.dto.CreateBannerRequest;
@@ -42,6 +43,7 @@ public class AdminController {
     private final OrderService orderService;
     private final BannerService bannerService;
     private final StatsService statsService;
+    private final SiteSettingService siteSettingService;
 
     /**
      * POST /api/v1/admin/categories — Tạo danh mục mới.
@@ -66,10 +68,13 @@ public class AdminController {
 
     /**
      * GET /api/v1/admin/stats/revenue — Comprehensive revenue analytics.
+     * Optional: ?from=2025-01-01T00:00:00&to=2025-12-31T23:59:59
      */
     @GetMapping("/stats/revenue")
-    public ResponseEntity<ApiResponse<RevenueStatsResponse>> getRevenueStats() {
-        return ResponseEntity.ok(ApiResponse.success(statsService.getRevenueStats()));
+    public ResponseEntity<ApiResponse<RevenueStatsResponse>> getRevenueStats(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+        return ResponseEntity.ok(ApiResponse.success(statsService.getRevenueStats(from, to)));
     }
 
     // ==================== Product CRUD (Bổ sung) ====================
@@ -221,6 +226,26 @@ public class AdminController {
     @PatchMapping("/banners/{id}/toggle")
     public ResponseEntity<ApiResponse<BannerResponse>> toggleBanner(@PathVariable String id) {
         return ResponseEntity.ok(ApiResponse.success(bannerService.toggleBannerStatus(id)));
+    }
+
+    // ==================== Site Settings ====================
+
+    /**
+     * GET /api/v1/admin/settings — Lấy tất cả cấu hình hiển thị sản phẩm (ADMIN).
+     */
+    @GetMapping("/settings")
+    public ResponseEntity<ApiResponse<java.util.List<SiteSettingDto>>> getAllSettings() {
+        return ResponseEntity.ok(ApiResponse.success(siteSettingService.getAllSettings()));
+    }
+
+    /**
+     * PUT /api/v1/admin/settings/{key} — Cập nhật một cấu hình (ADMIN).
+     */
+    @PutMapping("/settings/{key}")
+    public ResponseEntity<ApiResponse<SiteSettingDto>> updateSetting(
+            @PathVariable String key,
+            @RequestBody UpdateSettingRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(siteSettingService.updateSetting(key, request.value())));
     }
 }
 

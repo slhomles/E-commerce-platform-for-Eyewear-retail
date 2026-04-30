@@ -127,6 +127,11 @@ const AppRouter = () => (
           path={ROUTES.ADMIN_BANNERS}
         />
         <AdminRoute
+          component={view.AdminSettings}
+          exact
+          path={ROUTES.ADMIN_SETTINGS}
+        />
+        <AdminRoute
           component={view.AddProduct}
           path={ROUTES.ADD_PRODUCT}
         />

@@ -25,6 +25,13 @@ export default (state = {
         total: action.payload.total,
         items: [...state.items, ...action.payload.products]
       };
+    case 'RESET_PRODUCTS':
+      return {
+        ...state,
+        lastRefKey: null,
+        total: 0,
+        items: []
+      };
     case ADD_PRODUCT_SUCCESS:
       return {
         ...state,

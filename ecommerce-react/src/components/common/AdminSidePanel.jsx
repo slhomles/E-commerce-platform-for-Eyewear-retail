@@ -50,6 +50,15 @@ const SideNavigation = () => (
           Banners
         </NavLink>
       </div>
+      <div className="sidenavigation-item">
+        <NavLink
+          activeClassName="sidenavigation-menu-active"
+          className="sidenavigation-menu"
+          to={ROUTES.ADMIN_SETTINGS}
+        >
+          ⚙️ Display Settings
+        </NavLink>
+      </div>
     </div>
   </aside>
 );

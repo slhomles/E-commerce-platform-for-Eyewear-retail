@@ -10,6 +10,7 @@ export const ADMIN_ORDERS = '/admin/orders';
 export const ADMIN_USERS = '/admin/users';
 export const ADMIN_REVIEWS = '/admin/reviews';
 export const ADMIN_BANNERS = '/admin/banners';
+export const ADMIN_SETTINGS = '/admin/settings';
 export const ADD_PRODUCT = '/admin/add';
 export const ADD_ORDER = '/admin/add-order';
 export const EDIT_PRODUCT = '/admin/edit';

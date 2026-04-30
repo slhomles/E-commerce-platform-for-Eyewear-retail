@@ -5,26 +5,44 @@ import {
   useDocumentTitle, useFeaturedProducts, useRecommendedProducts, useScrollTop
 } from '@/hooks';
 import HeroBannerCarousel from '@/components/common/HeroBannerCarousel';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import api from '@/services/api';
 
 const Home = () => {
   useDocumentTitle('Salinaka | Home');
   useScrollTop();
+
+  const [homeFeaturedCount, setHomeFeaturedCount] = useState(6);
+  const [homeRecommendedCount, setHomeRecommendedCount] = useState(6);
+
+  useEffect(() => {
+    api.getPublicSettings()
+      .then((settingsList) => {
+        settingsList.forEach((s) => {
+          const val = parseInt(s.value, 10);
+          if (!isNaN(val)) {
+            if (s.key === 'home_featured_count') setHomeFeaturedCount(val);
+            if (s.key === 'home_recommended_count') setHomeRecommendedCount(val);
+          }
+        });
+      })
+      .catch(() => {/* fallback default */});
+  }, []);
 
   const {
     featuredProducts,
     fetchFeaturedProducts,
     isLoading: isLoadingFeatured,
     error: errorFeatured
-  } = useFeaturedProducts(6);
+  } = useFeaturedProducts(homeFeaturedCount);
+
   const {
     recommendedProducts,
     fetchRecommendedProducts,
     isLoading: isLoadingRecommended,
     error: errorRecommended
-  } = useRecommendedProducts(6);
+  } = useRecommendedProducts(homeRecommendedCount);
 
   return (
     <main className="content">
@@ -44,7 +62,7 @@ const Home = () => {
           ) : (
             <ProductShowcaseGrid
               products={featuredProducts}
-              skeletonCount={6}
+              skeletonCount={homeFeaturedCount}
             />
           )}
         </div>
@@ -62,7 +80,7 @@ const Home = () => {
           ) : (
             <ProductShowcaseGrid
               products={recommendedProducts}
-              skeletonCount={6}
+              skeletonCount={homeRecommendedCount}
             />
           )}
         </div>

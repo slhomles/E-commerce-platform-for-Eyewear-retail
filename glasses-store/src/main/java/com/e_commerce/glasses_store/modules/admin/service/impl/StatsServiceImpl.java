@@ -45,14 +45,23 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public RevenueStatsResponse getRevenueStats() {
+        return getRevenueStats(null, null);
+    }
+
+    @Override
+    public RevenueStatsResponse getRevenueStats(LocalDateTime from, LocalDateTime to) {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime rangeStart = from != null ? from : LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime rangeEnd = to != null ? to : now.plusSeconds(1);
+
+        // Calendar-relative reference points (always current, regardless of filter)
         LocalDateTime startOfToday = now.toLocalDate().atStartOfDay();
         LocalDateTime startOfThisMonth = now.toLocalDate().withDayOfMonth(1).atStartOfDay();
         LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
         LocalDateTime endOfLastMonth = startOfThisMonth;
 
         // ── KPI ──────────────────────────────────────────────────────────────
-        BigDecimal totalRevenue = orderRepository.sumTotalRevenue();
+        BigDecimal totalRevenue = orderRepository.sumRevenueBetween(rangeStart, rangeEnd);
         BigDecimal revenueThisMonth = orderRepository.sumRevenueBetween(startOfThisMonth, now.plusSeconds(1));
         BigDecimal revenueLastMonth = orderRepository.sumRevenueBetween(startOfLastMonth, endOfLastMonth);
         BigDecimal revenueToday = orderRepository.sumRevenueBetween(startOfToday, now.plusSeconds(1));
@@ -61,7 +70,7 @@ public class StatsServiceImpl implements StatsService {
         double momGrowth = calculateGrowthPercent(revenueLastMonth, revenueThisMonth);
 
         // ── Order Counts ─────────────────────────────────────────────────────
-        long totalOrders = orderRepository.count();
+        long totalOrders = orderRepository.countOrdersBetween(rangeStart, rangeEnd);
         long ordersThisMonth = orderRepository.countOrdersBetween(startOfThisMonth, now.plusSeconds(1));
         long ordersToday = orderRepository.countOrdersBetween(startOfToday, now.plusSeconds(1));
         long paidOrders = orderRepository.countByPaymentStatus(Order.PaymentStatus.PAID);
@@ -70,10 +79,10 @@ public class StatsServiceImpl implements StatsService {
         double conversionRate = totalOrders == 0 ? 0.0 :
                 Math.round((paidOrders * 100.0 / totalOrders) * 10.0) / 10.0;
 
-        // ── Monthly Trend (last 12 months) ───────────────────────────────────
-        LocalDateTime twelveMonthsAgo = startOfThisMonth.minusMonths(11);
-        List<Object[]> rawMonthly = orderRepository.findMonthlyRevenueSince(twelveMonthsAgo);
-        List<MonthlyRevenue> monthlyTrend = buildMonthlyTrend(rawMonthly, twelveMonthsAgo, now);
+        // ── Monthly Trend ────────────────────────────────────────────────────
+        LocalDateTime trendStart = from != null ? from : startOfThisMonth.minusMonths(11);
+        List<Object[]> rawMonthly = orderRepository.findMonthlyRevenueSince(trendStart);
+        List<MonthlyRevenue> monthlyTrend = buildMonthlyTrend(rawMonthly, trendStart, rangeEnd);
 
         // ── Payment Method Breakdown ─────────────────────────────────────────
         List<Object[]> rawPayment = orderRepository.findRevenueByPaymentMethod();
@@ -87,7 +96,7 @@ public class StatsServiceImpl implements StatsService {
         List<Object[]> rawTop = orderItemRepository.findTopProductsByRevenue(PageRequest.of(0, 5));
         List<TopProduct> topProducts = buildTopProducts(rawTop, totalRevenue);
 
-        log.info("Revenue stats computed: totalRevenue={}, ordersThisMonth={}", totalRevenue, ordersThisMonth);
+        log.info("Revenue stats computed: range=[{} → {}], totalRevenue={}", rangeStart, rangeEnd, totalRevenue);
 
         return new RevenueStatsResponse(
                 totalRevenue, revenueThisMonth, revenueLastMonth, revenueToday,

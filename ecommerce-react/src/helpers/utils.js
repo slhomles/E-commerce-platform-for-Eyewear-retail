@@ -16,12 +16,11 @@ export const displayDate = (timestamp) => {
 };
 
 export const displayMoney = (n) => {
-  const format = new Intl.NumberFormat('en-US', {
+  const format = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'VND',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-    useGrouping: false
+    maximumFractionDigits: 0
   });
 
   return format.format(n);
@@ -32,7 +31,7 @@ export const calculateTotal = (arr) => {
 
   const total = arr.reduce((acc, val) => acc + val, 0);
 
-  return total.toFixed(2);
+  return total;
 };
 
 export const displayActionMessage = (msg, status = 'info') => {
