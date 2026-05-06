@@ -1,6 +1,9 @@
 package com.e_commerce.glasses_store.modules.cart.service;
 
+import com.e_commerce.glasses_store.modules.cart.dto.AddToCartRequest;
 import com.e_commerce.glasses_store.modules.cart.dto.CartResponse;
+
+import java.util.List;
 
 public interface CartService {
 
@@ -13,4 +16,8 @@ public interface CartService {
     CartResponse removeItem(String userId, String itemId);
 
     CartResponse applyVoucher(String userId, String voucherCode);
+
+    CartResponse removeVoucher(String userId);
+
+    CartResponse replaceCart(String userId, List<AddToCartRequest> items);
 }

@@ -31,6 +31,17 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
         Page<Product> fulltextSearch(@Param("keyword") String keyword, Pageable pageable);
 
         /**
+         * Fallback LIKE search — không phụ thuộc fulltext index,
+         * match được tiếng Việt có dấu và từ khoá ngắn (<4 ký tự).
+         */
+        @Query("SELECT p FROM Product p WHERE p.isDeleted = false AND p.isActive = true AND (" +
+                        "LOWER(p.name) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
+                        "LOWER(p.description) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
+                        "LOWER(p.frameShape) LIKE LOWER(CONCAT('%', :kw, '%'))) " +
+                        "ORDER BY p.createdAt DESC")
+        List<Product> searchByLike(@Param("kw") String kw, Pageable pageable);
+
+        /**
          * Sản phẩm nổi bật: đang giảm giá (salePrice != null).
          */
         @Query("SELECT p FROM Product p WHERE p.isDeleted = false AND p.isActive = true " +

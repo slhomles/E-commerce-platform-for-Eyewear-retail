@@ -75,4 +75,26 @@ public class CartController {
         CartResponse cart = cartService.applyVoucher(user.getId(), request.code());
         return ResponseEntity.ok(ApiResponse.success("Voucher applied", cart));
     }
+
+    /**
+     * DELETE /api/v1/cart/voucher — Xóa voucher khỏi giỏ hàng.
+     */
+    @DeleteMapping("/voucher")
+    public ResponseEntity<ApiResponse<CartResponse>> removeVoucher(
+            @AuthenticationPrincipal User user) {
+        CartResponse cart = cartService.removeVoucher(user.getId());
+        return ResponseEntity.ok(ApiResponse.success("Voucher removed", cart));
+    }
+
+    /**
+     * POST /api/v1/cart/replace — Thay thế toàn bộ giỏ hàng bằng danh sách items từ client basket.
+     * Được gọi khi bắt đầu checkout để đồng bộ server cart với client basket.
+     */
+    @PostMapping("/replace")
+    public ResponseEntity<ApiResponse<CartResponse>> replaceCart(
+            @AuthenticationPrincipal User user,
+            @RequestBody java.util.List<AddToCartRequest> items) {
+        CartResponse cart = cartService.replaceCart(user.getId(), items);
+        return ResponseEntity.ok(ApiResponse.success("Cart replaced", cart));
+    }
 }

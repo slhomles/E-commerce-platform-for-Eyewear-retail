@@ -6,10 +6,12 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Voucher khuyến mãi.
- * Maps to Flyway V7: vouchers table.
+ * Maps to Flyway V7 + V12: vouchers table.
  */
 @Entity
 @Table(name = "vouchers")
@@ -51,6 +53,14 @@ public class Voucher extends BaseEntity {
     @Builder.Default
     private Integer usedCount = 0;
 
+    @Column(name = "per_user_limit")
+    private Integer perUserLimit;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "applicable_to", nullable = false, length = 20)
+    @Builder.Default
+    private ApplicableTo applicableTo = ApplicableTo.ALL;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
@@ -61,14 +71,26 @@ public class Voucher extends BaseEntity {
     @Builder.Default
     private Boolean isActive = true;
 
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<VoucherApplicableItem> applicableItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<VoucherUsage> usages = new ArrayList<>();
+
     public enum DiscountType {
         PERCENTAGE, FIXED_AMOUNT
+    }
+
+    public enum ApplicableTo {
+        ALL, CATEGORY, PRODUCT
     }
 
     // ==================== Business Methods ====================
 
     /**
-     * Kiểm tra voucher có hợp lệ để sử dụng hay không.
+     * Kiểm tra voucher có hợp lệ để sử dụng hay không (global check).
      */
     public boolean isValid() {
         LocalDateTime now = LocalDateTime.now();

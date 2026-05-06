@@ -1,4 +1,5 @@
 import { Basket } from '@/components/basket';
+import { ChatWidget } from '@/components/chatbot';
 import { Footer, Navigation } from '@/components/common';
 import OAuth2RedirectHandler from '@/components/common/OAuth2RedirectHandler';
 import * as ROUTES from '@/constants/routes';
@@ -19,6 +20,7 @@ const AppRouter = () => (
     <>
       <Navigation />
       <Basket />
+      <ChatWidget />
       <Switch>
         <Route
           component={view.Search}
@@ -121,6 +123,19 @@ const AppRouter = () => (
         <AdminRoute
           component={view.Reviews}
           path={ROUTES.ADMIN_REVIEWS}
+        />
+        <AdminRoute
+          component={view.AddVoucher}
+          exact
+          path={ROUTES.ADD_VOUCHER}
+        />
+        <AdminRoute
+          component={view.EditVoucher}
+          path={`${ROUTES.EDIT_VOUCHER}/:id`}
+        />
+        <AdminRoute
+          component={view.Vouchers}
+          path={ROUTES.ADMIN_VOUCHERS}
         />
         <AdminRoute
           component={view.AddProduct}

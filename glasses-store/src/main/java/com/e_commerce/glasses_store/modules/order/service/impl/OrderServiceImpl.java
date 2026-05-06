@@ -3,9 +3,11 @@ package com.e_commerce.glasses_store.modules.order.service.impl;
 import com.e_commerce.glasses_store.modules.cart.entity.Cart;
 import com.e_commerce.glasses_store.modules.cart.entity.CartItem;
 import com.e_commerce.glasses_store.modules.cart.entity.Voucher;
+import com.e_commerce.glasses_store.modules.cart.entity.VoucherUsage;
 import com.e_commerce.glasses_store.modules.cart.repository.CartItemRepository;
 import com.e_commerce.glasses_store.modules.cart.repository.CartRepository;
 import com.e_commerce.glasses_store.modules.cart.repository.VoucherRepository;
+import com.e_commerce.glasses_store.modules.cart.repository.VoucherUsageRepository;
 import com.e_commerce.glasses_store.modules.order.dto.request.PlaceOrderRequest;
 import com.e_commerce.glasses_store.modules.order.dto.request.UpdateOrderStatusRequest;
 import com.e_commerce.glasses_store.modules.order.dto.response.OrderListResponse;
@@ -53,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final VoucherRepository voucherRepository;
+    private final VoucherUsageRepository voucherUsageRepository;
     private final UserRepository userRepository;
     private final com.e_commerce.glasses_store.modules.payment.service.VnpayService vnpayService;
     private final jakarta.servlet.http.HttpServletRequest httpServletRequest;
@@ -66,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Cart is empty"));
 
-        List<CartItem> cartItems = cart.getItems();
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         if (cartItems == null || cartItems.isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
         }
@@ -151,7 +154,23 @@ public class OrderServiceImpl implements OrderService {
         // 8. Lưu order
         Order savedOrder = orderRepository.save(order);
 
-        // 9. Xóa cart items sau khi đặt hàng thành công
+        // 9. Increment voucher usedCount and record usage
+        if (request.getVoucherCode() != null) {
+            voucherRepository.findByCode(request.getVoucherCode()).ifPresent(v -> {
+                v.setUsedCount(v.getUsedCount() + 1);
+                voucherRepository.save(v);
+
+                VoucherUsage usage = VoucherUsage.builder()
+                        .voucher(v)
+                        .userId(userId)
+                        .orderId(savedOrder.getId())
+                        .usedAt(LocalDateTime.now())
+                        .build();
+                voucherUsageRepository.save(usage);
+            });
+        }
+
+        // 10. Xóa cart items sau khi đặt hàng thành công
         cartItemRepository.deleteAll(cartItems);
         cart.getItems().clear();
         cart.setVoucherCode(null);

@@ -4,7 +4,8 @@ import {
     SERVER_ADD_TO_CART,
     SERVER_UPDATE_CART_ITEM,
     SERVER_REMOVE_CART_ITEM,
-    SERVER_APPLY_VOUCHER
+    SERVER_APPLY_VOUCHER,
+    SERVER_REMOVE_VOUCHER
 } from '@/constants/constants';
 import { displayActionMessage } from '@/helpers/utils';
 import { call, put } from 'redux-saga/effects';
@@ -71,6 +72,16 @@ function* cartSaga({ type, payload }) {
                 yield put(setRequestStatus(e?.message || 'Voucher không hợp lệ'));
                 yield call(displayActionMessage, e?.message || 'Voucher không hợp lệ', 'error');
                 yield put(setLoading(false));
+            }
+            break;
+        }
+        case SERVER_REMOVE_VOUCHER: {
+            try {
+                const cartData = yield call(api.removeVoucher);
+                yield put(syncCartSuccess(cartData));
+                yield call(displayActionMessage, 'Đã xóa voucher', 'info');
+            } catch (e) {
+                yield put(setRequestStatus(e?.message || 'Không thể xóa voucher'));
             }
             break;
         }

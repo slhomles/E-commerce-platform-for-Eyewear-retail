@@ -5,7 +5,8 @@ import {
     SERVER_ADD_TO_CART,
     SERVER_UPDATE_CART_ITEM,
     SERVER_REMOVE_CART_ITEM,
-    SERVER_APPLY_VOUCHER
+    SERVER_APPLY_VOUCHER,
+    SERVER_REMOVE_VOUCHER
 } from '@/constants/constants';
 
 // ==================== Server Cart Actions ====================
@@ -42,4 +43,8 @@ export const serverRemoveCartItem = (itemId) => ({
 export const serverApplyVoucher = (code) => ({
     type: SERVER_APPLY_VOUCHER,
     payload: code
+});
+
+export const serverRemoveVoucher = () => ({
+    type: SERVER_REMOVE_VOUCHER
 });

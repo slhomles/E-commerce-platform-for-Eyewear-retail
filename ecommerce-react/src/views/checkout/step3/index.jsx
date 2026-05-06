@@ -5,7 +5,7 @@ import { useDocumentTitle, useScrollTop } from '@/hooks';
 import PropType from 'prop-types';
 import React, { useState } from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { StepTracker } from '../components';
 import withCheckout from '../hoc/withCheckout';
@@ -25,6 +25,8 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
   useScrollTop();
   const history = useHistory();
   const dispatch = useDispatch();
+  const cartState = useSelector((state) => state.cart);
+  const displayTotal = cartState.discountAmount > 0 ? subtotal - cartState.discountAmount : subtotal;
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const initFormikValues = {
@@ -58,7 +60,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
           city: shipping.isInternational ? 'International' : 'Vietnam',
         },
         customerNote: '',
-        voucherCode: null,
+        voucherCode: cartState.voucherCode || null,
       };
 
       const order = await api.placeOrder(orderData);
@@ -101,7 +103,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
             <VNPayPayment />
             <Total
               isInternational={shipping.isInternational}
-              subtotal={subtotal}
+              subtotal={displayTotal}
             />
             {isPlacingOrder && (
               <div style={{ textAlign: 'center', padding: '12px', color: '#666' }}>

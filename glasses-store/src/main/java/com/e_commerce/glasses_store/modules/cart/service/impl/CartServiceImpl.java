@@ -1,5 +1,6 @@
 package com.e_commerce.glasses_store.modules.cart.service.impl;
 
+import com.e_commerce.glasses_store.modules.cart.dto.AddToCartRequest;
 import com.e_commerce.glasses_store.modules.cart.dto.CartResponse;
 import com.e_commerce.glasses_store.modules.cart.entity.*;
 import com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException;
@@ -16,8 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +34,7 @@ public class CartServiceImpl implements CartService {
     private final ProductVariantRepository variantRepository;
     private final InventoryStockRepository inventoryStockRepository;
     private final VoucherRepository voucherRepository;
+    private final VoucherUsageRepository voucherUsageRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -100,15 +105,76 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(userId);
 
         Voucher voucher = voucherRepository.findByCode(voucherCode)
-                .orElseThrow(() -> new IllegalArgumentException("Voucher not found: " + voucherCode));
+                .orElseThrow(() -> new IllegalArgumentException("Voucher không tồn tại: " + voucherCode));
 
         if (!voucher.isValid()) {
-            throw new IllegalArgumentException("Voucher is expired or has reached its usage limit");
+            throw new IllegalArgumentException("Voucher đã hết hạn hoặc đã hết lượt sử dụng");
+        }
+
+        // Check per-user usage limit
+        if (voucher.getPerUserLimit() != null) {
+            int userUsageCount = voucherUsageRepository.countByVoucherIdAndUserId(voucher.getId(), userId);
+            if (userUsageCount >= voucher.getPerUserLimit()) {
+                throw new IllegalArgumentException("Bạn đã sử dụng hết lượt cho voucher này");
+            }
+        }
+
+        // Check targeting: verify cart items match applicable categories/products
+        if (voucher.getApplicableTo() != Voucher.ApplicableTo.ALL) {
+            validateVoucherTargeting(voucher, cart);
+        }
+
+        // Check minimum order amount
+        if (voucher.getMinOrderAmount() != null && voucher.getMinOrderAmount().compareTo(BigDecimal.ZERO) > 0) {
+            List<CartItem> items = cartItemRepository.findByCartId(cart.getId());
+            BigDecimal currentSubtotal = items.stream()
+                    .map(item -> {
+                        Product product = item.getProductVariant().getProduct();
+                        BigDecimal unitPrice = product.getSalePrice() != null
+                                ? product.getSalePrice().add(item.getProductVariant().getPriceAdjustment())
+                                : product.getBasePrice().add(item.getProductVariant().getPriceAdjustment());
+                        return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+                    })
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (currentSubtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
+                throw new IllegalArgumentException(
+                        String.format("Đơn hàng tối thiểu %.0f VNĐ để sử dụng voucher này",
+                                voucher.getMinOrderAmount()));
+            }
         }
 
         cart.setVoucherCode(voucherCode);
         cartRepository.save(cart);
 
+        return buildCartResponse(cart);
+    }
+
+    @Override
+    public CartResponse replaceCart(String userId, List<AddToCartRequest> items) {
+        Cart cart = getOrCreateCart(userId);
+        // Clear existing items
+        List<CartItem> existing = cartItemRepository.findByCartId(cart.getId());
+        cartItemRepository.deleteAll(existing);
+        // Add new items
+        List<CartItem> newItems = new ArrayList<>();
+        for (AddToCartRequest req : items) {
+            ProductVariant variant = variantRepository.findById(req.variantId())
+                    .orElseThrow(() -> new IllegalArgumentException("Variant not found: " + req.variantId()));
+            CartItem item = CartItem.builder()
+                    .cart(cart)
+                    .productVariant(variant)
+                    .quantity(req.quantity())
+                    .build();
+            newItems.add(cartItemRepository.save(item));
+        }
+        return buildCartResponse(cart);
+    }
+
+    @Override
+    public CartResponse removeVoucher(String userId) {
+        Cart cart = getOrCreateCart(userId);
+        cart.setVoucherCode(null);
+        cartRepository.save(cart);
         return buildCartResponse(cart);
     }
 
@@ -123,6 +189,32 @@ public class CartServiceImpl implements CartService {
                     Cart newCart = Cart.builder().userId(userId).build();
                     return cartRepository.save(newCart);
                 });
+    }
+
+    /**
+     * Validate voucher targeting — kiểm tra giỏ hàng có sản phẩm/danh mục phù hợp.
+     */
+    private void validateVoucherTargeting(Voucher voucher, Cart cart) {
+        List<VoucherApplicableItem> applicableItems = voucher.getApplicableItems();
+        if (applicableItems == null || applicableItems.isEmpty()) return;
+
+        Set<String> applicableIds = applicableItems.stream()
+                .map(VoucherApplicableItem::getItemId)
+                .collect(Collectors.toSet());
+
+        boolean hasMatch = cart.getItems().stream().anyMatch(cartItem -> {
+            Product product = cartItem.getProductVariant().getProduct();
+            if (voucher.getApplicableTo() == Voucher.ApplicableTo.PRODUCT) {
+                return applicableIds.contains(product.getId());
+            } else { // CATEGORY
+                return product.getCategory() != null
+                        && applicableIds.contains(product.getCategory().getId());
+            }
+        });
+
+        if (!hasMatch) {
+            throw new IllegalArgumentException("Voucher này không áp dụng cho sản phẩm trong giỏ hàng của bạn");
+        }
     }
 
     /**
@@ -144,8 +236,9 @@ public class CartServiceImpl implements CartService {
      * Build CartResponse với tính toán subtotal, discount, total.
      */
     private CartResponse buildCartResponse(Cart cart) {
-        // Refresh items
-        List<CartResponse.CartItemResponse> itemResponses = cart.getItems().stream()
+        // Use explicit query to avoid stale lazy-collection state after save()
+        List<CartItem> freshItems = cartItemRepository.findByCartId(cart.getId());
+        List<CartResponse.CartItemResponse> itemResponses = freshItems.stream()
                 .map(this::toCartItemResponse)
                 .toList();
 

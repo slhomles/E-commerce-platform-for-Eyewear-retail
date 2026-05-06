@@ -451,6 +451,24 @@ const cartAPI = {
         return response.data;
     },
 
+    removeVoucher: async () => {
+        const response = await request('/cart/voucher', {
+            method: 'DELETE',
+            auth: true,
+        });
+        return response.data;
+    },
+
+    replaceCart: async (items) => {
+        // items: [{ variantId, quantity }]
+        const response = await request('/cart/replace', {
+            method: 'POST',
+            body: items,
+            auth: true,
+        });
+        return response.data;
+    },
+
     saveBasketItems: async (basket, userId) => {
         // Sync local basket to server
         for (const item of basket) {
@@ -692,6 +710,70 @@ const adminAPI = {
         });
         return response.data;
     },
+
+    // ---- Admin Voucher APIs ----
+
+    getAdminVouchers: async (params = {}) => {
+        const queryParams = new URLSearchParams();
+        const { page = 0, size = 20, sortBy = 'newest', ...rest } = params;
+        queryParams.set('page', page);
+        queryParams.set('size', size);
+        queryParams.set('sortBy', sortBy);
+        Object.entries(rest).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') queryParams.set(key, value);
+        });
+        const response = await request(`/admin/vouchers?${queryParams.toString()}`, { auth: true });
+        return response.data;
+    },
+
+    getAdminVoucherDetail: async (id) => {
+        const response = await request(`/admin/vouchers/${id}`, { auth: true });
+        return response.data;
+    },
+
+    createVoucher: async (data) => {
+        const response = await request('/admin/vouchers', {
+            method: 'POST',
+            body: data,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    updateVoucher: async (id, data) => {
+        const response = await request(`/admin/vouchers/${id}`, {
+            method: 'PUT',
+            body: data,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    deleteVoucher: async (id) => {
+        await request(`/admin/vouchers/${id}`, {
+            method: 'DELETE',
+            auth: true,
+        });
+        return { id };
+    },
+
+    toggleVoucher: async (id, active) => {
+        const response = await request(`/admin/vouchers/${id}/toggle?active=${active}`, {
+            method: 'PATCH',
+            auth: true,
+        });
+        return response;
+    },
+
+    getVoucherUsages: async (id, page = 0, size = 10) => {
+        const response = await request(`/admin/vouchers/${id}/usages?page=${page}&size=${size}`, { auth: true });
+        return response.data;
+    },
+
+    getVoucherStats: async () => {
+        const response = await request('/admin/vouchers/stats', { auth: true });
+        return response.data;
+    },
 };
 
 // ============ PROFILE API ============
@@ -717,6 +799,20 @@ const profileAPI = {
     },
 };
 
+// ============ CHAT API ============
+
+const chatAPI = {
+    sendMessage: async (message, sessionId = null) => {
+        const isAuth = TokenManager.isAuthenticated();
+        const response = await request('/chat', {
+            method: 'POST',
+            body: { message, sessionId },
+            auth: isAuth,
+        });
+        return response.data;
+    },
+};
+
 // ============ EXPORTS ============
 
 const api = {
@@ -727,6 +823,7 @@ const api = {
     ...reviewAPI,
     ...adminAPI,
     ...profileAPI,
+    ...chatAPI,
     TokenManager,
 };
 

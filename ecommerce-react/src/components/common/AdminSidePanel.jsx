@@ -27,6 +27,15 @@ const SideNavigation = () => (
         <NavLink
           activeClassName="sidenavigation-menu-active"
           className="sidenavigation-menu"
+          to={ROUTES.ADMIN_VOUCHERS}
+        >
+          Vouchers
+        </NavLink>
+      </div>
+      <div className="sidenavigation-item">
+        <NavLink
+          activeClassName="sidenavigation-menu-active"
+          className="sidenavigation-menu"
           to={ROUTES.ADMIN_USERS}
         >
           Users
