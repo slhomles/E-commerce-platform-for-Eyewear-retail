@@ -8,12 +8,12 @@ const useFeaturedProducts = (itemsCount) => {
   const [error, setError] = useState('');
   const didMount = useDidMount(true);
 
-  const fetchFeaturedProducts = async () => {
+  const fetchFeaturedProducts = async (count) => {
     try {
       setLoading(true);
       setError('');
 
-      const products = await api.getFeaturedProducts(itemsCount);
+      const products = await api.getFeaturedProducts(count || itemsCount);
 
       if (!products || products.length === 0) {
         if (didMount) {
@@ -34,11 +34,13 @@ const useFeaturedProducts = (itemsCount) => {
     }
   };
 
+  // Re-fetch mỗi khi itemsCount thay đổi (bao gồm lần đầu mount)
   useEffect(() => {
-    if (featuredProducts.length === 0 && didMount) {
-      fetchFeaturedProducts();
+    if (didMount && itemsCount) {
+      setFeaturedProducts([]); // reset để re-fetch
+      fetchFeaturedProducts(itemsCount);
     }
-  }, []);
+  }, [itemsCount]);
 
   return {
     featuredProducts, fetchFeaturedProducts, isLoading, error

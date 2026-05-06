@@ -1,6 +1,7 @@
 package com.e_commerce.glasses_store.common;
 
 import com.e_commerce.glasses_store.modules.auth.exception.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,6 +114,14 @@ public class GlobalExceptionHandler {
         }
 
         // ==================== Generic Exceptions ====================
+
+        @ExceptionHandler(EntityNotFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleEntityNotFound(EntityNotFoundException ex) {
+                log.warn("Entity not found: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(404, ex.getMessage()));
+        }
 
         @ExceptionHandler(IllegalArgumentException.class)
         public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {

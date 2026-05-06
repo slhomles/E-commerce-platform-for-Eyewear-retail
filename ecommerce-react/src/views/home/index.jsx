@@ -1,54 +1,53 @@
-import { ArrowRightOutlined } from '@ant-design/icons';
 import { MessageDisplay } from '@/components/common';
 import { ProductShowcaseGrid } from '@/components/product';
-import { FEATURED_PRODUCTS, RECOMMENDED_PRODUCTS, SHOP } from '@/constants/routes';
+import { FEATURED_PRODUCTS, RECOMMENDED_PRODUCTS } from '@/constants/routes';
 import {
   useDocumentTitle, useFeaturedProducts, useRecommendedProducts, useScrollTop
 } from '@/hooks';
-import bannerImg from '@/images/banner-girl.png';
-import React from 'react';
+import HeroBannerCarousel from '@/components/common/HeroBannerCarousel';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import api from '@/services/api';
 
 const Home = () => {
   useDocumentTitle('Salinaka | Home');
   useScrollTop();
+
+  const [homeFeaturedCount, setHomeFeaturedCount] = useState(6);
+  const [homeRecommendedCount, setHomeRecommendedCount] = useState(6);
+
+  useEffect(() => {
+    api.getPublicSettings()
+      .then((settingsList) => {
+        settingsList.forEach((s) => {
+          const val = parseInt(s.value, 10);
+          if (!isNaN(val)) {
+            if (s.key === 'home_featured_count') setHomeFeaturedCount(val);
+            if (s.key === 'home_recommended_count') setHomeRecommendedCount(val);
+          }
+        });
+      })
+      .catch(() => {/* fallback default */});
+  }, []);
 
   const {
     featuredProducts,
     fetchFeaturedProducts,
     isLoading: isLoadingFeatured,
     error: errorFeatured
-  } = useFeaturedProducts(6);
+  } = useFeaturedProducts(homeFeaturedCount);
+
   const {
     recommendedProducts,
     fetchRecommendedProducts,
     isLoading: isLoadingRecommended,
     error: errorRecommended
-  } = useRecommendedProducts(6);
+  } = useRecommendedProducts(homeRecommendedCount);
 
   return (
     <main className="content">
       <div className="home">
-        <div className="banner">
-          <div className="banner-desc">
-            <h1 className="text-thin">
-              <strong>See</strong>
-              &nbsp;everything with&nbsp;
-              <strong>Clarity</strong>
-            </h1>
-            <p>
-              Buying eyewear should leave you happy and good-looking, with money in your pocket.
-              Glasses, sunglasses, and contacts—we’ve got your eyes covered.
-            </p>
-            <br />
-            <Link to={SHOP} className="button">
-              Shop Now &nbsp;
-              <ArrowRightOutlined />
-            </Link>
-          </div>
-          <div className="banner-img"><img src={bannerImg} alt="" /></div>
-        </div>
+        <HeroBannerCarousel />
         <div className="display">
           <div className="display-header">
             <h1>Featured Products</h1>
@@ -63,7 +62,7 @@ const Home = () => {
           ) : (
             <ProductShowcaseGrid
               products={featuredProducts}
-              skeletonCount={6}
+              skeletonCount={homeFeaturedCount}
             />
           )}
         </div>
@@ -81,7 +80,7 @@ const Home = () => {
           ) : (
             <ProductShowcaseGrid
               products={recommendedProducts}
-              skeletonCount={6}
+              skeletonCount={homeRecommendedCount}
             />
           )}
         </div>

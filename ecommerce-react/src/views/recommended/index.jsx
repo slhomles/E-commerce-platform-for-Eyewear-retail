@@ -2,18 +2,33 @@ import { MessageDisplay } from '@/components/common';
 import { ProductShowcaseGrid } from '@/components/product';
 import { useDocumentTitle, useRecommendedProducts, useScrollTop } from '@/hooks';
 import bannerImg from '@/images/banner-girl-1.png';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '@/services/api';
 
 const RecommendedProducts = () => {
   useDocumentTitle('Recommended Products | Salinaka');
   useScrollTop();
+
+  const [recommendedCount, setRecommendedCount] = useState(12);
+
+  useEffect(() => {
+    api.getPublicSettings()
+      .then((settingsList) => {
+        const s = settingsList.find((x) => x.key === 'recommended_page_count');
+        if (s) {
+          const val = parseInt(s.value, 10);
+          if (!isNaN(val)) setRecommendedCount(val);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const {
     recommendedProducts,
     fetchRecommendedProducts,
     isLoading,
     error
-  } = useRecommendedProducts();
+  } = useRecommendedProducts(recommendedCount);
 
   return (
     <main className="content">
@@ -37,7 +52,7 @@ const RecommendedProducts = () => {
             ) : (
               <ProductShowcaseGrid
                 products={recommendedProducts}
-                skeletonCount={6}
+                skeletonCount={recommendedCount}
               />
             )}
           </div>

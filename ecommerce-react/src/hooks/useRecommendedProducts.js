@@ -8,12 +8,12 @@ const useRecommendedProducts = (itemsCount) => {
   const [error, setError] = useState('');
   const didMount = useDidMount(true);
 
-  const fetchRecommendedProducts = async () => {
+  const fetchRecommendedProducts = async (count) => {
     try {
       setLoading(true);
       setError('');
 
-      const products = await api.getRecommendedProducts(itemsCount);
+      const products = await api.getRecommendedProducts(count || itemsCount);
 
       if (!products || products.length === 0) {
         if (didMount) {
@@ -34,12 +34,13 @@ const useRecommendedProducts = (itemsCount) => {
     }
   };
 
+  // Re-fetch mỗi khi itemsCount thay đổi (bao gồm lần đầu mount)
   useEffect(() => {
-    if (recommendedProducts.length === 0 && didMount) {
-      fetchRecommendedProducts();
+    if (didMount && itemsCount) {
+      setRecommendedProducts([]); // reset để re-fetch
+      fetchRecommendedProducts(itemsCount);
     }
-  }, []);
-
+  }, [itemsCount]);
 
   return {
     recommendedProducts, fetchRecommendedProducts, isLoading, error

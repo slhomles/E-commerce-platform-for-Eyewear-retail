@@ -652,8 +652,12 @@ const adminAPI = {
         return response;
     },
 
-    getRevenueStats: async () => {
-        const response = await request('/admin/stats/revenue', { auth: true });
+    getRevenueStats: async (from, to) => {
+        const params = new URLSearchParams();
+        if (from) params.append('from', from);
+        if (to) params.append('to', to);
+        const q = params.toString();
+        const response = await request(`/admin/stats/revenue${q ? '?' + q : ''}`, { auth: true });
         return response.data;
     },
 
@@ -813,6 +817,107 @@ const chatAPI = {
     },
 };
 
+// ============ BANNER API ============
+
+const bannerAPI = {
+    /**
+     * GET /api/v1/banners/active — Banner đang hiển thị (public, không cần auth).
+     */
+    getActiveBanners: async () => {
+        const response = await request('/banners/active');
+        return response.data || [];
+    },
+
+    /**
+     * GET /api/v1/admin/banners — Tất cả banner (admin).
+     */
+    getAdminBanners: async (page = 0, size = 20) => {
+        const response = await request(`/admin/banners?page=${page}&size=${size}`, { auth: true });
+        return response.data;
+    },
+
+    /**
+     * POST /api/v1/admin/banners — Tạo banner mới.
+     */
+    createBanner: async (bannerData) => {
+        const response = await request('/admin/banners', {
+            method: 'POST',
+            body: bannerData,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    /**
+     * PUT /api/v1/admin/banners/{id} — Cập nhật banner.
+     */
+    updateBanner: async (id, bannerData) => {
+        const response = await request(`/admin/banners/${id}`, {
+            method: 'PUT',
+            body: bannerData,
+            auth: true,
+        });
+        return response.data;
+    },
+
+    /**
+     * DELETE /api/v1/admin/banners/{id} — Xóa banner.
+     */
+    deleteBanner: async (id) => {
+        await request(`/admin/banners/${id}`, {
+            method: 'DELETE',
+            auth: true,
+        });
+        return { id };
+    },
+
+    /**
+     * PATCH /api/v1/admin/banners/{id}/toggle — Bật/tắt banner.
+     */
+    toggleBanner: async (id) => {
+        const response = await request(`/admin/banners/${id}/toggle`, {
+            method: 'PATCH',
+            auth: true,
+        });
+        return response.data;
+    },
+};
+
+// ============ SETTINGS API ============
+
+const settingsAPI = {
+    /**
+     * GET /api/v1/settings — Public, không cần auth.
+     * Trả về array: [{ id, key, value, description, minValue, maxValue }]
+     */
+    getPublicSettings: async () => {
+        const response = await request('/settings');
+        return response.data || [];
+    },
+
+    /**
+     * GET /api/v1/admin/settings — Cần auth ADMIN.
+     */
+    getAdminSettings: async () => {
+        const response = await request('/admin/settings', { auth: true });
+        return response.data || [];
+    },
+
+    /**
+     * PUT /api/v1/admin/settings/{key} — Cập nhật một setting.
+     * @param {string} key - setting key, ví dụ: 'shop_page_size'
+     * @param {number|string} value - giá trị mới
+     */
+    updateSetting: async (key, value) => {
+        const response = await request(`/admin/settings/${key}`, {
+            method: 'PUT',
+            body: { value: String(value) },
+            auth: true,
+        });
+        return response.data;
+    },
+};
+
 // ============ EXPORTS ============
 
 const api = {
@@ -824,6 +929,8 @@ const api = {
     ...adminAPI,
     ...profileAPI,
     ...chatAPI,
+    ...bannerAPI,
+    ...settingsAPI,
     TokenManager,
 };
 
