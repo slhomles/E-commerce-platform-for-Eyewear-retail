@@ -1,9 +1,9 @@
 services:
   mysql:
-    image: 'mysql:8.0'
+    image: thank1902/glasses-store-mysql:8.0
     environment:
-      - 'MYSQL_DATABASE=glasses_store'
-      - 'MYSQL_ROOT_PASSWORD=root'
+      MYSQL_DATABASE: glasses_store
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - '3307:3306'
     volumes:
@@ -24,8 +24,7 @@ services:
     restart: always
 
   backend:
-    build: .
-    image: glasses-store-backend:latest
+    image: thank1902/glasses-store-backend:latest
     ports:
       - '8081:8081'
     environment:
@@ -41,6 +40,16 @@ services:
       redis:
         condition: service_started
     restart: on-failure
+
+  frontend:
+    image: thank1902/glasses-store-frontend:latest
+    build:
+      context: ./ecommerce-react
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+    restart: always
 
 volumes:
   mysql_data:
