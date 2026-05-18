@@ -13,3 +13,13 @@ Thumbs.db
 .claude/
 CLAUDE.md
 .vscode/
+
+# Build / runtime logs
+*.log
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
+# Java compiled classes outside target/
+*.class
