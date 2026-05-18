@@ -44,6 +44,12 @@ public record CreateProductRequest(
         BigDecimal frameWidth,
         BigDecimal weightGram,
 
+        // Price display per-product
+        Boolean showOriginalPrice,
+        Boolean showSalePrice,
+        Boolean showDiscountBadge,
+        Boolean priceDisplayOverridden,
+
         // Variants
         List<VariantRequest> variants) {
     public record VariantRequest(

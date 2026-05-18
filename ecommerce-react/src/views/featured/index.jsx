@@ -10,15 +10,29 @@ const FeaturedProducts = () => {
   useScrollTop();
 
   const [featuredCount, setFeaturedCount] = useState(12);
+  const [priceSettings, setPriceSettings] = useState({
+    showOriginalPrice: true,
+    showSalePrice: true,
+    showDiscountBadge: true,
+  });
 
   useEffect(() => {
     api.getPublicSettings()
       .then((settingsList) => {
+        const get = (key) => {
+          const s = settingsList.find((x) => x.key === key);
+          return s ? s.value !== 'false' : true;
+        };
         const s = settingsList.find((x) => x.key === 'featured_page_count');
         if (s) {
           const val = parseInt(s.value, 10);
           if (!isNaN(val)) setFeaturedCount(val);
         }
+        setPriceSettings({
+          showOriginalPrice: get('show_original_price'),
+          showSalePrice: get('show_sale_price'),
+          showDiscountBadge: get('show_discount_badge'),
+        });
       })
       .catch(() => {});
   }, []);
@@ -53,6 +67,7 @@ const FeaturedProducts = () => {
               <ProductShowcaseGrid
                 products={featuredProducts}
                 skeletonCount={featuredCount}
+                priceSettings={priceSettings}
               />
             )}
           </div>

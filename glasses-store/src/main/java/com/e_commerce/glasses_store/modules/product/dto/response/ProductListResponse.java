@@ -26,5 +26,9 @@ public record ProductListResponse(
         Double averageRating,
         Integer reviewCount,
         String defaultVariantId,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        Boolean showOriginalPrice,
+        Boolean showSalePrice,
+        Boolean showDiscountBadge,
+        Boolean priceDisplayOverridden) {
 }

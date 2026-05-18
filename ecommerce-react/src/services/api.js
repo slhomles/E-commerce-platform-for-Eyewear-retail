@@ -300,6 +300,10 @@ const productAPI = {
             bridgeWidth: product.bridgeWidth || null,
             templeLength: product.templeLength || null,
             weightGram: product.weightGram || null,
+            showOriginalPrice: product.showOriginalPrice !== undefined ? product.showOriginalPrice : true,
+            showSalePrice: product.showSalePrice !== undefined ? product.showSalePrice : true,
+            showDiscountBadge: product.showDiscountBadge !== undefined ? product.showDiscountBadge : true,
+            priceDisplayOverridden: product.priceDisplayOverridden === true,
 
             variants: [
                 {
@@ -339,6 +343,10 @@ const productAPI = {
             bridgeWidth: updates.bridgeWidth || null,
             templeLength: updates.templeLength || null,
             weightGram: updates.weightGram || null,
+            showOriginalPrice: updates.showOriginalPrice !== undefined ? updates.showOriginalPrice : true,
+            showSalePrice: updates.showSalePrice !== undefined ? updates.showSalePrice : true,
+            showDiscountBadge: updates.showDiscountBadge !== undefined ? updates.showDiscountBadge : true,
+            priceDisplayOverridden: updates.priceDisplayOverridden === true,
 
             variants: [
                 {
@@ -670,7 +678,8 @@ const adminAPI = {
                 price: p.salePrice || p.basePrice || 0,
                 brand: p.brandName || '',
                 image: p.imageUrl || '',
-                maxQuantity: p.stockQuantity || 0
+                maxQuantity: p.stockQuantity || 0,
+                dateAdded: p.createdAt ? new Date(p.createdAt).getTime() : null
             }));
         }
         return pageData;

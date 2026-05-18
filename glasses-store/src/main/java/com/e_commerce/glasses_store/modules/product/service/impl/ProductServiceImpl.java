@@ -180,7 +180,11 @@ public class ProductServiceImpl implements ProductService {
                         ? p.getVariants().stream().filter(ProductVariant::getIsActive)
                                 .findFirst().map(ProductVariant::getId).orElse(p.getVariants().get(0).getId())
                         : null,
-                p.getCreatedAt());
+                p.getCreatedAt(),
+                p.getShowOriginalPrice() != null ? p.getShowOriginalPrice() : false,
+                p.getShowSalePrice() != null ? p.getShowSalePrice() : true,
+                p.getShowDiscountBadge() != null ? p.getShowDiscountBadge() : true,
+                p.getPriceDisplayOverridden() != null ? p.getPriceDisplayOverridden() : false);
     }
 
     private ProductDetailResponse toDetailResponse(Product p) {

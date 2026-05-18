@@ -111,6 +111,10 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
 
     basePrice: product?.basePrice || product?.price || 0,
     salePrice: product?.salePrice || 0,
+    priceDisplayOverridden: product?.priceDisplayOverridden === true,
+    showOriginalPrice: product?.showOriginalPrice !== undefined ? product.showOriginalPrice : false,
+    showSalePrice: product?.showSalePrice !== undefined ? product.showSalePrice : true,
+    showDiscountBadge: product?.showDiscountBadge !== undefined ? product.showDiscountBadge : true,
     description: product?.description || '',
 
     lensWidth: product?.specs?.lensWidth || product?.sizes?.[0] || 0,
@@ -244,6 +248,152 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                   />
                 </div>
               </div>
+
+              {/* ── Price Display on Card ── */}
+              <h4 className="margin-top-s">Hiển thị giá trên card sản phẩm</h4>
+              <Field name="priceDisplayOverridden">
+                {({ field, form }) => {
+                  const overridden = field.value === true;
+                  const TOGGLES = [
+                    {
+                      name: 'showOriginalPrice',
+                      label: 'Giá gốc',
+                      desc: 'Chỉ hiện giá gốc — tự động tắt giá KM và badge giảm giá',
+                      onToggleOn: (form) => {
+                        form.setFieldValue('showSalePrice', false);
+                        form.setFieldValue('showDiscountBadge', false);
+                      },
+                      onToggleOff: (form) => {
+                        form.setFieldValue('showSalePrice', true);
+                        form.setFieldValue('showDiscountBadge', true);
+                      },
+                    },
+                    { name: 'showSalePrice', label: 'Giá khuyến mãi', desc: 'Hiển thị giá bán hiện tại trên card' },
+                    { name: 'showDiscountBadge', label: '% Giảm giá', desc: 'Hiển thị nhãn phần trăm giảm giá' },
+                  ];
+                  return (
+                    <div style={{
+                      border: `1.5px solid ${overridden ? '#1a1a1a' : '#e8e8e8'}`,
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                      marginBottom: '8px',
+                      transition: 'border-color .2s',
+                    }}>
+                      {/* Master switch row */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 16px',
+                        background: overridden ? '#1a1a1a' : '#fafafa',
+                        transition: 'background .2s',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                      }}
+                        onClick={() => form.setFieldValue('priceDisplayOverridden', !overridden)}
+                      >
+                        <div>
+                          <div style={{ fontWeight: '700', fontSize: '13px', color: overridden ? '#fff' : '#1a1a1a' }}>
+                            Tùy chỉnh riêng cho sản phẩm này
+                          </div>
+                          <div style={{ fontSize: '11px', color: overridden ? '#aaa' : '#999', marginTop: '2px' }}>
+                            {overridden
+                              ? 'Đang dùng cấu hình riêng — cài đặt tổng thể không ảnh hưởng sản phẩm này'
+                              : 'Đang theo cài đặt tổng thể — bật để cấu hình riêng'}
+                          </div>
+                        </div>
+                        {/* Toggle knob */}
+                        <div style={{
+                          position: 'relative',
+                          width: '44px',
+                          height: '24px',
+                          borderRadius: '12px',
+                          background: overridden ? '#fff' : '#d9d9d9',
+                          flexShrink: 0,
+                          transition: 'background .2s',
+                        }}>
+                          <span style={{
+                            position: 'absolute',
+                            left: overridden ? '22px' : '2px',
+                            top: '2px',
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            background: overridden ? '#1a1a1a' : '#fff',
+                            boxShadow: '0 1px 3px rgba(0,0,0,.25)',
+                            transition: 'left .2s, background .2s',
+                          }} />
+                        </div>
+                      </div>
+
+                      {/* Individual toggles — chỉ active khi overridden = true */}
+                      {TOGGLES.map(({ name: tName, label, desc }, idx) => (
+                        <div
+                          key={tName}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '12px 16px',
+                            borderTop: '1px solid #f0f0f0',
+                            opacity: overridden ? 1 : 0.35,
+                            pointerEvents: overridden ? 'auto' : 'none',
+                            transition: 'opacity .2s',
+                            background: '#fff',
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontWeight: '600', fontSize: '13px', color: '#1a1a1a' }}>{label}</div>
+                            <div style={{ fontSize: '11px', color: '#999' }}>{desc}</div>
+                          </div>
+                          <Field name={tName}>
+                            {({ field: tf, form: tf_form }) => {
+                              const isOn = tf.value !== false;
+                              const handleClick = () => {
+                                const next = !isOn;
+                                tf_form.setFieldValue(tName, next);
+                                if (next && TOGGLES[idx].onToggleOn) TOGGLES[idx].onToggleOn(tf_form);
+                                if (!next && TOGGLES[idx].onToggleOff) TOGGLES[idx].onToggleOff(tf_form);
+                              };
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={handleClick}
+                                  style={{
+                                    position: 'relative',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    width: '44px',
+                                    height: '24px',
+                                    borderRadius: '12px',
+                                    background: isOn ? '#1a1a1a' : '#d9d9d9',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                    flexShrink: 0,
+                                    transition: 'background .2s',
+                                  }}
+                                >
+                                  <span style={{
+                                    position: 'absolute',
+                                    left: isOn ? '22px' : '2px',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: '#fff',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,.25)',
+                                    transition: 'left .2s',
+                                  }} />
+                                </button>
+                              );
+                            }}
+                          </Field>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }}
+              </Field>
 
               <h4 className="margin-top-s">Physical Specifications</h4>
               <div className="d-flex">

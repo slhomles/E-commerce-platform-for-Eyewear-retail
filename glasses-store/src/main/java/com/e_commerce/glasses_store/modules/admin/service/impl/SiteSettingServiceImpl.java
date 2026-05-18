@@ -32,19 +32,27 @@ public class SiteSettingServiceImpl implements SiteSettingService {
         SiteSetting setting = siteSettingRepository.findBySettingKey(key)
                 .orElseThrow(() -> new IllegalArgumentException("Setting not found: " + key));
 
-        // Validate giá trị số nằm trong [minValue, maxValue]
-        try {
-            int intVal = Integer.parseInt(value.trim());
-            if (setting.getMinValue() != null && intVal < setting.getMinValue()) {
-                throw new IllegalArgumentException(
-                    "Giá trị tối thiểu cho '" + key + "' là " + setting.getMinValue());
+        // Boolean settings (no min/max) — only accept "true" or "false"
+        if (setting.getMinValue() == null && setting.getMaxValue() == null) {
+            String trimmed = value.trim().toLowerCase();
+            if (!trimmed.equals("true") && !trimmed.equals("false")) {
+                throw new IllegalArgumentException("Giá trị phải là 'true' hoặc 'false': " + value);
             }
-            if (setting.getMaxValue() != null && intVal > setting.getMaxValue()) {
-                throw new IllegalArgumentException(
-                    "Giá trị tối đa cho '" + key + "' là " + setting.getMaxValue());
+        } else {
+            // Validate giá trị số nằm trong [minValue, maxValue]
+            try {
+                int intVal = Integer.parseInt(value.trim());
+                if (setting.getMinValue() != null && intVal < setting.getMinValue()) {
+                    throw new IllegalArgumentException(
+                        "Giá trị tối thiểu cho '" + key + "' là " + setting.getMinValue());
+                }
+                if (setting.getMaxValue() != null && intVal > setting.getMaxValue()) {
+                    throw new IllegalArgumentException(
+                        "Giá trị tối đa cho '" + key + "' là " + setting.getMaxValue());
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Giá trị phải là số nguyên: " + value);
             }
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Giá trị phải là số nguyên: " + value);
         }
 
         setting.setSettingValue(value.trim());

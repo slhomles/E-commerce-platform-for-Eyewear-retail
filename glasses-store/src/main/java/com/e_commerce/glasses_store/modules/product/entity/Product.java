@@ -103,6 +103,22 @@ public class Product extends BaseEntity {
     @Builder.Default
     private Boolean supportProgressive = false;
 
+    @Column(name = "show_original_price")
+    @Builder.Default
+    private Boolean showOriginalPrice = false;
+
+    @Column(name = "show_sale_price")
+    @Builder.Default
+    private Boolean showSalePrice = true;
+
+    @Column(name = "show_discount_badge")
+    @Builder.Default
+    private Boolean showDiscountBadge = true;
+
+    @Column(name = "price_display_overridden")
+    @Builder.Default
+    private Boolean priceDisplayOverridden = false;
+
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;

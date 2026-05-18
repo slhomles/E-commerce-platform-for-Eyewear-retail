@@ -6,15 +6,12 @@ import React from 'react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useHistory } from 'react-router-dom';
 
-const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
+const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) => {
   const history = useHistory();
 
   const onClickItem = () => {
     if (!product) return;
-
-    if (product.id) {
-      history.push(`/product/${product.id}`);
-    }
+    if (product.id) history.push(`/product/${product.id}`);
   };
 
   const itemOnBasket = isItemOnBasket ? isItemOnBasket(product.id) : false;
@@ -27,6 +24,21 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
     });
   };
 
+  const hasDiscount = product.basePrice && product.salePrice
+    && Number(product.salePrice) < Number(product.basePrice);
+
+  const discountPct = product.discountPercent
+    || (hasDiscount
+      ? Math.round((1 - Number(product.salePrice) / Number(product.basePrice)) * 100)
+      : 0);
+
+  // Nếu sản phẩm đã được cấu hình riêng → dùng per-product, global không ảnh hưởng
+  // Ngược lại → dùng hoàn toàn global settings
+  const overridden = product.priceDisplayOverridden === true;
+  const showOriginalPrice = overridden ? product.showOriginalPrice !== false : priceSettings.showOriginalPrice;
+  const showSalePrice = overridden ? product.showSalePrice !== false : priceSettings.showSalePrice;
+  const showDiscountBadge = overridden ? product.showDiscountBadge !== false : priceSettings.showDiscountBadge;
+
   return (
     <SkeletonTheme color="#e1e1e1" highlightColor="#f2f2f2">
       <div
@@ -37,6 +49,26 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
         }}
       >
         {itemOnBasket && <CheckOutlined className="fa fa-check product-card-check" />}
+
+        {/* Discount badge */}
+        {product.id && showDiscountBadge && hasDiscount && discountPct > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            background: '#e53935',
+            color: '#fff',
+            fontSize: '11px',
+            fontWeight: '700',
+            padding: '3px 7px',
+            borderRadius: '4px',
+            letterSpacing: '.03em',
+            zIndex: 2,
+          }}>
+            -{discountPct}%
+          </div>
+        )}
+
         <div
           className="product-card-content"
           onClick={onClickItem}
@@ -58,11 +90,40 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
             <p className="product-card-brand">
               {product.brand || <Skeleton width={60} />}
             </p>
-            <h4 className="product-card-price">
-              {product.price ? displayMoney(product.price) : <Skeleton width={40} />}
-            </h4>
+
+            {/* Price block */}
+            {product.price ? (
+              <div style={{ marginTop: '4px' }}>
+                {showOriginalPrice ? (
+                  /* Chế độ "Giá gốc": chỉ hiện basePrice, không badge, không sale */
+                  <h4 className="product-card-price" style={{ margin: '2px 0 0' }}>
+                    {displayMoney(product.basePrice || product.price)}
+                  </h4>
+                ) : (
+                  /* Chế độ mặc định: giá bán + badge */
+                  <>
+                    {showSalePrice && (
+                      <h4 className="product-card-price" style={{
+                        color: hasDiscount ? '#e53935' : undefined,
+                        margin: '2px 0 0',
+                      }}>
+                        {displayMoney(product.salePrice || product.price)}
+                      </h4>
+                    )}
+                    {!showSalePrice && (
+                      <h4 className="product-card-price" style={{ margin: '2px 0 0' }}>
+                        {displayMoney(product.price)}
+                      </h4>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : (
+              <Skeleton width={40} />
+            )}
           </div>
         </div>
+
         {product.id && (
           <button
             className={`product-card-button button-small button button-block ${itemOnBasket ? 'button-border button-border-gray' : ''}`}
@@ -72,7 +133,6 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
             {itemOnBasket ? 'Remove from basket' : 'Add to basket'}
           </button>
         )}
-
       </div>
     </SkeletonTheme>
   );
@@ -80,14 +140,20 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket }) => {
 
 ProductItem.defaultProps = {
   isItemOnBasket: undefined,
-  addToBasket: undefined
+  addToBasket: undefined,
+  priceSettings: { showOriginalPrice: true, showSalePrice: true, showDiscountBadge: true },
 };
 
 ProductItem.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   product: PropType.object.isRequired,
   isItemOnBasket: PropType.func,
-  addToBasket: PropType.func
+  addToBasket: PropType.func,
+  priceSettings: PropType.shape({
+    showOriginalPrice: PropType.bool,
+    showSalePrice: PropType.bool,
+    showDiscountBadge: PropType.bool,
+  }),
 };
 
 export default ProductItem;

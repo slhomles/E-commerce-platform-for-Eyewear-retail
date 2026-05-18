@@ -17,6 +17,11 @@ const Shop = () => {
   const [shopPageSize, setShopPageSize] = useState(12);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [isFetching, setFetching] = useState(false);
+  const [priceSettings, setPriceSettings] = useState({
+    showOriginalPrice: true,
+    showSalePrice: true,
+    showDiscountBadge: true,
+  });
 
   const store = useSelector((state) => ({
     filteredProducts: selectFilter(state.products.items, state.filter),
@@ -62,11 +67,20 @@ const Shop = () => {
   useEffect(() => {
     api.getPublicSettings()
       .then((settingsList) => {
+        const get = (key) => {
+          const s = settingsList.find((x) => x.key === key);
+          return s ? s.value !== 'false' : true;
+        };
         const s = settingsList.find((x) => x.key === 'shop_page_size');
         if (s) {
           const val = parseInt(s.value, 10);
           if (!isNaN(val)) setShopPageSize(val);
         }
+        setPriceSettings({
+          showOriginalPrice: get('show_original_price'),
+          showSalePrice: get('show_sale_price'),
+          showDiscountBadge: get('show_discount_badge'),
+        });
       })
       .catch(() => {})
       .finally(() => setSettingsLoaded(true));
@@ -122,7 +136,7 @@ const Shop = () => {
           />
         ) : (
           <>
-            <ProductGrid products={store.filteredProducts} />
+            <ProductGrid products={store.filteredProducts} priceSettings={priceSettings} />
             {store.products.items.length < store.products.total && (
               <div className="d-flex-center padding-l">
                 <button

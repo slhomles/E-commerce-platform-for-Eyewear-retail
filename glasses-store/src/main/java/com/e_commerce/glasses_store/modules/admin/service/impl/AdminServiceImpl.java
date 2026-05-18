@@ -9,6 +9,7 @@ import com.e_commerce.glasses_store.modules.product.entity.*;
 import com.e_commerce.glasses_store.modules.product.exception.CategoryNotFoundException;
 import com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException;
 import com.e_commerce.glasses_store.modules.product.repository.*;
+import com.e_commerce.glasses_store.modules.product.entity.ProductSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class AdminServiceImpl implements AdminService {
     private final BrandRepository brandRepository;
     private final ProductVariantRepository variantRepository;
     private final InventoryStockRepository inventoryStockRepository;
+    private final ProductSpecRepository productSpecRepository;
     private final CloudinaryService cloudinaryService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -126,6 +128,10 @@ public class AdminServiceImpl implements AdminService {
                 .style(req.style())
                 .supportPrescription(req.supportPrescription())
                 .supportProgressive(req.supportProgressive())
+                .showOriginalPrice(req.showOriginalPrice() != null ? req.showOriginalPrice() : false)
+                .showSalePrice(req.showSalePrice() != null ? req.showSalePrice() : true)
+                .showDiscountBadge(req.showDiscountBadge() != null ? req.showDiscountBadge() : true)
+                .priceDisplayOverridden(req.priceDisplayOverridden() != null ? req.priceDisplayOverridden() : false)
                 .build();
 
         if (req.type() != null)
@@ -220,6 +226,10 @@ public class AdminServiceImpl implements AdminService {
             product.setType(Product.ProductType.valueOf(req.type().toUpperCase()));
         if (req.gender() != null)
             product.setGender(Product.Gender.valueOf(req.gender().toUpperCase()));
+        if (req.showOriginalPrice() != null) product.setShowOriginalPrice(req.showOriginalPrice());
+        if (req.showSalePrice() != null) product.setShowSalePrice(req.showSalePrice());
+        if (req.showDiscountBadge() != null) product.setShowDiscountBadge(req.showDiscountBadge());
+        if (req.priceDisplayOverridden() != null) product.setPriceDisplayOverridden(req.priceDisplayOverridden());
 
         // Update Specs
         if (hasSpecs(req)) {
@@ -352,11 +362,11 @@ public class AdminServiceImpl implements AdminService {
     public void importProducts(ProductImportRequest request) {
         System.out.println(">>> SERVICE START: importProducts");
         log.info("Starting batch product import from Excel with embedded images");
-        
+
         try {
             XSSFWorkbook workbook = (XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(request.getFile().getInputStream());
             org.apache.poi.ss.usermodel.Sheet sheet = workbook.getSheetAt(0);
-            
+
             // Extract Place in Cell images
             Map<String, byte[]> cellImageMap = extractPlaceInCellImages(workbook);
             log.info("Extracted {} Place in Cell images from Excel", cellImageMap.size());
@@ -372,9 +382,7 @@ public class AdminServiceImpl implements AdminService {
                         mediaParts.add(part);
                     }
                 }
-                // Sort by name to ensure sequential mapping (image1, image2)
                 mediaParts.sort((p1, p2) -> p1.getPartName().getName().compareTo(p2.getPartName().getName()));
-                
                 for (PackagePart part : mediaParts) {
                     try (java.io.InputStream is = part.getInputStream()) {
                         byte[] data = is.readAllBytes();
@@ -390,7 +398,21 @@ public class AdminServiceImpl implements AdminService {
 
             java.util.Iterator<org.apache.poi.ss.usermodel.Row> rows = sheet.iterator();
             if (!rows.hasNext()) return;
-            org.apache.poi.ss.usermodel.Row headerRow = rows.next(); // Skip header row
+
+            // Parse header row to build column-name → index map (case-insensitive, strip units like "(mm)")
+            org.apache.poi.ss.usermodel.Row headerRow = rows.next();
+            Map<String, Integer> colIndex = new HashMap<>();
+            for (int i = 0; i <= headerRow.getLastCellNum(); i++) {
+                String cellStr = getCellValue(headerRow, i); // safe for all cell types
+                if (cellStr != null && !cellStr.isBlank()) {
+                    String raw = cellStr.trim().toLowerCase();
+                    // Strip parenthetical unit suffixes, e.g. "Lens Width (mm)" → "lens width"
+                    String header = raw.replaceAll("\\s*\\(.*\\)\\s*$", "").trim();
+                    colIndex.put(header, i);
+                    if (!header.equals(raw)) colIndex.put(raw, i);
+                }
+            }
+            log.info("Detected {} columns from header row: {}", colIndex.size(), colIndex.keySet());
 
             int fallbackImageIndex = 0;
 
@@ -398,7 +420,7 @@ public class AdminServiceImpl implements AdminService {
                 org.apache.poi.ss.usermodel.Row row = rows.next();
                 log.info("Processing Excel row: {}", row.getRowNum());
                 try {
-                    boolean usedFallback = processImportRow(row, cellImageMap, fallbackImages, fallbackImageIndex);
+                    boolean usedFallback = processImportRow(row, colIndex, cellImageMap, fallbackImages, fallbackImageIndex);
                     if (usedFallback) fallbackImageIndex++;
                 } catch (Exception e) {
                     log.error("CRITICAL: Error processing row {}: {}", row.getRowNum(), e.getMessage(), e);
@@ -447,7 +469,17 @@ public class AdminServiceImpl implements AdminService {
     private void extractFromCellImagesPart(OPCPackage pkg, PackagePart part, Map<String, byte[]> imageMap) throws Exception {
         Map<String, byte[]> relIdToData = new HashMap<>();
         for (PackageRelationship rel : part.getRelationships()) {
-            PackagePart imgPart = pkg.getPart(PackagingURIHelper.createPartName("/xl/" + rel.getTargetURI()));
+            // Resolve relative URI against the cellimages.xml part URI to get absolute OPC path
+            java.net.URI resolvedUri = part.getPartName().getURI().resolve(rel.getTargetURI());
+            PackagePart imgPart = null;
+            try {
+                imgPart = pkg.getPart(PackagingURIHelper.createPartName(resolvedUri.toString()));
+            } catch (Exception e) {
+                // Fallback: try constructing path from /xl/ prefix
+                try {
+                    imgPart = pkg.getPart(PackagingURIHelper.createPartName("/xl/" + rel.getTargetURI()));
+                } catch (Exception ignored) {}
+            }
             if (imgPart != null) {
                 try (InputStream is = imgPart.getInputStream()) {
                     relIdToData.put(rel.getId(), is.readAllBytes());
@@ -478,53 +510,75 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    private boolean processImportRow(org.apache.poi.ss.usermodel.Row row, Map<String, byte[]> cellImageMap, List<byte[]> fallbackImages, int fallbackImageIndex) throws java.io.IOException {
+    /** Try multiple candidate header names in order; return fallback if none found. */
+    private int resolveCol(Map<String, Integer> colIndex, int fallback, String... candidates) {
+        for (String key : candidates) {
+            Integer idx = colIndex.get(key);
+            if (idx != null) return idx;
+        }
+        // Partial prefix match as last resort
+        for (String key : candidates) {
+            for (Map.Entry<String, Integer> entry : colIndex.entrySet()) {
+                if (entry.getKey().startsWith(key)) return entry.getValue();
+            }
+        }
+        return fallback;
+    }
+
+    private boolean processImportRow(org.apache.poi.ss.usermodel.Row row, Map<String, Integer> colIndex,
+                                     Map<String, byte[]> cellImageMap, List<byte[]> fallbackImages, int fallbackImageIndex) throws java.io.IOException {
         boolean usedFallback = false;
-        String name = getCellValue(row, 0);
+        String name = getCellValue(row, resolveCol(colIndex, 0, "name"));
         log.info("Row {}: Name='{}'", row.getRowNum(), name);
         if (name == null || name.isBlank()) return usedFallback;
 
-        String slug = getCellValue(row, 1);
+        String slug = getCellValue(row, resolveCol(colIndex, 1, "slug"));
         if (slug == null || slug.isBlank()) slug = slugify(name);
         log.info("Row {}: Slug='{}'", row.getRowNum(), slug);
 
-        String description = getCellValue(row, 2);
-        String brandName = getCellValue(row, 3);
-        String categoryName = getCellValue(row, 4);
-        String type = getCellValue(row, 5);
+        String description = getCellValue(row, resolveCol(colIndex, 2, "description"));
+        String brandName    = getCellValue(row, resolveCol(colIndex, 3, "brand"));
+        String categoryName = getCellValue(row, resolveCol(colIndex, 4, "category"));
+        String type         = getCellValue(row, resolveCol(colIndex, 5, "type"));
+
         BigDecimal basePrice = BigDecimal.ZERO;
         try {
-            String basePriceStr = getCellValue(row, 6);
-            if (basePriceStr != null && !basePriceStr.isBlank()) {
-                basePrice = new BigDecimal(basePriceStr);
-            }
+            String s = getCellValue(row, resolveCol(colIndex, 6, "base price"));
+            if (s != null && !s.isBlank()) basePrice = new BigDecimal(s);
         } catch (Exception e) {
-            log.warn("Invalid base price at row {}: {}", row.getRowNum(), getCellValue(row, 6));
+            log.warn("Invalid base price at row {}", row.getRowNum());
         }
 
         BigDecimal salePrice = null;
         try {
-            String salePriceStr = getCellValue(row, 7);
-            if (salePriceStr != null && !salePriceStr.isBlank()) {
-                salePrice = new BigDecimal(salePriceStr);
-            }
+            String s = getCellValue(row, resolveCol(colIndex, 7, "sale price"));
+            if (s != null && !s.isBlank()) salePrice = new BigDecimal(s);
         } catch (Exception e) {
-            log.warn("Invalid salePrice at row {}: {}", row.getRowNum(), getCellValue(row, 7));
+            log.warn("Invalid sale price at row {}", row.getRowNum());
         }
-        String gender = getCellValue(row, 8);
-        String frameMaterial = getCellValue(row, 9);
-        String frameShape = getCellValue(row, 10);
-        String rimType = getCellValue(row, 11);
-        String hingeType = getCellValue(row, 12);
-        String nosePadType = getCellValue(row, 13);
-        String frameSize = getCellValue(row, 14);
-        String style = getCellValue(row, 15);
-        
+
+        String gender       = getCellValue(row, resolveCol(colIndex, 8, "gender"));
+        String frameMaterial= getCellValue(row, resolveCol(colIndex, 9, "frame material"));
+        String frameShape   = getCellValue(row, resolveCol(colIndex, 10, "frame shape"));
+        String rimType      = getCellValue(row, resolveCol(colIndex, 11, "rim type"));
+        String hingeType    = getCellValue(row, resolveCol(colIndex, 12, "hinge type"));
+        String nosePadType  = getCellValue(row, resolveCol(colIndex, 13, "nose pad type"));
+        String frameSize    = getCellValue(row, resolveCol(colIndex, 14, "frame size"));
+        String style        = getCellValue(row, resolveCol(colIndex, 15, "style"));
+
+        // Physical Spec columns — try multiple aliases
+        BigDecimal lensWidth    = parseBigDecimal(getCellValue(row, resolveCol(colIndex, -1, "lens width (mm)", "lens width")));
+        BigDecimal bridgeWidth  = parseBigDecimal(getCellValue(row, resolveCol(colIndex, -1, "bridge width (mm)", "bridge width")));
+        BigDecimal templeLength = parseBigDecimal(getCellValue(row, resolveCol(colIndex, -1, "temple len (mm)", "temple len", "temple length")));
+        BigDecimal weightGram   = parseBigDecimal(getCellValue(row, resolveCol(colIndex, -1, "weight (g)", "weight")));
+
         // Find or create product
         Product product = productRepository.findBySlug(slug).orElse(null);
         if (product == null) {
             product = new Product();
             product.setSlug(slug);
+            product.setIsActive(true);
+            product.setIsDeleted(false);
             log.info("Creating new product: {}", name);
         } else {
             log.info("Updating existing product: {}", name);
@@ -541,7 +595,7 @@ public class AdminServiceImpl implements AdminService {
         product.setNosePadType(nosePadType);
         product.setFrameSize(frameSize);
         product.setStyle(style);
-        
+
         if (type != null) {
             try {
                 product.setType(Product.ProductType.valueOf(type.toUpperCase()));
@@ -559,17 +613,16 @@ public class AdminServiceImpl implements AdminService {
             }
         }
 
-        // Brand & Category
         if (brandName != null) {
-            final String finalBrandName = brandName;
-            Brand brand = brandRepository.findByName(brandName)
-                    .orElseGet(() -> brandRepository.save(Brand.builder().name(finalBrandName).slug(slugify(finalBrandName)).build()));
+            final String fb = brandName;
+            Brand brand = brandRepository.findByName(fb)
+                    .orElseGet(() -> brandRepository.save(Brand.builder().name(fb).slug(slugify(fb)).build()));
             product.setBrand(brand);
         }
         if (categoryName != null) {
-            final String finalCatName = categoryName;
-            Category category = categoryRepository.findByName(categoryName)
-                    .orElseGet(() -> categoryRepository.save(Category.builder().name(finalCatName).slug(slugify(finalCatName)).build()));
+            final String fc = categoryName;
+            Category category = categoryRepository.findByName(fc)
+                    .orElseGet(() -> categoryRepository.save(Category.builder().name(fc).slug(slugify(fc)).build()));
             product.setCategory(category);
         }
 
@@ -577,15 +630,38 @@ public class AdminServiceImpl implements AdminService {
         product = productRepository.save(product);
         log.info("Step 1 done. Product ID: {}", product.getId());
 
-        // Variant info
-        String sku = getCellValue(row, 16);
-        String colorName = getCellValue(row, 17);
-        String colorHex = getCellValue(row, 18);
-        String rawStock = getCellValue(row, 19);
+        // Save ProductSpec if any spec value was provided
+        if (lensWidth != null || bridgeWidth != null || templeLength != null || weightGram != null) {
+            final Product savedProduct = product;
+            ProductSpec spec = productSpecRepository.findById(product.getId())
+                    .orElseGet(() -> {
+                        ProductSpec s = new ProductSpec();
+                        s.setProduct(savedProduct);
+                        return s;
+                    });
+            if (lensWidth != null)    spec.setLensWidth(lensWidth);
+            if (bridgeWidth != null)  spec.setBridgeWidth(bridgeWidth);
+            if (templeLength != null) spec.setTempleLength(templeLength);
+            if (weightGram != null)   spec.setWeightGram(weightGram);
+            productSpecRepository.save(spec);
+            log.info("Step 1b: ProductSpec saved for product {}", product.getId());
+        }
+
+        // Variant info — use resolveCol with template-specific aliases
+        String sku      = getCellValue(row, resolveCol(colIndex, 16, "sku (*)", "sku"));
+        String colorName= getCellValue(row, resolveCol(colIndex, 17, "color name"));
+        String colorHex = getCellValue(row, resolveCol(colIndex, 18, "color hex"));
+        String rawStock = getCellValue(row, resolveCol(colIndex, 19, "initial stock", "stock", "qty", "quantity"));
         log.info("Step 2: Variant Info - SKU='{}', Color='{}', Stock='{}'", sku, colorName, rawStock);
 
         if (sku != null && !sku.isBlank()) {
-            int initialStock = (int) Double.parseDouble(rawStock != null ? rawStock : "0");
+            int initialStock = 0;
+            try {
+                initialStock = (int) Double.parseDouble(rawStock != null ? rawStock : "0");
+            } catch (Exception e) {
+                log.warn("Invalid stock value '{}' at row {}, defaulting to 0", rawStock, row.getRowNum());
+            }
+
             ProductVariant variant = variantRepository.findBySku(sku).orElse(null);
             if (variant == null) {
                 variant = new ProductVariant();
@@ -595,45 +671,49 @@ public class AdminServiceImpl implements AdminService {
             } else {
                 log.info("Step 3: Updating existing variant for SKU: {}", sku);
             }
-            variant.setColorName(colorName);
-            variant.setColorHex(colorHex);
+            variant.setColorName(colorName != null ? colorName : "Default");
+            variant.setColorHex(colorHex != null ? colorHex : "#000000");
 
-            // Handle Place in Cell Image (defaulting to column U - index 20)
-            String imageRef = getCellValue(row, 20);
+            // Handle image: try DISPIMG formula first, then fallback
+            String imageRef = getCellValue(row, resolveCol(colIndex, 20, "thumbnail url [ab]", "thumbnail url [ab] (*)", "image url", "image"));
             log.info("Step 4: Image Reference = '{}'", imageRef);
 
-            // If it's a formula like DISPIMG("ID_1",1), extract "ID_1"
-            if (imageRef != null && imageRef.contains("DISPIMG(\"")) {
-                int start = imageRef.indexOf("(\"") + 2;
-                int end = imageRef.indexOf("\",", start);
-                if (end > start) {
-                    imageRef = imageRef.substring(start, end);
-                    log.info("Step 4: Parsed image ID from formula: {}", imageRef);
-                }
-            }
-            
-            if (imageRef != null && !imageRef.isBlank() && cellImageMap.containsKey(imageRef)) {
-                log.info("Step 5: Image found in map. Uploading to Cloudinary...");
-                byte[] imageData = cellImageMap.get(imageRef);
-                String imageUrl = cloudinaryService.uploadBytes(imageData, "import_" + sku + ".jpg");
-                variant.setImageUrl(imageUrl);
-                log.info("Step 5 completion: Image uploaded: {}", imageUrl);
+            if (imageRef != null && (imageRef.startsWith("http://") || imageRef.startsWith("https://"))) {
+                // Direct URL in cell — use as-is (already hosted)
+                variant.setImageUrl(imageRef);
+                log.info("Step 5: Direct URL image set: {}", imageRef);
             } else {
-                log.info("Step 5 skip: No matching image for ref '{}'", imageRef);
-                if (fallbackImageIndex < fallbackImages.size()) {
-                    log.info("Step 5 fallback: Using sequential fallback image index {}", fallbackImageIndex);
-                    byte[] imageData = fallbackImages.get(fallbackImageIndex);
-                    String imageUrl = cloudinaryService.uploadBytes(imageData, "import_" + sku + "_fb.jpg");
+                if (imageRef != null && imageRef.contains("DISPIMG(\"")) {
+                    int start = imageRef.indexOf("(\"") + 2;
+                    int end = imageRef.indexOf("\",", start);
+                    if (end > start) {
+                        imageRef = imageRef.substring(start, end);
+                        log.info("Step 4: Parsed image ID from formula: {}", imageRef);
+                    }
+                }
+
+                if (imageRef != null && !imageRef.isBlank() && cellImageMap.containsKey(imageRef)) {
+                    log.info("Step 5: Image found in cell map. Uploading...");
+                    byte[] imageData = cellImageMap.get(imageRef);
+                    String imageUrl = cloudinaryService.uploadBytes(imageData, "import_" + sku + ".jpg");
                     variant.setImageUrl(imageUrl);
-                    log.info("Step 5 completion (fallback): Image uploaded: {}", imageUrl);
-                    usedFallback = true;
+                    log.info("Step 5 done: Image uploaded: {}", imageUrl);
+                } else {
+                    log.info("Step 5 skip: No matching cell image for ref '{}'", imageRef);
+                    if (fallbackImageIndex < fallbackImages.size()) {
+                        log.info("Step 5 fallback: Using sequential fallback image index {}", fallbackImageIndex);
+                        byte[] imageData = fallbackImages.get(fallbackImageIndex);
+                        String imageUrl = cloudinaryService.uploadBytes(imageData, "import_" + sku + "_fb.jpg");
+                        variant.setImageUrl(imageUrl);
+                        log.info("Step 5 done (fallback): Image uploaded: {}", imageUrl);
+                        usedFallback = true;
+                    }
                 }
             }
 
             variant = variantRepository.save(variant);
             log.info("Step 6: Variant saved with ID: {}", variant.getId());
 
-            // Stock
             ProductVariant finalVariant = variant;
             InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
                     .orElseGet(() -> InventoryStock.builder().productVariant(finalVariant).quantityOnHand(0).build());
@@ -646,7 +726,17 @@ public class AdminServiceImpl implements AdminService {
         return usedFallback;
     }
 
+    private BigDecimal parseBigDecimal(String value) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            return new BigDecimal(value.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private String getCellValue(org.apache.poi.ss.usermodel.Row row, int cellIndex) {
+        if (cellIndex < 0) return null;
         org.apache.poi.ss.usermodel.Cell cell = row.getCell(cellIndex);
         if (cell == null) return null;
         return switch (cell.getCellType()) {
@@ -696,6 +786,10 @@ public class AdminServiceImpl implements AdminService {
                 p.getStatus() != null ? p.getStatus().name() : null,
                 inStock, stockQuantity, null, 0,
                 (p.getVariants() != null && !p.getVariants().isEmpty()) ? p.getVariants().get(0).getId() : null,
-                p.getCreatedAt());
+                p.getCreatedAt(),
+                p.getShowOriginalPrice() != null ? p.getShowOriginalPrice() : false,
+                p.getShowSalePrice() != null ? p.getShowSalePrice() : true,
+                p.getShowDiscountBadge() != null ? p.getShowDiscountBadge() : true,
+                p.getPriceDisplayOverridden() != null ? p.getPriceDisplayOverridden() : false);
     }
 }
