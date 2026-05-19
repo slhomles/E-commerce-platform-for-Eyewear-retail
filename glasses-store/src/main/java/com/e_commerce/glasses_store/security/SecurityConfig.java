@@ -25,6 +25,8 @@ import com.e_commerce.glasses_store.security.oauth2.OAuth2AuthenticationSuccessH
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * Spring Security configuration for JWT-based authentication and OAuth2 Social Login.
  */
@@ -32,6 +34,9 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+        @Value("${app.cors.allowed-origins}")
+        private String allowedOriginsRaw;
 
         private final UserRepository userRepository;
         private final JwtService jwtService;
@@ -77,10 +82,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(
-                                List.of("http://localhost:3000", "http://localhost:3001", "http://localhost:5173",
-                                                "http://52.68.124.230:3301", "http://52.68.124.230",
-                                                "http://glassestp.io.vn", "http://www.glassestp.io.vn",
-                                                "https://glassestp.io.vn", "https://www.glassestp.io.vn"));
+                                Arrays.asList(allowedOriginsRaw.split(",")));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setAllowCredentials(true);
