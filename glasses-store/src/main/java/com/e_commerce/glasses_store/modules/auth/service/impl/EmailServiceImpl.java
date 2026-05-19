@@ -2,9 +2,11 @@ package com.e_commerce.glasses_store.modules.auth.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -19,6 +21,9 @@ import com.e_commerce.glasses_store.modules.auth.service.EmailService;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
+
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
 
     @Override
     public void sendVerificationEmail(String to, String token) {
@@ -36,7 +41,7 @@ public class EmailServiceImpl implements EmailService {
                     + "<p>Thank you for registering. Please use the following token to verify your email address:</p>"
                     + "<h3 style=\"background-color: #f4f4f4; padding: 10px; display: inline-block;\">" + token
                     + "</h3>"
-                    + "<p>Or click this link: <a href=\"http://localhost:3001/verify-email?token=" + token
+                    + "<p>Or click this link: <a href=\"" + buildFrontendUrl("/verify-email", token)
                     + "\">Verify Email</a></p>"
                     + "<p>This token will expire in 24 hours.</p>"
                     + "</div>";
@@ -65,7 +70,7 @@ public class EmailServiceImpl implements EmailService {
             String htmlContent = "<div style=\"font-family: Arial, sans-serif; padding: 20px;\">"
                     + "<h2>Password Reset Request</h2>"
                     + "<p>We received a request to reset your password. Click the link below to set a new password:</p>"
-                    + "<p><a href=\"http://localhost:3001/reset-password?token=" + token
+                    + "<p><a href=\"" + buildFrontendUrl("/reset-password", token)
                     + "\" style=\"background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 5px;\">Reset Password</a></p>"
                     + "<p>Or copy and paste this token if the button doesn't work:</p>"
                     + "<h3 style=\"background-color: #f4f4f4; padding: 10px; display: inline-block;\">" + token
@@ -82,5 +87,15 @@ public class EmailServiceImpl implements EmailService {
             log.error("Failed to send password reset email to {}", to, e);
             throw new RuntimeException("Failed to send password reset email", e);
         }
+    }
+
+    private String buildFrontendUrl(String path, String token) {
+        String normalizedBaseUrl = frontendBaseUrl.trim().replaceAll("/+$", "");
+        return UriComponentsBuilder.fromUriString(normalizedBaseUrl)
+                .path(path)
+                .queryParam("token", token)
+                .build()
+                .encode()
+                .toUriString();
     }
 }

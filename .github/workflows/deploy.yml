@@ -105,6 +105,17 @@ jobs:
           script: |
             set -e
             cd ~/e-commerce
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
+            PUBLIC_APP_URL="${{ secrets.PUBLIC_APP_URL }}"
+            if [ -z "$PUBLIC_APP_URL" ]; then
+              PUBLIC_APP_URL="http://${{ secrets.EC2_HOST }}"
+            fi
+            PUBLIC_APP_URL="${PUBLIC_APP_URL%/}"
+            export FRONTEND_URL="$PUBLIC_APP_URL"
+            export BACKEND_URL="$PUBLIC_APP_URL"
+            export CORS_ALLOWED_ORIGINS="$PUBLIC_APP_URL"
             docker compose pull
             docker compose up -d
             docker image prune -f

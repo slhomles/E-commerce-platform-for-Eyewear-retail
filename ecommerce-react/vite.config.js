@@ -2,6 +2,13 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 
+const backendTarget = process.env.VITE_BACKEND_URL || 'http://52.68.124.230:8081';
+const backendProxy = {
+  target: backendTarget,
+  changeOrigin: true,
+  secure: false,
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -15,16 +22,10 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
-      '/api': {
-        target: 'http://52.68.124.230:8081',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/uploads': {
-        target: 'http://52.68.124.230:8081',
-        changeOrigin: true,
-        secure: false,
-      }
+      '/api': backendProxy,
+      '/uploads': backendProxy,
+      '/oauth2': backendProxy,
+      '/login/oauth2': backendProxy
     }
   }
 })

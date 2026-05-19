@@ -2,7 +2,7 @@ import { FacebookOutlined, GithubFilled, GoogleOutlined } from '@ant-design/icon
 import PropType from 'prop-types';
 import React from 'react';
 
-const BACKEND_URL = 'http://localhost:8080';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
 
 const SocialLogin = ({ isLoading }) => {
   const handleSocialLogin = (provider) => {

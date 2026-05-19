@@ -20,6 +20,7 @@ Vào repo trên GitHub → **Settings** → **Secrets and variables** → **Acti
 | `EC2_USER` | `ubuntu` hoặc `ec2-user` | Phụ thuộc AMI (Ubuntu → `ubuntu`, Amazon Linux → `ec2-user`) |
 | `EC2_SSH_KEY` | Nội dung private key | Xem mục 1.2 |
 | `EC2_SSH_PORT` *(optional)* | `22` | Chỉ cần nếu bạn đổi port SSH |
+| `PUBLIC_APP_URL` *(optional)* | `http://<EC2_HOST>` or `https://your-domain.com` | Public base URL used for OAuth redirects and email links. If empty, deploy uses `http://EC2_HOST`. |
 
 ### 1.2 Private key cho `EC2_SSH_KEY`
 
@@ -75,6 +76,26 @@ cd ~/e-commerce
 docker compose ps               # các container đang chạy
 docker compose logs -f backend  # log realtime
 docker images | grep lephuc101  # check digest mới nhất
+```
+
+### OAuth and email link URLs
+
+Set `PUBLIC_APP_URL` in GitHub Actions secrets when you use a domain or HTTPS. Otherwise the deploy workflow uses `http://EC2_HOST`.
+
+Configure OAuth provider callback URLs to match the public app URL:
+
+```txt
+Google:   <PUBLIC_APP_URL>/login/oauth2/code/google
+Facebook: <PUBLIC_APP_URL>/login/oauth2/code/facebook
+GitHub:   <PUBLIC_APP_URL>/login/oauth2/code/github
+```
+
+The backend uses the same public URL for:
+
+```txt
+<PUBLIC_APP_URL>/oauth2/redirect
+<PUBLIC_APP_URL>/verify-email?token=...
+<PUBLIC_APP_URL>/reset-password?token=...
 ```
 
 ---
