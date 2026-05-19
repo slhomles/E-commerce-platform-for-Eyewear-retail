@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: thank1902/glasses-store-mysql:8.0
+    image: lephuc101/glasses-store-mysql:8.0
     environment:
       MYSQL_DATABASE: glasses_store
       MYSQL_ROOT_PASSWORD: root
@@ -24,7 +24,7 @@ services:
     restart: always
 
   backend:
-    image: thank1902/glasses-store-backend:latest
+    image: lephuc101/glasses-store-backend:latest
     ports:
       - '8081:8081'
     environment:
@@ -42,7 +42,7 @@ services:
     restart: on-failure
 
   frontend:
-    image: thank1902/glasses-store-frontend:latest
+    image: lephuc101/glasses-store-frontend:latest
     build:
       context: ./ecommerce-react
     ports:
