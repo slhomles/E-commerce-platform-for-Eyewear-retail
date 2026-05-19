@@ -15,26 +15,42 @@ const PaymentSuccess = () => {
         const verifyPayment = async () => {
             if (!location.search) {
                 setStatus('error');
-                setMessage('Không tìm thấy thông tin URL VNPay.');
+                setMessage('Không tìm thấy thông tin thanh toán.');
+                return;
+            }
+
+            const params = new URLSearchParams(location.search);
+            let verifyFn = null;
+            let gateway = '';
+            if (params.has('vnp_ResponseCode')) {
+                verifyFn = api.verifyVNPay;
+                gateway = 'VNPay';
+            } else if (params.has('apptransid')) {
+                verifyFn = api.verifyZaloPay;
+                gateway = 'ZaloPay';
+            } else if (params.has('partnerCode') || (params.has('orderId') && params.has('resultCode'))) {
+                verifyFn = api.verifyMoMo;
+                gateway = 'MoMo';
+            }
+
+            if (!verifyFn) {
+                setStatus('error');
+                setMessage('Không nhận diện được cổng thanh toán.');
                 return;
             }
 
             try {
-                // Gọi API backend để check Sign và cập nhật DB (Order status)
-                const res = await api.verifyVNPay(location.search);
+                const res = await verifyFn(location.search);
                 if (res.status === 200) {
                     setStatus('success');
                     setMessage(res.data || 'Thanh toán thành công! Đơn hàng của bạn đã được cập nhật.');
                 } else {
                     setStatus('error');
-                    setMessage(res.message || 'Xác thực thanh toán trên server thất bại.');
+                    setMessage(res.message || `Xác thực thanh toán ${gateway} thất bại.`);
                 }
             } catch (error) {
-                console.error('Lỗi xác thực VNPay:', error);
-                const query = new URLSearchParams(location.search);
-                const vnpCode = query.get('vnp_ResponseCode');
-                const backendMsg = error.data?.message || `Thanh toán thất bại (Mã lỗi VNPay: ${vnpCode || 'Hủy hoặc Không rõ'})`;
-                
+                console.error(`Lỗi xác thực ${gateway}:`, error);
+                const backendMsg = error.data?.message || `Thanh toán ${gateway} thất bại hoặc đã hủy.`;
                 setStatus('error');
                 setMessage(backendMsg);
             }

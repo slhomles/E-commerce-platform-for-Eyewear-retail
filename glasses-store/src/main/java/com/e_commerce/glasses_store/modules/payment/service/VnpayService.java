@@ -39,16 +39,11 @@ public class VnpayService {
         vnp_Params.put("vnp_ReturnUrl", vnpayConfig.getReturnUrl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        // if (order.getVnpaySubMethod() != null) {
-        //     String subMethod = order.getVnpaySubMethod();
-        //     if ("vnpay_visa".equals(subMethod)) {
-        //         vnp_Params.put("vnp_BankCode", "VISA");
-        //     } else if ("vnpay_wallet".equals(subMethod)) {
-        //         vnp_Params.put("vnp_BankCode", "VNPAYQR");
-        //     } else if ("vnpay_banking".equals(subMethod)) {
-        //         vnp_Params.put("vnp_BankCode", "NCB");
-        //     }
-        // }
+        if (order.getPaymentMethod() == Order.PaymentMethod.ATM) {
+            vnp_Params.put("vnp_BankCode", "VNBANK");
+        } else if (order.getPaymentMethod() == Order.PaymentMethod.VISA) {
+            vnp_Params.put("vnp_BankCode", "INTCARD");
+        }
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");

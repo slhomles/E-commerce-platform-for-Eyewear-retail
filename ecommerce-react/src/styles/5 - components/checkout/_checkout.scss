@@ -276,3 +276,44 @@
 .payment-img-discover {
   background-position: 175px 115px;
 }
+
+// Logos for the fixed 6-method checkout list (ZaloPay, VNPAY, MoMo, ATM, COD).
+// `payment-img-visa` above is already a sprite — keep it for the international card row.
+.payment-img-zalopay,
+.payment-img-vnpay,
+.payment-img-momo,
+.payment-img-atm,
+.payment-img-cod {
+  width: 60px;
+  height: 32px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: none;
+  border-radius: 4px;
+}
+
+.payment-img-zalopay {
+  background-color: #fff;
+  background-image: url('https://upload.wikimedia.org/wikipedia/vi/thumb/7/77/ZaloPay_Logo.svg/512px-ZaloPay_Logo.svg.png');
+}
+
+.payment-img-vnpay {
+  background-color: #fff;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Vnpay-logo.png/512px-Vnpay-logo.png');
+}
+
+.payment-img-momo {
+  background-color: #fff;
+  background-image: url('https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png');
+}
+
+.payment-img-atm {
+  background-color: #f2f2f2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='2' y='4' width='60' height='32' rx='4' fill='%23ffffff' stroke='%23333' stroke-width='2'/><rect x='2' y='12' width='60' height='6' fill='%23333'/><text x='32' y='32' text-anchor='middle' font-family='Arial' font-size='10' font-weight='bold' fill='%23333'>ATM</text></svg>");
+}
+
+.payment-img-cod {
+  background-color: #f2f2f2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><rect x='4' y='10' width='56' height='22' rx='2' fill='%23ffffff' stroke='%2300796b' stroke-width='2'/><circle cx='32' cy='21' r='6' fill='none' stroke='%2300796b' stroke-width='2'/><text x='32' y='25' text-anchor='middle' font-family='Arial' font-size='8' font-weight='bold' fill='%2300796b'>VND</text></svg>");
+}

@@ -18,7 +18,7 @@ CREATE TABLE orders (
     -- Status & Shipping
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING, PAID, PACKING, SHIPPING, DELIVERED, CANCELLED',
     payment_status VARCHAR(20) NOT NULL DEFAULT 'UNPAID' COMMENT 'UNPAID, PAID, REFUNDED',
-    payment_method VARCHAR(20) COMMENT 'COD, BANK_TRANSFER, VNPAY',
+    payment_method VARCHAR(20) COMMENT 'COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA',
 
     -- Address snapshot
     shipping_address_json JSON NOT NULL COMMENT 'Snapshot address tại thời điểm đặt hàng',

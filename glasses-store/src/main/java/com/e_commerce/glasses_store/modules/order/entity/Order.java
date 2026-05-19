@@ -67,9 +67,6 @@ public class Order extends BaseEntity {
     @Column(name = "payment_method", length = 20)
     private PaymentMethod paymentMethod;
 
-    @Transient
-    private String vnpaySubMethod;
-
     // ==================== Address & Notes ====================
 
     @Column(name = "shipping_address_json", columnDefinition = "JSON", nullable = false)
@@ -80,6 +77,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "tracking_number", length = 100)
     private String trackingNumber;
+
+    @Column(name = "gateway_txn_ref", length = 64)
+    private String gatewayTxnRef;
 
     @Column(name = "voucher_code", length = 50)
     private String voucherCode;
@@ -110,6 +110,6 @@ public class Order extends BaseEntity {
     }
 
     public enum PaymentMethod {
-        COD, BANK_TRANSFER, VNPAY
+        COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA
     }
 }

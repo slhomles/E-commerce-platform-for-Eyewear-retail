@@ -554,6 +554,16 @@ const orderAPI = {
         return response;
     },
 
+    verifyZaloPay: async (queryString) => {
+        const response = await request(`/payment/zalopay-return${queryString}`);
+        return response;
+    },
+
+    verifyMoMo: async (queryString) => {
+        const response = await request(`/payment/momo-return${queryString}`);
+        return response;
+    },
+
     // ---- Admin Order APIs ----
 
     /**

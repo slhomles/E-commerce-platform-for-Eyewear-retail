@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class PlaceOrderRequest {
 
     @NotBlank(message = "Payment method is required")
-    private String paymentMethod; // COD, BANK_TRANSFER, VNPAY
+    private String paymentMethod; // COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA
 
     @NotNull(message = "Shipping address is required")
     @Valid
@@ -28,8 +28,6 @@ public class PlaceOrderRequest {
     private String customerNote;
 
     private String voucherCode;
-
-    private String vnpaySubMethod;
 
     @Data
     @NoArgsConstructor

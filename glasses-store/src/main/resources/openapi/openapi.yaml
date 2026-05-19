@@ -968,7 +968,7 @@ components:
       required: [addressId, paymentMethod]
       properties:
         addressId: { type: string }
-        paymentMethod: { type: string, enum: [COD, BANK_TRANSFER, VNPAY] }
+        paymentMethod: { type: string, enum: [COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA] }
         note: { type: string }
 
     OrderPreview:

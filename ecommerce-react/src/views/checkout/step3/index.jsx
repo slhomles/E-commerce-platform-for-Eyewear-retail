@@ -30,7 +30,16 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const initFormikValues = {
-    type: payment.type || 'vnpay_visa'
+    type: payment.type || 'zalopay'
+  };
+
+  const METHOD_MAP = {
+    zalopay: 'ZALOPAY',
+    vnpay: 'VNPAY',
+    momo: 'MOMO',
+    atm: 'ATM',
+    visa: 'VISA',
+    cod: 'COD'
   };
 
   const onConfirm = async (formValues) => {
@@ -38,19 +47,10 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
     setIsPlacingOrder(true);
 
     try {
-      // Map payment type to backend enum
-      let paymentMethod = 'VNPAY';
-      let vnpaySubMethod = null;
-
-      if (formValues.type === 'cod') {
-          paymentMethod = 'COD';
-      } else {
-          vnpaySubMethod = formValues.type;
-      }
+      const paymentMethod = METHOD_MAP[formValues.type] || 'VNPAY';
 
       const orderData = {
         paymentMethod,
-        vnpaySubMethod,
         shippingAddress: {
           fullName: shipping.fullname || profile?.fullname || '',
           phone: shipping.mobile?.value || profile?.mobile?.value || '',

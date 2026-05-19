@@ -22,6 +22,8 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
 
     java.util.Optional<Order> findByCode(String code);
 
+    java.util.Optional<Order> findByGatewayTxnRef(String gatewayTxnRef);
+
     List<Order> findTop5ByUserIdOrderByCreatedAtDesc(String userId);
 
     List<Order> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
