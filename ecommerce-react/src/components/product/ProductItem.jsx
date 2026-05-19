@@ -82,21 +82,6 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
                 src={product.image}
               />
             ) : <Skeleton width="100%" height="90%" />}
-
-            {/* Price overlay - góc dưới bên phải của ảnh */}
-            {product.price && (
-              <div className="product-card-price-overlay">
-                {showOriginalPrice ? (
-                  <span>{displayMoney(product.basePrice || product.price)}</span>
-                ) : (
-                  <span style={{ color: hasDiscount ? '#fff' : '#fff' }}>
-                    {showSalePrice
-                      ? displayMoney(product.salePrice || product.price)
-                      : displayMoney(product.price)}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
           <div className="product-details">
             <h5 className="product-card-name text-overflow-ellipsis margin-auto">
@@ -107,6 +92,21 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
             </p>
           </div>
         </div>
+
+        {/* Giá - góc dưới bên phải của card */}
+        {product.price && (
+          <div className="product-card-price-overlay">
+            {showOriginalPrice ? (
+              <span>{displayMoney(product.basePrice || product.price)}</span>
+            ) : (
+              <span>
+                {showSalePrice
+                  ? displayMoney(product.salePrice || product.price)
+                  : displayMoney(product.price)}
+              </span>
+            )}
+          </div>
+        )}
 
         {product.id && (
           <button

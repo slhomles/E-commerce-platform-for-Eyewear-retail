@@ -558,27 +558,22 @@
   }
 }
 
-// PRICE OVERLAY - Góc dưới bên phải trong khung ảnh
+// PRICE OVERLAY - Góc dưới bên phải của thẻ card (vùng trắng)
 .product-card-price-overlay {
   position: absolute;
-  bottom: 8px;
+  bottom: 36px;
   right: 8px;
-  background: rgba(20, 20, 20, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  color: #fff;
+  background: transparent;
+  color: #1a1a1a;
   font-size: 12px;
   font-weight: 700;
-  padding: 4px 9px;
-  border-radius: 6px;
-  letter-spacing: 0.02em;
+  padding: 0;
   z-index: 3;
   pointer-events: none;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 
   span {
-    color: #fff;
+    color: #1a1a1a;
   }
 }
 

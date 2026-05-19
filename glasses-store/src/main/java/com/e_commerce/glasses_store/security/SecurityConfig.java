@@ -2,7 +2,6 @@ package com.e_commerce.glasses_store.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -38,9 +37,6 @@ public class SecurityConfig {
         private final JwtService jwtService;
         private final CustomOAuth2UserService customOAuth2UserService;
         private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-
-        @Value("#{'${app.cors.allowed-origins}'.split(',')}")
-        private List<String> allowedOrigins;
 
         public SecurityConfig(UserRepository userRepository,
                         JwtService jwtService,
@@ -81,10 +77,10 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(
-                                allowedOrigins.stream()
-                                                .map(String::trim)
-                                                .filter(origin -> !origin.isEmpty())
-                                                .toList());
+                                List.of("http://localhost:3000", "http://localhost:3001", "http://localhost:5173",
+                                                "http://52.68.124.230:3301", "http://52.68.124.230",
+                                                "http://glassestp.io.vn", "http://www.glassestp.io.vn",
+                                                "https://glassestp.io.vn", "https://www.glassestp.io.vn"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("*"));
                 configuration.setAllowCredentials(true);
