@@ -82,6 +82,21 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
                 src={product.image}
               />
             ) : <Skeleton width="100%" height="90%" />}
+
+            {/* Price overlay - góc dưới bên phải của ảnh */}
+            {product.price && (
+              <div className="product-card-price-overlay">
+                {showOriginalPrice ? (
+                  <span>{displayMoney(product.basePrice || product.price)}</span>
+                ) : (
+                  <span style={{ color: hasDiscount ? '#fff' : '#fff' }}>
+                    {showSalePrice
+                      ? displayMoney(product.salePrice || product.price)
+                      : displayMoney(product.price)}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="product-details">
             <h5 className="product-card-name text-overflow-ellipsis margin-auto">
@@ -90,37 +105,6 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
             <p className="product-card-brand">
               {product.brand || <Skeleton width={60} />}
             </p>
-
-            {/* Price block */}
-            {product.price ? (
-              <div style={{ marginTop: '4px' }}>
-                {showOriginalPrice ? (
-                  /* Chế độ "Giá gốc": chỉ hiện basePrice, không badge, không sale */
-                  <h4 className="product-card-price" style={{ margin: '2px 0 0' }}>
-                    {displayMoney(product.basePrice || product.price)}
-                  </h4>
-                ) : (
-                  /* Chế độ mặc định: giá bán + badge */
-                  <>
-                    {showSalePrice && (
-                      <h4 className="product-card-price" style={{
-                        color: hasDiscount ? '#e53935' : undefined,
-                        margin: '2px 0 0',
-                      }}>
-                        {displayMoney(product.salePrice || product.price)}
-                      </h4>
-                    )}
-                    {!showSalePrice && (
-                      <h4 className="product-card-price" style={{ margin: '2px 0 0' }}>
-                        {displayMoney(product.price)}
-                      </h4>
-                    )}
-                  </>
-                )}
-              </div>
-            ) : (
-              <Skeleton width={40} />
-            )}
           </div>
         </div>
 

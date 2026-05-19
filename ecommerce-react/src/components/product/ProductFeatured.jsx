@@ -55,6 +55,21 @@ const ProductFeatured = ({ product, priceSettings }) => {
               src={product.image}
             />
           ) : <Skeleton width="100%" height="100%" />}
+
+          {/* Price overlay - góc dưới bên phải của ảnh */}
+          {product.price && (
+            <div className="product-display-price-overlay">
+              {showOriginalPrice ? (
+                <span>{displayMoney(product.basePrice || product.price)}</span>
+              ) : (
+                <span>
+                  {showSalePrice
+                    ? displayMoney(product.salePrice || product.price)
+                    : displayMoney(product.price)}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="product-display-details">
@@ -62,38 +77,6 @@ const ProductFeatured = ({ product, priceSettings }) => {
           <p className="text-subtle text-italic">
             {product.brand || <Skeleton width={40} />}
           </p>
-
-          {/* Price block */}
-          {product.price ? (
-            <div style={{ marginTop: '6px' }}>
-              {showOriginalPrice ? (
-                /* Chế độ "Giá gốc": chỉ hiện basePrice */
-                <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>
-                  {displayMoney(product.basePrice || product.price)}
-                </p>
-              ) : (
-                <>
-                  {showSalePrice && (
-                    <p style={{
-                      margin: '2px 0 0',
-                      fontWeight: '700',
-                      fontSize: '15px',
-                      color: hasDiscount ? '#e53935' : '#1a1a1a',
-                    }}>
-                      {displayMoney(product.salePrice || product.price)}
-                    </p>
-                  )}
-                  {!showSalePrice && (
-                    <p style={{ margin: '2px 0 0', fontWeight: '700', fontSize: '15px', color: '#1a1a1a' }}>
-                      {displayMoney(product.price)}
-                    </p>
-                  )}
-                </>
-              )}
-            </div>
-          ) : (
-            <Skeleton width={60} />
-          )}
         </div>
       </div>
     </SkeletonTheme>
