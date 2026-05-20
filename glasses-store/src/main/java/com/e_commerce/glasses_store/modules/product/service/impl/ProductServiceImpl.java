@@ -133,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<BrandResponse> getAllBrands() {
-        return brandRepository.findByIsDeletedFalseOrderByNameAsc()
+        return brandRepository.findAllByOrderByNameAsc()
                 .stream()
                 .map(b -> new BrandResponse(
                         b.getId(), b.getName(), b.getSlug(), b.getDescription(),

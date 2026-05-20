@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, withRouter } from 'react-router-dom';
 import { applyFilter, resetFilter } from '@/redux/actions/filterActions';
 import { selectMax, selectMin } from '@/selectors/selector';
+import api from '@/services/api';
 import PriceRange from './PriceRange';
 
 const Filters = ({ closeModal }) => {
@@ -20,9 +21,14 @@ const Filters = ({ closeModal }) => {
     maxPrice: filter.maxPrice,
     sortBy: filter.sortBy
   });
+  const [brands, setBrands] = useState([]);
   const dispatch = useDispatch();
   const history = useHistory();
   const didMount = useDidMount();
+
+  useEffect(() => {
+    api.getBrands().then((data) => setBrands(data)).catch(() => {});
+  }, []);
 
   const max = selectMax(products);
   const min = selectMin(products);
@@ -93,10 +99,11 @@ const Filters = ({ closeModal }) => {
             onChange={onBrandFilterChange}
           >
             <option value="">All Brands</option>
-            <option value="salt">Salt Maalat</option>
-            <option value="betsin">Betsin Maalat</option>
-            <option value="black">Black Kibal</option>
-            <option value="sexbomb">Sexbomb</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.name.toLowerCase()}>
+                {b.name}
+              </option>
+            ))}
           </select>
         )}
       </div>

@@ -11,5 +11,7 @@ public interface BrandRepository extends JpaRepository<Brand, String> {
 
     List<Brand> findByIsDeletedFalseOrderByNameAsc();
 
+    List<Brand> findAllByOrderByNameAsc();
+
     java.util.Optional<Brand> findByName(String name);
 }
