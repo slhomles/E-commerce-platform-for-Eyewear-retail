@@ -62,6 +62,11 @@ const AppRouter = () => (
           path={ROUTES.SIGNIN}
         />
         <PublicRoute
+          component={view.AdminSignIn}
+          exact
+          path={ROUTES.ADMIN_SIGNIN}
+        />
+        <PublicRoute
           component={view.ForgotPassword}
           path={ROUTES.FORGOT_PASSWORD}
         />

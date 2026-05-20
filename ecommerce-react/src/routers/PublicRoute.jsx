@@ -1,6 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/jsx-props-no-spreading */
-import { ADMIN_DASHBOARD, SIGNIN, SIGNUP } from '@/constants/routes';
+import { ADMIN_DASHBOARD, SIGNIN, SIGNUP, ADMIN_SIGNIN } from '@/constants/routes';
 import PropType from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -20,7 +20,7 @@ const PublicRoute = ({
         return <Redirect to={ADMIN_DASHBOARD} />;
       }
 
-      if ((isAuth && role === 'USER') && (path === SIGNIN || path === SIGNUP)) {
+      if ((isAuth && role === 'USER') && (path === SIGNIN || path === SIGNUP || path === ADMIN_SIGNIN)) {
         return <Redirect to={from} />;
       }
 

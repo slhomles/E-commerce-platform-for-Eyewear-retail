@@ -17,6 +17,7 @@ export { default as ForgotPassword } from './auth/forgot_password';
 export { default as ResetPassword } from './auth/reset_password';
 export { default as VerifyEmail } from './auth/verify_email';
 export { default as SignIn } from './auth/signin';
+export { default as AdminSignIn } from './auth/adminSignin';
 export { default as SignUp } from './auth/signup';
 export { default as CheckOutStep1 } from './checkout/step1';
 export { default as CheckOutStep2 } from './checkout/step2';
