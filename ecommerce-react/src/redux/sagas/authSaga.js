@@ -1,8 +1,8 @@
 import {
   RESET_PASSWORD,
-  SIGNIN, SIGNOUT, SIGNUP
+  SIGNIN, SIGNIN_ADMIN, SIGNIN_USER, SIGNOUT, SIGNUP
 } from '@/constants/constants';
-import { SIGNIN as ROUTE_SIGNIN } from '@/constants/routes';
+import { SIGNIN as ROUTE_SIGNIN, ADMIN_SIGNIN, ADMIN_DASHBOARD, HOME } from '@/constants/routes';
 import defaultAvatar from '@/images/defaultAvatar.jpg';
 import defaultBanner from '@/images/defaultBanner.jpg';
 import { call, put } from 'redux-saga/effects';
@@ -28,15 +28,117 @@ function* initRequest() {
   yield put(setAuthStatus({}));
 }
 
+/** Logic chung: gọi API đăng nhập, trả về user object + role */
+function* performLogin(email, password) {
+  const response = yield call(api.login, email, password);
+  const role = response.data?.role || 'USER';
+
+  const user = {
+    fullname: response.data?.fullName || email.split('@')[0],
+    avatar: defaultAvatar,
+    banner: defaultBanner,
+    email,
+    address: '',
+    mobile: { data: {} },
+    role,
+    dateJoined: new Date().getTime()
+  };
+
+  return { response, user, role };
+}
+
 function* authSaga({ type, payload }) {
   switch (type) {
+
+    // ─── Đăng nhập từ trang Admin (/admin-signin) ──────────────────────────────
+    case SIGNIN_ADMIN: {
+      try {
+        yield initRequest();
+        const { response, user, role } = yield performLogin(payload.email, payload.password);
+
+        // Kiểm tra: chỉ cho phép ADMIN
+        if (role !== 'ADMIN') {
+          yield put(setAuthenticating(false));
+          yield put(setAuthStatus({
+            success: false,
+            type: 'auth',
+            isError: true,
+            message: '⛔ Tài khoản của bạn không có quyền truy cập trang quản trị. Vui lòng đăng nhập bằng trang dành cho khách hàng.'
+          }));
+          return;
+        }
+
+        yield put(setProfile(user));
+        yield put(signInSuccess({
+          id: response.data?.userId || payload.email,
+          role,
+          provider: 'password'
+        }));
+        yield put(setAuthStatus({
+          success: true,
+          type: 'auth',
+          isError: false,
+          message: 'Đăng nhập thành công. Đang chuyển hướng...'
+        }));
+        yield put(setAuthenticating(false));
+        yield call(history.push, ADMIN_DASHBOARD);
+      } catch (e) {
+        yield handleError(e);
+      }
+      break;
+    }
+
+    // ─── Đăng nhập từ trang User (/signin) ────────────────────────────────────
+    case SIGNIN_USER: {
+      try {
+        yield initRequest();
+        const { response, user, role } = yield performLogin(payload.email, payload.password);
+
+        // Nếu là ADMIN đăng nhập nhầm trang user → redirect sang admin dashboard
+        if (role === 'ADMIN') {
+          yield put(setProfile(user));
+          yield put(signInSuccess({
+            id: response.data?.userId || payload.email,
+            role,
+            provider: 'password'
+          }));
+          yield put(setAuthStatus({
+            success: true,
+            type: 'auth',
+            isError: false,
+            message: 'Đăng nhập thành công. Đang chuyển hướng trang quản trị...'
+          }));
+          yield put(setAuthenticating(false));
+          yield call(history.push, ADMIN_DASHBOARD);
+          return;
+        }
+
+        yield put(setProfile(user));
+        yield put(signInSuccess({
+          id: response.data?.userId || payload.email,
+          role,
+          provider: 'password'
+        }));
+        yield put(setAuthStatus({
+          success: true,
+          type: 'auth',
+          isError: false,
+          message: 'Successfully signed in. Redirecting...'
+        }));
+        yield put(setAuthenticating(false));
+        yield call(history.push, HOME);
+      } catch (e) {
+        yield handleError(e);
+      }
+      break;
+    }
+
+    // ─── SIGNIN (backward compat) ──────────────────────────────────────────────
     case SIGNIN:
       try {
         yield initRequest();
         const response = yield call(api.login, payload.email, payload.password);
 
-        // Set user profile from token data
-        // For now, set basic profile until we have a /users/me endpoint
         const user = {
           fullname: response.data?.fullName || payload.email.split('@')[0],
           avatar: defaultAvatar,
@@ -65,6 +167,7 @@ function* authSaga({ type, payload }) {
         yield handleError(e);
       }
       break;
+
     case SIGNUP:
       try {
         yield initRequest();
@@ -89,6 +192,7 @@ function* authSaga({ type, payload }) {
         yield handleError(e);
       }
       break;
+
     case SIGNOUT: {
       try {
         yield initRequest();
@@ -105,6 +209,7 @@ function* authSaga({ type, payload }) {
       }
       break;
     }
+
     case RESET_PASSWORD: {
       try {
         yield initRequest();
@@ -120,6 +225,7 @@ function* authSaga({ type, payload }) {
       }
       break;
     }
+
     default: {
       throw new Error('Unexpected Action Type.');
     }
@@ -127,3 +233,4 @@ function* authSaga({ type, payload }) {
 }
 
 export default authSaga;
+

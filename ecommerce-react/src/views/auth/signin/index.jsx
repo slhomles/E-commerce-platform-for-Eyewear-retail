@@ -8,7 +8,7 @@ import PropType from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { signIn } from '@/redux/actions/authActions';
+import { signInUser } from '@/redux/actions/authActions';
 import { setAuthenticating, setAuthStatus } from '@/redux/actions/miscActions';
 import * as Yup from 'yup';
 
@@ -39,7 +39,7 @@ const SignIn = ({ history }) => {
   const onSignUp = () => history.push(SIGNUP);
 
   const onSubmitForm = (form) => {
-    dispatch(signIn(form.email, form.password));
+    dispatch(signInUser(form.email, form.password));
   };
 
   const onClickLink = (e) => {

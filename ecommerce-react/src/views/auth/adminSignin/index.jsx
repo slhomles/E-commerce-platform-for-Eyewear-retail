@@ -6,7 +6,7 @@ import PropType from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { signIn } from '@/redux/actions/authActions';
+import { signInAdmin } from '@/redux/actions/authActions';
 import { setAuthenticating, setAuthStatus } from '@/redux/actions/miscActions';
 import { SIGNIN } from '@/constants/routes';
 import * as Yup from 'yup';
@@ -36,7 +36,7 @@ const AdminSignIn = ({ history }) => {
   }, []);
 
   const onSubmitForm = (form) => {
-    dispatch(signIn(form.email, form.password));
+    dispatch(signInAdmin(form.email, form.password));
   };
 
   return (

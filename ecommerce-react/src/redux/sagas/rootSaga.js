@@ -8,6 +8,8 @@ import cartSaga from './cartSaga';
 function* rootSaga() {
   yield takeLatest([
     ACTION.SIGNIN,
+    ACTION.SIGNIN_ADMIN,
+    ACTION.SIGNIN_USER,
     ACTION.SIGNUP,
     ACTION.SIGNOUT,
     ACTION.RESET_PASSWORD

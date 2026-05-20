@@ -2,10 +2,19 @@ import * as type from '@/constants/constants';
 
 export const signIn = (email, password) => ({
   type: type.SIGNIN,
-  payload: {
-    email,
-    password
-  }
+  payload: { email, password }
+});
+
+/** Dùng khi đăng nhập từ trang Admin (/admin-signin) */
+export const signInAdmin = (email, password) => ({
+  type: type.SIGNIN_ADMIN,
+  payload: { email, password }
+});
+
+/** Dùng khi đăng nhập từ trang User (/signin) */
+export const signInUser = (email, password) => ({
+  type: type.SIGNIN_USER,
+  payload: { email, password }
 });
 
 export const signUp = (user) => ({
