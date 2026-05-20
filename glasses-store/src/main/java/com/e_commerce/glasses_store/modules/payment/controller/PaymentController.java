@@ -216,7 +216,7 @@ public class PaymentController {
      * Trả về {"code": "00", "desc": "success"} khi thành công.
      */
     @PostMapping("/payos-webhook")
-    public ResponseEntity<Map<String, Object>> payOsWebhook(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Map<String, Object>> payOsWebhook(@RequestBody com.fasterxml.jackson.databind.node.ObjectNode body) {
         log.info("PayOS Webhook body: {}", body);
         Map<String, Object> resp = new HashMap<>();
         try {

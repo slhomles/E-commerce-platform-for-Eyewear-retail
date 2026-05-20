@@ -9,8 +9,7 @@ import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import vn.payos.model.webhooks.WebhookData;
-
-import java.util.Map;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Service xử lý thanh toán qua PayOS (VietQR).
@@ -79,7 +78,7 @@ public class PayOsService {
      * @param webhookBody raw body từ request PayOS gửi đến
      * @return WebhookData đã được xác thực
      */
-    public WebhookData verifyWebhookData(Map<String, Object> webhookBody) {
+    public WebhookData verifyWebhookData(ObjectNode webhookBody) {
         try {
             return payOS.webhooks().verify(webhookBody);
         } catch (Exception e) {
