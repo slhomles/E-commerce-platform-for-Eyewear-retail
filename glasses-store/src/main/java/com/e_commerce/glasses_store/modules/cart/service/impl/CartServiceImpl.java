@@ -151,7 +151,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<AvailableVoucherResponse> getAvailableVouchers(String userId) {
         Cart cart = getOrCreateCart(userId);
         BigDecimal subtotal = calculateCartSubtotal(cart);

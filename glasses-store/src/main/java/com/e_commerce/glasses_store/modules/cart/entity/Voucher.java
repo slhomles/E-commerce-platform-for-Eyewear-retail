@@ -103,7 +103,8 @@ public class Voucher extends BaseEntity {
      * Tính tiền giảm giá.
      */
     public BigDecimal calculateDiscount(BigDecimal orderAmount) {
-        if (orderAmount.compareTo(minOrderAmount) < 0)
+        BigDecimal minAmount = (minOrderAmount != null) ? minOrderAmount : BigDecimal.ZERO;
+        if (orderAmount.compareTo(minAmount) < 0)
             return BigDecimal.ZERO;
 
         BigDecimal discount;
