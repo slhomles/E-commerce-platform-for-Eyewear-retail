@@ -38,7 +38,7 @@ const CustomMobileInput = (props) => {
         inputExtraProps={{ required: true }}
         onChange={handleChange}
         placeholder={placeholder}
-        value={defaultValue.value}
+        value={defaultValue?.value || ''}
       />
     </div>
   );
