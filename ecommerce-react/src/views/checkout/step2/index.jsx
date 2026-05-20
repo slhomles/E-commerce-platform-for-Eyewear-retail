@@ -24,8 +24,26 @@ const FormSchema = Yup.object().shape({
   email: Yup.string()
     .email('Email is not valid.')
     .required('Email is required.'),
-  address: Yup.string()
-    .required('Shipping address is required.'),
+  address: Yup.string().when('isInternational', {
+    is: true,
+    then: Yup.string().required('Shipping address is required.')
+  }),
+  provinceCode: Yup.string().when('isInternational', {
+    is: false,
+    then: Yup.string().required('Vui lòng chọn Tỉnh/Thành phố.')
+  }),
+  districtCode: Yup.string().when('isInternational', {
+    is: false,
+    then: Yup.string().required('Vui lòng chọn Quận/Huyện.')
+  }),
+  wardCode: Yup.string().when('isInternational', {
+    is: false,
+    then: Yup.string().required('Vui lòng chọn Phường/Xã.')
+  }),
+  streetAddress: Yup.string().when('isInternational', {
+    is: false,
+    then: Yup.string().required('Vui lòng nhập địa chỉ chi tiết (số nhà, tên đường).')
+  }),
   mobile: Yup.object()
     .shape({
       country: Yup.string(),
@@ -63,16 +81,34 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
     fullname: safeShipping.fullname || safeProfile.fullname || safeProfile.fullName || '',
     email: safeShipping.email || safeProfile.email || '',
     address: safeShipping.address || safeProfile.address || '',
+    provinceCode: safeShipping.provinceCode || '',
+    provinceName: safeShipping.provinceName || '',
+    districtCode: safeShipping.districtCode || '',
+    districtName: safeShipping.districtName || '',
+    wardCode: safeShipping.wardCode || '',
+    wardName: safeShipping.wardName || '',
+    streetAddress: safeShipping.streetAddress || '',
     mobile: getMobileValue(safeShipping.mobile || safeProfile.mobile || safeProfile.phone),
     isInternational: safeShipping.isInternational || false,
     isDone: safeShipping.isDone || false
   };
 
   const onSubmitForm = (form) => {
+    let finalAddress = form.address;
+    if (!form.isInternational) {
+      finalAddress = `${form.streetAddress}, ${form.wardName}, ${form.districtName}, ${form.provinceName}`;
+    }
     dispatch(setShippingDetails({
       fullname: form.fullname,
       email: form.email,
-      address: form.address,
+      address: finalAddress,
+      provinceCode: form.provinceCode,
+      provinceName: form.provinceName,
+      districtCode: form.districtCode,
+      districtName: form.districtName,
+      wardCode: form.wardCode,
+      wardName: form.wardName,
+      streetAddress: form.streetAddress,
       mobile: form.mobile,
       isInternational: form.isInternational,
       isDone: true
