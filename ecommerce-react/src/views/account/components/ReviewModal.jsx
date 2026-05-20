@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
 
+const REVIEW_LINK_ERROR = 'Binh luan khong duoc chua link, URL hoac dia chi lien he.';
+
+const REVIEW_LINK_PATTERNS = [
+    /\b(?:https?|ftp|file)\s*:\/\//i,
+    /\b(?:javascript|data)\s*:/i,
+    /(^|[^a-z0-9_-])www\s*(?:\.|\[\.\]|\(\.\)|\{\.\})/i,
+    /(^|[^a-z0-9._%+-])[a-z0-9._%+-]+\s*@\s*[a-z0-9.-]+\.[a-z]{2,24}($|[^a-z0-9_-])/i,
+    /(^|[^a-z0-9_-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\s*(?:\.|\[\.\]|\(\.\)|\{\.\}|\s+dot\s+|\s+cham\s+|\s+chấm\s+)\s*)+[a-z]{2,24}($|[^a-z0-9_-])/i
+];
+
+const containsBlockedReviewLink = (value = '') => {
+    const normalized = value.normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g, '');
+    return REVIEW_LINK_PATTERNS.some((pattern) => pattern.test(normalized));
+};
+
 const ReviewModal = ({ orderId, onClose, onSuccess }) => {
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -36,6 +51,11 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
         }
         if (rating < 1 || rating > 5) {
             setError('Số sao phải từ 1 đến 5.');
+            return;
+        }
+
+        if (containsBlockedReviewLink(content)) {
+            setError(REVIEW_LINK_ERROR);
             return;
         }
 

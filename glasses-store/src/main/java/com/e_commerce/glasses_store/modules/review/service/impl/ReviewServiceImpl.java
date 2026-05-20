@@ -13,6 +13,7 @@ import com.e_commerce.glasses_store.modules.review.dto.response.ReviewResponse;
 import com.e_commerce.glasses_store.modules.review.entity.Review;
 import com.e_commerce.glasses_store.modules.review.repository.ReviewRepository;
 import com.e_commerce.glasses_store.modules.review.service.ReviewService;
+import com.e_commerce.glasses_store.modules.review.validation.ReviewContentPolicy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse addReview(String userId, PlaceReviewRequest request) {
+        ReviewContentPolicy.validate(request.getContent());
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
