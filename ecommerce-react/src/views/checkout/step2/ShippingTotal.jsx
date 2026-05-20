@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 const ShippingTotal = ({ subtotal }) => {
   const { values } = useFormikContext();
-  const { discountAmount, voucherCode } = useSelector((state) => state.cart);
+  const { discountAmount = 0, voucherCode } = useSelector((state) => state.cart || {});
   const shippingFee = values.isInternational ? 50000 : 0;
   const displaySubtotal = discountAmount > 0 ? subtotal - discountAmount : subtotal;
 

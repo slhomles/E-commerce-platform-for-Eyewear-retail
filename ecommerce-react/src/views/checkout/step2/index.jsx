@@ -43,14 +43,29 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
   useScrollTop();
   const dispatch = useDispatch();
   const history = useHistory();
+  const safeProfile = profile || {};
+  const safeShipping = shipping || {};
+
+  const getMobileValue = (mobile) => {
+    if (!mobile) return {};
+    if (typeof mobile === 'string') {
+      return {
+        country: '',
+        countryCode: '',
+        dialCode: '',
+        value: mobile
+      };
+    }
+    return mobile;
+  };
 
   const initFormikValues = {
-    fullname: shipping.fullname || profile.fullname || '',
-    email: shipping.email || profile.email || '',
-    address: shipping.address || profile.address || '',
-    mobile: shipping.mobile || profile.mobile || {},
-    isInternational: shipping.isInternational || false,
-    isDone: shipping.isDone || false
+    fullname: safeShipping.fullname || safeProfile.fullname || safeProfile.fullName || '',
+    email: safeShipping.email || safeProfile.email || '',
+    address: safeShipping.address || safeProfile.address || '',
+    mobile: getMobileValue(safeShipping.mobile || safeProfile.mobile || safeProfile.phone),
+    isInternational: safeShipping.isInternational || false,
+    isDone: safeShipping.isDone || false
   };
 
   const onSubmitForm = (form) => {
@@ -120,7 +135,7 @@ ShippingDetails.propTypes = {
     email: PropType.string,
     address: PropType.string,
     mobile: PropType.object
-  }).isRequired,
+  }),
   shipping: PropType.shape({
     fullname: PropType.string,
     email: PropType.string,
@@ -128,7 +143,12 @@ ShippingDetails.propTypes = {
     mobile: PropType.object,
     isInternational: PropType.bool,
     isDone: PropType.bool
-  }).isRequired
+  })
+};
+
+ShippingDetails.defaultProps = {
+  profile: {},
+  shipping: {}
 };
 
 export default withCheckout(ShippingDetails);

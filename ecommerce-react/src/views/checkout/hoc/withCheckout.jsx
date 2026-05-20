@@ -7,11 +7,11 @@ import { Redirect, withRouter } from 'react-router-dom';
 
 const withCheckout = (Component) => withRouter((props) => {
   const state = useSelector((store) => ({
-    isAuth: !!store.auth.id && !!store.auth.role,
-    basket: store.basket,
-    shipping: store.checkout.shipping,
-    payment: store.checkout.payment,
-    profile: store.profile
+    isAuth: !!store.auth?.id && !!store.auth?.role,
+    basket: Array.isArray(store.basket) ? store.basket : [],
+    shipping: store.checkout?.shipping || {},
+    payment: store.checkout?.payment || {},
+    profile: store.profile || {}
   }));
 
   // Only include selected items for checkout
