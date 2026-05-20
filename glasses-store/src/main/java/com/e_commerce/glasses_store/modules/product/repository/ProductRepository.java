@@ -68,4 +68,36 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
                         Pageable pageable);
 
         long countByIsDeletedFalse();
+
+        /**
+         * Admin: Lấy danh sách sản phẩm với filter brand, category, keyword.
+         * Dùng JPQL để tránh vấn đề Specification + JOIN + pagination.
+         */
+        @Query(value = "SELECT DISTINCT p FROM Product p " +
+                "LEFT JOIN p.brand b " +
+                "LEFT JOIN p.category c " +
+                "WHERE p.isDeleted = false " +
+                "AND (:keyword IS NULL OR :keyword = '' OR " +
+                "  LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                "  LOWER(COALESCE(b.name,'')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                "  LOWER(COALESCE(c.name,'')) LIKE LOWER(CONCAT('%', :keyword, '%'))" +
+                ") " +
+                "AND (:brand IS NULL OR :brand = '' OR LOWER(b.name) = LOWER(:brand)) " +
+                "AND (:category IS NULL OR :category = '' OR LOWER(c.name) = LOWER(:category))",
+                countQuery = "SELECT COUNT(DISTINCT p) FROM Product p " +
+                "LEFT JOIN p.brand b " +
+                "LEFT JOIN p.category c " +
+                "WHERE p.isDeleted = false " +
+                "AND (:keyword IS NULL OR :keyword = '' OR " +
+                "  LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                "  LOWER(COALESCE(b.name,'')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                "  LOWER(COALESCE(c.name,'')) LIKE LOWER(CONCAT('%', :keyword, '%'))" +
+                ") " +
+                "AND (:brand IS NULL OR :brand = '' OR LOWER(b.name) = LOWER(:brand)) " +
+                "AND (:category IS NULL OR :category = '' OR LOWER(c.name) = LOWER(:category))")
+        Page<Product> findAllForAdmin(
+                @Param("keyword") String keyword,
+                @Param("brand") String brand,
+                @Param("category") String category,
+                Pageable pageable);
 }

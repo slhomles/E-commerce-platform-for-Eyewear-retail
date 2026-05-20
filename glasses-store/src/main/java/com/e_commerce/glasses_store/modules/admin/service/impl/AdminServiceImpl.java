@@ -340,53 +340,17 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(String keyword, String brand, String category, String sortBy, Pageable pageable) {
-        return productRepository.findAll((root, query, cb) -> {
-            // Dùng INNER JOIN khi có filter để đảm bảo lọc đúng
-            // Dùng LEFT JOIN khi không có filter để không bỏ sót sản phẩm
-            boolean filterBrand = brand != null && !brand.isBlank();
-            boolean filterCategory = category != null && !category.isBlank();
+        // Chuẩn hóa param: truyền null nếu rỗng để JPQL nhận diện "không filter"
+        String kw  = (keyword  != null && !keyword.isBlank())  ? keyword.trim()  : null;
+        String br  = (brand    != null && !brand.isBlank())    ? brand.trim()    : null;
+        String cat = (category != null && !category.isBlank()) ? category.trim() : null;
 
-            var brandJoin = root.join("brand",
-                    filterBrand
-                        ? jakarta.persistence.criteria.JoinType.INNER
-                        : jakarta.persistence.criteria.JoinType.LEFT);
+        log.info("Admin filter — keyword='{}', brand='{}', category='{}'", kw, br, cat);
 
-            var catJoin = root.join("category",
-                    filterCategory
-                        ? jakarta.persistence.criteria.JoinType.INNER
-                        : jakarta.persistence.criteria.JoinType.LEFT);
-
-            // Tránh duplicate rows khi join
-            if (query != null) {
-                query.distinct(true);
-            }
-
-            var predicate = cb.isFalse(root.get("isDeleted"));
-
-            if (keyword != null && !keyword.isBlank()) {
-                String pattern = "%" + keyword.toLowerCase() + "%";
-                var searchPredicate = cb.or(
-                        cb.like(cb.lower(root.get("name")), pattern),
-                        cb.like(cb.lower(cb.coalesce(catJoin.get("name"), "")), pattern),
-                        cb.like(cb.lower(cb.coalesce(brandJoin.get("name"), "")), pattern)
-                );
-                predicate = cb.and(predicate, searchPredicate);
-            }
-
-            if (filterBrand) {
-                // So sánh chính xác (case-insensitive) để đúng với tên brand được chọn
-                predicate = cb.and(predicate,
-                        cb.equal(cb.lower(brandJoin.get("name")), brand.trim().toLowerCase()));
-            }
-
-            if (filterCategory) {
-                predicate = cb.and(predicate,
-                        cb.equal(cb.lower(catJoin.get("name")), category.trim().toLowerCase()));
-            }
-
-            return predicate;
-        }, pageable).map(this::toListResponse);
+        return productRepository.findAllForAdmin(kw, br, cat, pageable)
+                .map(this::toListResponse);
     }
+
 
     // ==================== Private ====================
 
