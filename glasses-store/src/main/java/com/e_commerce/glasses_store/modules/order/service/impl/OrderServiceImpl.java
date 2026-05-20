@@ -20,8 +20,11 @@ import com.e_commerce.glasses_store.modules.order.exception.OrderNotFoundExcepti
 import com.e_commerce.glasses_store.modules.order.repository.OrderRepository;
 import com.e_commerce.glasses_store.modules.order.repository.OrderSpecification;
 import com.e_commerce.glasses_store.modules.order.service.OrderService;
+import com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException;
+import com.e_commerce.glasses_store.modules.product.entity.InventoryStock;
 import com.e_commerce.glasses_store.modules.product.entity.Product;
 import com.e_commerce.glasses_store.modules.product.entity.ProductVariant;
+import com.e_commerce.glasses_store.modules.product.repository.InventoryStockRepository;
 import com.e_commerce.glasses_store.modules.auth.entity.User;
 import com.e_commerce.glasses_store.modules.auth.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private final VoucherRepository voucherRepository;
     private final VoucherUsageRepository voucherUsageRepository;
     private final UserRepository userRepository;
+    private final InventoryStockRepository inventoryStockRepository;
     private final com.e_commerce.glasses_store.modules.payment.service.VnpayService vnpayService;
     private final com.e_commerce.glasses_store.modules.payment.service.ZaloPayService zaloPayService;
     private final com.e_commerce.glasses_store.modules.payment.service.MoMoService moMoService;
@@ -77,7 +81,17 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Cart is empty");
         }
 
-        // 2. Tính toán tổng tiền
+        // 2. Kiểm tra tồn kho cho từng item trước khi tạo order
+        for (CartItem item : cartItems) {
+            ProductVariant variant = item.getProductVariant();
+            InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId()).orElse(null);
+            if (stock == null || !stock.hasStock(item.getQuantity())) {
+                int available = stock != null ? stock.getAvailableQuantity() : 0;
+                throw new InsufficientStockException(variant.getSku(), item.getQuantity(), available);
+            }
+        }
+
+        // 3. Tính toán tổng tiền
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
             ProductVariant variant = item.getProductVariant();
@@ -89,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
             totalAmount = totalAmount.add(lineTotal);
         }
 
-        // 3. Tính phí ship & discount
+        // 4. Tính phí ship & discount
         BigDecimal shippingFee = BigDecimal.valueOf(30000); // Khớp với SHIPPING_FEE = 30000 ở Frontend
         BigDecimal discountAmount = BigDecimal.ZERO;
         if (request.getVoucherCode() != null) {
@@ -100,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
         }
         BigDecimal finalAmount = totalAmount.add(shippingFee).subtract(discountAmount);
 
-        // 4. Serialize shipping address to JSON
+        // 5. Serialize shipping address to JSON
         String shippingAddressJson;
         try {
             shippingAddressJson = objectMapper.writeValueAsString(request.getShippingAddress());
@@ -108,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Invalid shipping address data");
         }
 
-        // 5. Tạo Order
+        // 6. Tạo Order
         Order order = Order.builder()
                 .code(generateOrderCode())
                 .userId(userId)
@@ -124,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
                 .voucherCode(request.getVoucherCode())
                 .build();
 
-        // 6. Tạo OrderItems (snapshot data từ cart)
+        // 7. Tạo OrderItems (snapshot data từ cart)
         for (CartItem cartItem : cartItems) {
             ProductVariant variant = cartItem.getProductVariant();
             Product product = variant.getProduct();
@@ -145,7 +159,7 @@ public class OrderServiceImpl implements OrderService {
             order.getItems().add(orderItem);
         }
 
-        // 7. Tạo initial status history
+        // 8. Tạo initial status history
         OrderStatusHistory history = OrderStatusHistory.builder()
                 .order(order)
                 .status(Order.OrderStatus.PENDING)
@@ -153,10 +167,19 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         order.getStatusHistory().add(history);
 
-        // 8. Lưu order
+        // 9. Lưu order
         Order savedOrder = orderRepository.save(order);
 
-        // 9. Increment voucher usedCount and record usage
+        // 9.5. Trừ tồn kho cho từng item
+        for (CartItem cartItem : cartItems) {
+            ProductVariant variant = cartItem.getProductVariant();
+            inventoryStockRepository.findByProductVariantId(variant.getId()).ifPresent(stock -> {
+                stock.setQuantityOnHand(stock.getQuantityOnHand() - cartItem.getQuantity());
+                inventoryStockRepository.save(stock);
+            });
+        }
+
+        // 10. Increment voucher usedCount and record usage
         if (request.getVoucherCode() != null) {
             voucherRepository.findByCode(request.getVoucherCode()).ifPresent(v -> {
                 v.setUsedCount(v.getUsedCount() + 1);
@@ -172,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
             });
         }
 
-        // 10. Xóa cart items sau khi đặt hàng thành công
+        // 11. Xóa cart items sau khi đặt hàng thành công
         cartItemRepository.deleteAll(cartItems);
         cart.getItems().clear();
         cart.setVoucherCode(null);

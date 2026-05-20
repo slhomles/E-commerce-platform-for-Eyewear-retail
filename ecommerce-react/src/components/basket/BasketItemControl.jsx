@@ -1,28 +1,35 @@
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import PropType from 'prop-types';
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addQtyItem, minusQtyItem, setQtyItem } from '@/redux/actions/basketActions';
+import { serverUpdateCartItem } from '@/redux/actions/cartActions';
 
 const BasketItemControl = ({ product }) => {
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState(String(product.quantity || 1));
 
+  const cartItems = useSelector((state) => state.cart.items || []);
+  const cartItem = cartItems.find((i) => i.variantId === product.selectedVariantId);
+  const maxQty = cartItem ? cartItem.stockAvailable : (product.maxQuantity || Infinity);
+
   useEffect(() => {
     setInputValue(String(product.quantity || 1));
   }, [product.quantity]);
 
-  const maxQty = product.maxQuantity || Infinity;
-
   const onAddQty = () => {
-    if (product.quantity < maxQty) {
+    const newQty = product.quantity + 1;
+    if (newQty <= maxQty) {
       dispatch(addQtyItem(product.id));
+      if (cartItem) dispatch(serverUpdateCartItem(cartItem.itemId, newQty));
     }
   };
 
   const onMinusQty = () => {
-    if (product.quantity > 1) {
+    const newQty = product.quantity - 1;
+    if (newQty >= 1) {
       dispatch(minusQtyItem(product.id));
+      if (cartItem) dispatch(serverUpdateCartItem(cartItem.itemId, newQty));
     }
   };
 
@@ -48,6 +55,7 @@ const BasketItemControl = ({ product }) => {
     setInputValue(String(qty));
     if (qty !== product.quantity) {
       dispatch(setQtyItem(product.id, qty));
+      if (cartItem) dispatch(serverUpdateCartItem(cartItem.itemId, qty));
     }
   };
 
