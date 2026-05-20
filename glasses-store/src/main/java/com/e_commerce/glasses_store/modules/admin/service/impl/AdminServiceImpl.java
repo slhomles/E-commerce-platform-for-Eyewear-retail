@@ -341,9 +341,25 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(String keyword, String brand, String category, String sortBy, Pageable pageable) {
         return productRepository.findAll((root, query, cb) -> {
-            // Always LEFT JOIN brand and category so products without them still appear
-            var catJoin = root.join("category", jakarta.persistence.criteria.JoinType.LEFT);
-            var brandJoin = root.join("brand", jakarta.persistence.criteria.JoinType.LEFT);
+            // Dùng INNER JOIN khi có filter để đảm bảo lọc đúng
+            // Dùng LEFT JOIN khi không có filter để không bỏ sót sản phẩm
+            boolean filterBrand = brand != null && !brand.isBlank();
+            boolean filterCategory = category != null && !category.isBlank();
+
+            var brandJoin = root.join("brand",
+                    filterBrand
+                        ? jakarta.persistence.criteria.JoinType.INNER
+                        : jakarta.persistence.criteria.JoinType.LEFT);
+
+            var catJoin = root.join("category",
+                    filterCategory
+                        ? jakarta.persistence.criteria.JoinType.INNER
+                        : jakarta.persistence.criteria.JoinType.LEFT);
+
+            // Tránh duplicate rows khi join
+            if (query != null) {
+                query.distinct(true);
+            }
 
             var predicate = cb.isFalse(root.get("isDeleted"));
 
@@ -357,14 +373,15 @@ public class AdminServiceImpl implements AdminService {
                 predicate = cb.and(predicate, searchPredicate);
             }
 
-            if (brand != null && !brand.isBlank()) {
+            if (filterBrand) {
+                // So sánh chính xác (case-insensitive) để đúng với tên brand được chọn
                 predicate = cb.and(predicate,
-                        cb.like(cb.lower(cb.coalesce(brandJoin.get("name"), "")), "%" + brand.toLowerCase() + "%"));
+                        cb.equal(cb.lower(brandJoin.get("name")), brand.trim().toLowerCase()));
             }
 
-            if (category != null && !category.isBlank()) {
+            if (filterCategory) {
                 predicate = cb.and(predicate,
-                        cb.like(cb.lower(cb.coalesce(catJoin.get("name"), "")), "%" + category.toLowerCase() + "%"));
+                        cb.equal(cb.lower(catJoin.get("name")), category.trim().toLowerCase()));
             }
 
             return predicate;
