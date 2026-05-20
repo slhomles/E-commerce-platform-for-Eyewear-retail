@@ -61,7 +61,7 @@ const OrderSummary = ({ basket, subtotal }) => {
           ))}
         </div>
         <br />
-        <VoucherInput />
+        <VoucherInput basket={basket} />
         <br />
         <div className="basket-total text-right">
           <p className="basket-total-title">Subtotal:</p>

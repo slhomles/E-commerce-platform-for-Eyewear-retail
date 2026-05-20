@@ -1,7 +1,7 @@
 import { EditOutlined } from '@ant-design/icons';
 import * as ROUTES from '@/constants/routes';
 import PropType from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const statusColors = {
@@ -23,13 +23,44 @@ const formatDate = (dateStr) => {
   return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
+const voucherRowStyle = {
+  padding: '10px 20px',
+  alignItems: 'center',
+  gridTemplateColumns: '0.45fr 1.55fr 1.05fr 1.05fr 1.15fr 0.95fr 1.55fr',
+};
+
+const actionGroupStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  gap: '6px',
+  flexWrap: 'nowrap',
+  whiteSpace: 'nowrap',
+};
+
+const actionButtonStyle = {
+  width: '48px',
+  minWidth: '48px',
+  height: '38px',
+  padding: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const confirmButtonStyle = {
+  ...actionButtonStyle,
+  width: '76px',
+  minWidth: '76px',
+};
+
 const VoucherItem = ({ voucher, onDelete, onToggle, index }) => {
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const statusStyle = statusColors[voucher.status] || statusColors.INACTIVE;
 
   return (
-    <div className="grid grid-product grid-count-7" style={{ padding: '10px 20px', alignItems: 'center' }}>
+    <div className="grid grid-product grid-count-7" style={voucherRowStyle}>
       <div className="grid-col">
         <span className="text-tertiary">{index + 1}</span>
       </div>
@@ -85,38 +116,55 @@ const VoucherItem = ({ voucher, onDelete, onToggle, index }) => {
         </span>
       </div>
       <div className="grid-col">
-        <div className="item-action" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <button
-            className="button button-border button-small"
-            onClick={() => history.push(`${ROUTES.EDIT_VOUCHER}/${voucher.id}`)}
-            type="button"
-            title="Edit"
-          >
-            <EditOutlined />
-          </button>
-          <button
-            className={`button button-small ${voucher.isActive ? 'button-border button-muted' : 'button-border'}`}
-            onClick={() => onToggle(voucher.id, !voucher.isActive)}
-            type="button"
-            title={voucher.isActive ? 'Deactivate' : 'Activate'}
-          >
-            {voucher.isActive ? 'Off' : 'On'}
-          </button>
-          <button
-            className="button button-border button-small button-danger"
-            onClick={() => setIsDeleting(!isDeleting)}
-            type="button"
-          >
-            {isDeleting ? 'Cancel' : 'Del'}
-          </button>
-          {isDeleting && (
-            <button
-              className="button button-small button-danger"
-              onClick={() => { onDelete(voucher.id); setIsDeleting(false); }}
-              type="button"
-            >
-              Confirm
-            </button>
+        <div style={actionGroupStyle}>
+          {isDeleting ? (
+            <>
+              <button
+                className="button button-border button-small"
+                onClick={() => setIsDeleting(false)}
+                style={confirmButtonStyle}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="button button-small button-danger"
+                onClick={() => { onDelete(voucher.id); setIsDeleting(false); }}
+                style={confirmButtonStyle}
+                type="button"
+              >
+                Confirm
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="button button-border button-small"
+                onClick={() => history.push(`${ROUTES.EDIT_VOUCHER}/${voucher.id}`)}
+                style={actionButtonStyle}
+                type="button"
+                title="Edit"
+              >
+                <EditOutlined />
+              </button>
+              <button
+                className={`button button-small ${voucher.isActive ? 'button-border button-muted' : 'button-border'}`}
+                onClick={() => onToggle(voucher.id, !voucher.isActive)}
+                style={actionButtonStyle}
+                type="button"
+                title={voucher.isActive ? 'Deactivate' : 'Activate'}
+              >
+                {voucher.isActive ? 'Off' : 'On'}
+              </button>
+              <button
+                className="button button-border button-small button-danger"
+                onClick={() => setIsDeleting(true)}
+                style={actionButtonStyle}
+                type="button"
+              >
+                Del
+              </button>
+            </>
           )}
         </div>
       </div>

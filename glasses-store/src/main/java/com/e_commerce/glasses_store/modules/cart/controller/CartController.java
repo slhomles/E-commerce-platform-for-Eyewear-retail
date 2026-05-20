@@ -87,6 +87,15 @@ public class CartController {
     }
 
     /**
+     * GET /api/v1/cart/vouchers/available — Lấy danh sách voucher dùng được với giỏ hiện tại.
+     */
+    @GetMapping("/vouchers/available")
+    public ResponseEntity<ApiResponse<java.util.List<AvailableVoucherResponse>>> getAvailableVouchers(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(ApiResponse.success(cartService.getAvailableVouchers(user.getId())));
+    }
+
+    /**
      * POST /api/v1/cart/replace — Thay thế toàn bộ giỏ hàng bằng danh sách items từ client basket.
      * Được gọi khi bắt đầu checkout để đồng bộ server cart với client basket.
      */

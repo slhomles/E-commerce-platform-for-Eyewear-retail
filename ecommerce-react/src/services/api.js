@@ -467,6 +467,13 @@ const cartAPI = {
         return response.data;
     },
 
+    getAvailableVouchers: async () => {
+        const response = await request('/cart/vouchers/available', {
+            auth: true,
+        });
+        return response.data;
+    },
+
     replaceCart: async (items) => {
         // items: [{ variantId, quantity }]
         const response = await request('/cart/replace', {

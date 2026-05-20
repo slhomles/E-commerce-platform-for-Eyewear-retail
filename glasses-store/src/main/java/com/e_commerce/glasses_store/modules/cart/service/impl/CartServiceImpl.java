@@ -1,6 +1,7 @@
 package com.e_commerce.glasses_store.modules.cart.service.impl;
 
 import com.e_commerce.glasses_store.modules.cart.dto.AddToCartRequest;
+import com.e_commerce.glasses_store.modules.cart.dto.AvailableVoucherResponse;
 import com.e_commerce.glasses_store.modules.cart.dto.CartResponse;
 import com.e_commerce.glasses_store.modules.cart.entity.*;
 import com.e_commerce.glasses_store.modules.cart.exception.InsufficientStockException;
@@ -150,6 +151,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<AvailableVoucherResponse> getAvailableVouchers(String userId) {
+        Cart cart = getOrCreateCart(userId);
+        BigDecimal subtotal = calculateCartSubtotal(cart);
+
+        return voucherRepository.findAll().stream()
+                .filter(voucher -> canUseVoucherInCurrentCart(voucher, userId, cart, subtotal))
+                .sorted(java.util.Comparator.comparing(Voucher::getEndDate))
+                .map(voucher -> toAvailableVoucherResponse(voucher, subtotal))
+                .toList();
+    }
+
+    @Override
     public CartResponse replaceCart(String userId, List<AddToCartRequest> items) {
         Cart cart = getOrCreateCart(userId);
         // Clear existing items
@@ -269,6 +283,66 @@ public class CartServiceImpl implements CartService {
                 cart.getVoucherCode(),
                 discountAmount,
                 subtotal.subtract(discountAmount));
+    }
+
+    private boolean canUseVoucherInCurrentCart(Voucher voucher, String userId, Cart cart, BigDecimal subtotal) {
+        if (!voucher.isValid()) return false;
+
+        if (voucher.getPerUserLimit() != null) {
+            int userUsageCount = voucherUsageRepository.countByVoucherIdAndUserId(voucher.getId(), userId);
+            if (userUsageCount >= voucher.getPerUserLimit()) return false;
+        }
+
+        if (voucher.getMinOrderAmount() != null && subtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
+            return false;
+        }
+
+        return isVoucherTargetingMatched(voucher, cart);
+    }
+
+    private boolean isVoucherTargetingMatched(Voucher voucher, Cart cart) {
+        if (voucher.getApplicableTo() == Voucher.ApplicableTo.ALL) return true;
+
+        List<VoucherApplicableItem> applicableItems = voucher.getApplicableItems();
+        if (applicableItems == null || applicableItems.isEmpty()) return true;
+
+        Set<String> applicableIds = applicableItems.stream()
+                .map(VoucherApplicableItem::getItemId)
+                .collect(Collectors.toSet());
+
+        return cart.getItems().stream().anyMatch(cartItem -> {
+            Product product = cartItem.getProductVariant().getProduct();
+            if (voucher.getApplicableTo() == Voucher.ApplicableTo.PRODUCT) {
+                return applicableIds.contains(product.getId());
+            }
+            return product.getCategory() != null
+                    && applicableIds.contains(product.getCategory().getId());
+        });
+    }
+
+    private BigDecimal calculateCartSubtotal(Cart cart) {
+        return cartItemRepository.findByCartId(cart.getId()).stream()
+                .map(item -> {
+                    Product product = item.getProductVariant().getProduct();
+                    BigDecimal unitPrice = product.getSalePrice() != null
+                            ? product.getSalePrice().add(item.getProductVariant().getPriceAdjustment())
+                            : product.getBasePrice().add(item.getProductVariant().getPriceAdjustment());
+                    return unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private AvailableVoucherResponse toAvailableVoucherResponse(Voucher voucher, BigDecimal subtotal) {
+        return new AvailableVoucherResponse(
+                voucher.getId(),
+                voucher.getCode(),
+                voucher.getDescription(),
+                voucher.getDiscountType().name(),
+                voucher.getDiscountValue(),
+                voucher.getMinOrderAmount(),
+                voucher.getMaxDiscountAmount(),
+                voucher.calculateDiscount(subtotal),
+                voucher.getEndDate());
     }
 
     private CartResponse.CartItemResponse toCartItemResponse(CartItem item) {

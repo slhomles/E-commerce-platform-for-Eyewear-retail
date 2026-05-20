@@ -1,16 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { serverApplyVoucher, serverRemoveVoucher } from '@/redux/actions/cartActions';
+import { serverApplyVoucher, serverRemoveVoucher, syncCartSuccess } from '@/redux/actions/cartActions';
 import { CloseOutlined, GiftOutlined } from '@ant-design/icons';
+import api from '@/services/api';
 
-const VoucherInput = () => {
+const VoucherInput = ({ basket = [] }) => {
   const dispatch = useDispatch();
   const { voucherCode, discountAmount } = useSelector((state) => state.cart);
   const [code, setCode] = useState('');
+  const [availableVouchers, setAvailableVouchers] = useState([]);
+  const [isLoadingVouchers, setIsLoadingVouchers] = useState(false);
 
-  const handleApply = () => {
+  const basketSignature = basket
+    .map((item) => `${item.selectedVariantId}:${item.quantity || 1}`)
+    .join('|');
+
+  const syncServerCart = async () => {
+    const items = basket
+      .filter((item) => item.selectedVariantId)
+      .map((item) => ({ variantId: item.selectedVariantId, quantity: item.quantity || 1 }));
+
+    if (items.length === 0) return;
+
+    const cartData = await api.replaceCart(items);
+    dispatch(syncCartSuccess(cartData));
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadAvailableVouchers = async () => {
+      try {
+        setIsLoadingVouchers(true);
+        await syncServerCart();
+        const vouchers = await api.getAvailableVouchers();
+        if (mounted) {
+          setAvailableVouchers(Array.isArray(vouchers) ? vouchers : []);
+        }
+      } catch (err) {
+        if (mounted) {
+          setAvailableVouchers([]);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoadingVouchers(false);
+        }
+      }
+    };
+
+    if (!voucherCode) {
+      loadAvailableVouchers();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [basketSignature, voucherCode]);
+
+  const handleApply = async () => {
     const trimmed = code.trim();
     if (!trimmed) return;
+    try {
+      await syncServerCart();
+    } catch (err) {
+      // Applying still goes through the existing saga, which will surface any backend validation error.
+    }
     dispatch(serverApplyVoucher(trimmed));
     setCode('');
   };
@@ -28,6 +82,16 @@ const VoucherInput = () => {
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  };
+
+  const formatVoucherLabel = (voucher) => {
+    const discount = voucher.discountType === 'PERCENTAGE'
+      ? `${voucher.discountValue}%`
+      : formatCurrency(voucher.discountValue);
+    const estimated = voucher.estimatedDiscountAmount > 0
+      ? ` - giảm ${formatCurrency(voucher.estimatedDiscountAmount)}`
+      : '';
+    return `${voucher.code} (${discount}${estimated})`;
   };
 
   return (
@@ -70,7 +134,7 @@ const VoucherInput = () => {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           <GiftOutlined style={{ color: '#757575', fontSize: '16px' }} />
           <input
             type="text"
@@ -89,6 +153,37 @@ const VoucherInput = () => {
               fontSize: '14px'
             }}
           />
+          <select
+            value=""
+            onChange={(e) => {
+              setCode(e.target.value);
+            }}
+            disabled={isLoadingVouchers || availableVouchers.length === 0}
+            style={{
+              flex: '0 1 280px',
+              minWidth: '220px',
+              padding: '8px 12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '4px',
+              fontSize: '14px',
+              color: availableVouchers.length === 0 ? '#9e9e9e' : '#333',
+              background: '#fff'
+            }}
+            aria-label="Chọn voucher có thể dùng"
+          >
+            <option value="">
+              {isLoadingVouchers
+                ? 'Đang tải voucher...'
+                : availableVouchers.length > 0
+                  ? 'Chọn voucher có thể dùng'
+                  : 'Không có voucher phù hợp'}
+            </option>
+            {availableVouchers.map((voucher) => (
+              <option key={voucher.id || voucher.code} value={voucher.code}>
+                {formatVoucherLabel(voucher)}
+              </option>
+            ))}
+          </select>
           <button
             className="button button-small"
             onClick={handleApply}

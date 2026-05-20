@@ -2,9 +2,15 @@ import PropType from 'prop-types';
 import React from 'react';
 import VoucherItem from './VoucherItem';
 
+const voucherHeaderStyle = {
+  padding: '10px 20px',
+  fontWeight: 'bold',
+  gridTemplateColumns: '0.45fr 1.55fr 1.05fr 1.05fr 1.15fr 0.95fr 1.55fr',
+};
+
 const VouchersTable = ({ vouchers, onDelete, onToggle, baseIndex }) => (
   <div className="product-admin-items">
-    <div className="grid grid-product grid-count-7" style={{ padding: '10px 20px', fontWeight: 'bold' }}>
+    <div className="grid grid-product grid-count-7" style={voucherHeaderStyle}>
       <div className="grid-col">
         <span>#</span>
       </div>
