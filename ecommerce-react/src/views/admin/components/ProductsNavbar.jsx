@@ -1,13 +1,20 @@
 import { FilterOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { FiltersToggle } from '@/components/common';
+import { Modal } from '@/components/common';
 import { ADD_PRODUCT } from '@/constants/routes';
 import PropType from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import ProductFilters from './ProductFilters';
 
 const ProductsNavbar = (props) => {
-  const { productsCount, totalProductsCount, onSearchChange } = props;
+  const {
+    productsCount, totalProductsCount, onSearchChange, onApplyFilter, filter, onImportClick
+  } = props;
   const history = useHistory();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="product-admin-header">
@@ -27,15 +34,30 @@ const ProductsNavbar = (props) => {
         />
       </div>
       &nbsp;
-      <FiltersToggle>
-        <button className="button-muted button-small" type="button">
-          <FilterOutlined />
-          &nbsp;More Filters
+      <button className="button-muted button-small" type="button" onClick={openModal}>
+        <FilterOutlined />
+        &nbsp;More Filters
+      </button>
+      <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
+        <div className="filters-toggle-sub">
+          <ProductFilters
+            closeModal={closeModal}
+            dispatchFilter={onApplyFilter}
+            filter={filter}
+          />
+        </div>
+        <button
+          className="modal-close-button"
+          onClick={closeModal}
+          type="button"
+        >
+          <i className="fa fa-times-circle" />
         </button>
-      </FiltersToggle>
+      </Modal>
+      &nbsp;
       <button
         className="button button-small button-muted"
-        onClick={props.onImportClick}
+        onClick={onImportClick}
         type="button"
       >
         <PlusOutlined />
@@ -57,7 +79,10 @@ const ProductsNavbar = (props) => {
 ProductsNavbar.propTypes = {
   productsCount: PropType.number.isRequired,
   totalProductsCount: PropType.number.isRequired,
-  onSearchChange: PropType.func.isRequired
+  onSearchChange: PropType.func.isRequired,
+  onApplyFilter: PropType.func.isRequired,
+  onImportClick: PropType.func.isRequired,
+  filter: PropType.object.isRequired
 };
 
 export default ProductsNavbar;

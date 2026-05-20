@@ -339,14 +339,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getAllProducts(String keyword, Pageable pageable) {
+    public Page<ProductListResponse> getAllProducts(String keyword, String brand, String category, String sortBy, Pageable pageable) {
         return productRepository.findAll((root, query, cb) -> {
+            // Always LEFT JOIN brand and category so products without them still appear
+            var catJoin = root.join("category", jakarta.persistence.criteria.JoinType.LEFT);
+            var brandJoin = root.join("brand", jakarta.persistence.criteria.JoinType.LEFT);
+
             var predicate = cb.isFalse(root.get("isDeleted"));
+
             if (keyword != null && !keyword.isBlank()) {
                 String pattern = "%" + keyword.toLowerCase() + "%";
-                // LEFT JOIN để không mất sản phẩm chưa gán brand/category
-                var catJoin = root.join("category", jakarta.persistence.criteria.JoinType.LEFT);
-                var brandJoin = root.join("brand", jakarta.persistence.criteria.JoinType.LEFT);
                 var searchPredicate = cb.or(
                         cb.like(cb.lower(root.get("name")), pattern),
                         cb.like(cb.lower(cb.coalesce(catJoin.get("name"), "")), pattern),
@@ -354,6 +356,17 @@ public class AdminServiceImpl implements AdminService {
                 );
                 predicate = cb.and(predicate, searchPredicate);
             }
+
+            if (brand != null && !brand.isBlank()) {
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(cb.coalesce(brandJoin.get("name"), "")), "%" + brand.toLowerCase() + "%"));
+            }
+
+            if (category != null && !category.isBlank()) {
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(cb.coalesce(catJoin.get("name"), "")), "%" + category.toLowerCase() + "%"));
+            }
+
             return predicate;
         }, pageable).map(this::toListResponse);
     }

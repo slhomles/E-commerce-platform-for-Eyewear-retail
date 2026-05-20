@@ -691,8 +691,13 @@ const adminAPI = {
         return response.data;
     },
 
-    getAllProducts: async (page = 0, size = 20, keyword = '') => {
-        const response = await request(`/admin/products?page=${page}&size=${size}&keyword=${keyword}`, { auth: true });
+    getAllProducts: async (page = 0, size = 20, keyword = '', brand = '', category = '', sortBy = 'newest') => {
+        const params = new URLSearchParams({ page, size });
+        if (keyword) params.append('keyword', keyword);
+        if (brand) params.append('brand', brand);
+        if (category) params.append('category', category);
+        if (sortBy) params.append('sortBy', sortBy);
+        const response = await request(`/admin/products?${params.toString()}`, { auth: true });
         const pageData = response.data;
         if (pageData && pageData.content) {
             pageData.content = pageData.content.map(p => ({

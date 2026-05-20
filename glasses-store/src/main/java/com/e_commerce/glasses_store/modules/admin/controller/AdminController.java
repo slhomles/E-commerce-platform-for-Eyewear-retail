@@ -82,10 +82,20 @@ public class AdminController {
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<Page<ProductListResponse>>> getAllProducts(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false, defaultValue = "newest") String sortBy,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        Sort sort = switch (sortBy) {
+            case "name_asc" -> Sort.by("name").ascending();
+            case "name_desc" -> Sort.by("name").descending();
+            case "price_asc" -> Sort.by("basePrice").ascending();
+            case "price_desc" -> Sort.by("basePrice").descending();
+            default -> Sort.by("createdAt").descending();
+        };
         Page<ProductListResponse> result = adminService.getAllProducts(
-                keyword, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+                keyword, brand, category, sortBy, PageRequest.of(page, size, sort));
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 

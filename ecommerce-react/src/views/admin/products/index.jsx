@@ -18,16 +18,20 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const [searchKey, setSearchKey] = useState('');
+  const [filter, setFilter] = useState({ brand: '', category: '', sortBy: 'newest' });
   const pageSize = 12;
 
   useEffect(() => {
-    fetchProducts(currentPage, searchKey);
-  }, [currentPage, searchKey]);
+    fetchProducts(currentPage, searchKey, filter);
+  }, [currentPage, searchKey, filter]);
 
-  const fetchProducts = async (page, keyword) => {
+  const fetchProducts = async (page, keyword, activeFilter) => {
     setLoading(true);
     try {
-      const data = await api.getAllProducts(page, pageSize, keyword);
+      const data = await api.getAllProducts(
+        page, pageSize, keyword,
+        activeFilter.brand, activeFilter.category, activeFilter.sortBy
+      );
       setProducts(data.content || []);
       setTotal(data.totalElements || 0);
       setTotalPages(data.totalPages || 0);
@@ -43,6 +47,11 @@ const Products = () => {
     setCurrentPage(0);
   };
 
+  const handleApplyFilter = (newFilter) => {
+    setFilter(newFilter);
+    setCurrentPage(0);
+  };
+
   const openImportModal = () => setImportModalOpen(true);
   const closeImportModal = () => setImportModalOpen(false);
 
@@ -50,6 +59,8 @@ const Products = () => {
     <Boundary>
       <ProductsNavbar
         onSearchChange={handleSearchChange}
+        onApplyFilter={handleApplyFilter}
+        filter={filter}
         productsCount={products.length}
         totalProductsCount={total}
         onImportClick={openImportModal}

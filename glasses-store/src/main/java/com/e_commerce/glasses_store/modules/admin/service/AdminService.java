@@ -20,7 +20,7 @@ public interface AdminService {
 
     void deleteProduct(String id);
 
-    Page<ProductListResponse> getAllProducts(String keyword, Pageable pageable);
+    Page<ProductListResponse> getAllProducts(String keyword, String brand, String category, String sortBy, Pageable pageable);
 
     void importProducts(ProductImportRequest request);
 }
