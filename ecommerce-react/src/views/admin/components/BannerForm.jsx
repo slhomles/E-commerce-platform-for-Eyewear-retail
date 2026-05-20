@@ -40,6 +40,17 @@ const EMPTY_FORM = {
   fontFamily: "'Tajawal', Helvetica, Arial, sans-serif",
 };
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
+  return cleanUrl.endsWith('.mp4') || 
+         cleanUrl.endsWith('.webm') || 
+         cleanUrl.endsWith('.ogg') || 
+         cleanUrl.endsWith('.mov') ||
+         url.includes('/video/upload/') ||
+         url.startsWith('data:video/');
+};
+
 const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
   const isEditing = !!banner?.id;
 
@@ -206,20 +217,31 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
               }}
             >
               {imagePreview ? (
-                <img
-                  alt="Preview"
-                  src={imagePreview}
-                  style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '4px' }}
-                />
+                isVideoUrl(imagePreview) ? (
+                  <video
+                    src={imagePreview}
+                    muted
+                    playsInline
+                    autoPlay
+                    loop
+                    style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '4px' }}
+                  />
+                ) : (
+                  <img
+                    alt="Preview"
+                    src={imagePreview}
+                    style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '4px' }}
+                  />
+                )
               ) : (
                 <span style={{ color: '#aaa' }}>
                   {isPromo
-                    ? 'Click or drag & drop — Product photo for left side'
-                    : 'Click or drag & drop - Recommended: 1600 x 500px'}
+                    ? 'Click or drag & drop — Photo or video for left side'
+                    : 'Click or drag & drop - Recommended: Photo or short video (1600 x 500px)'}
                 </span>
               )}
               <input
-                accept="image/*"
+                accept="image/*,video/*"
                 onChange={handleImageUpload}
                 style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
                 type="file"

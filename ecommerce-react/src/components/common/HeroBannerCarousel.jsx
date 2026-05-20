@@ -29,6 +29,16 @@ const handleNavigate = (banner, history) => {
   }
 };
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
+  return cleanUrl.endsWith('.mp4') || 
+         cleanUrl.endsWith('.webm') || 
+         cleanUrl.endsWith('.ogg') || 
+         cleanUrl.endsWith('.mov') ||
+         url.includes('/video/upload/');
+};
+
 // ─── Rich Promo Slide (split layout) ─────────────────────────────────────────
 // Used when banner.displayStyle === 'PROMO' (or when no plain image fits)
 const PromoSlide = ({ banner, onClick }) => {
@@ -57,13 +67,24 @@ const PromoSlide = ({ banner, onClick }) => {
         overflow: 'hidden',
       }}>
         {banner.imageUrl ? (
-          <img
-            src={banner.imageUrl}
-            alt={title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          isVideoUrl(banner.imageUrl) ? (
+            <video
+              src={banner.imageUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            <img
+              src={banner.imageUrl}
+              alt={title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )
         ) : (
-          <div style={{ color: '#ccc', fontSize: '14px' }}>No image</div>
+          <div style={{ color: '#ccc', fontSize: '14px' }}>No media</div>
         )}
       </div>
 
@@ -200,12 +221,23 @@ const ImageSlide = ({ banner, onClick }) => {
       onClick={onClick}
       style={{ width: '100%', height: '100%', position: 'relative', cursor: banner.linkValue ? 'pointer' : 'default' }}
     >
-      <img
-        src={banner.imageUrl}
-        alt={banner.title}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        onError={(e) => { e.target.src = 'https://placehold.co/1600x500?text=Banner'; }}
-      />
+      {isVideoUrl(banner.imageUrl) ? (
+        <video
+          src={banner.imageUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <img
+          src={banner.imageUrl}
+          alt={banner.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          onError={(e) => { e.target.src = 'https://placehold.co/1600x500?text=Banner'; }}
+        />
+      )}
       {(banner.title || banner.subtitle) && (
         <div style={{
           position: 'absolute', left: 0, right: 0,

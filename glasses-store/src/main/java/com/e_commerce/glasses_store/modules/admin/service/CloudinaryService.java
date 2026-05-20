@@ -22,7 +22,8 @@ public class CloudinaryService {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                 "folder", "glasses-store/products",
                 "use_filename", true,
-                "unique_filename", true
+                "unique_filename", true,
+                "resource_type", "auto"
         ));
         String url = uploadResult.get("secure_url").toString();
         log.info("Upload successful. URL: {}", url);
@@ -34,7 +35,8 @@ public class CloudinaryService {
         Map uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.asMap(
                 "folder", "glasses-store/products",
                 "use_filename", true,
-                "unique_filename", true
+                "unique_filename", true,
+                "resource_type", "auto"
         ));
         String url = uploadResult.get("secure_url").toString();
         log.info("Upload successful. URL: {}", url);

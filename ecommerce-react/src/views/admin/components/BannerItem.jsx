@@ -22,6 +22,16 @@ const formatDate = (dateStr) => {
   });
 };
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
+  return cleanUrl.endsWith('.mp4') || 
+         cleanUrl.endsWith('.webm') || 
+         cleanUrl.endsWith('.ogg') || 
+         cleanUrl.endsWith('.mov') ||
+         url.includes('/video/upload/');
+};
+
 const BannerItem = ({ banner, onEdit, onDelete, onToggle }) => {
   const itemRef = useRef(null);
 
@@ -46,9 +56,23 @@ const BannerItem = ({ banner, onEdit, onDelete, onToggle }) => {
       >
         <div className="grid grid-count-6">
           <div className="grid-col item-img-wrapper">
-            {banner.imageUrl
-              ? <img alt={banner.title} className="item-img" src={banner.imageUrl} />
-              : <Skeleton height={50} width={80} />}
+            {banner.imageUrl ? (
+              isVideoUrl(banner.imageUrl) ? (
+                <video
+                  className="item-img"
+                  src={banner.imageUrl}
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              ) : (
+                <img alt={banner.title} className="item-img" src={banner.imageUrl} />
+              )
+            ) : (
+              <Skeleton height={50} width={80} />
+            )}
           </div>
           <div className="grid-col">
             <span className="text-overflow-ellipsis">
