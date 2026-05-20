@@ -60,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private final com.e_commerce.glasses_store.modules.payment.service.VnpayService vnpayService;
     private final com.e_commerce.glasses_store.modules.payment.service.ZaloPayService zaloPayService;
     private final com.e_commerce.glasses_store.modules.payment.service.MoMoService moMoService;
+    private final com.e_commerce.glasses_store.modules.payment.service.PayOsService payOsService;
     private final jakarta.servlet.http.HttpServletRequest httpServletRequest;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -184,6 +185,12 @@ public class OrderServiceImpl implements OrderService {
             case VNPAY, ATM, VISA -> response.setPaymentUrl(vnpayService.createPaymentUrl(savedOrder, httpServletRequest));
             case ZALOPAY -> response.setPaymentUrl(zaloPayService.createPaymentUrl(savedOrder));
             case MOMO -> response.setPaymentUrl(moMoService.createPaymentUrl(savedOrder));
+            case PAYOS -> {
+                String checkoutUrl = payOsService.createPaymentLink(savedOrder);
+                // Lưu lại gatewayTxnRef (orderCode PayOS) vào DB
+                orderRepository.save(savedOrder);
+                response.setPaymentUrl(checkoutUrl);
+            }
             case COD, BANK_TRANSFER -> { /* no online payment URL */ }
         }
 

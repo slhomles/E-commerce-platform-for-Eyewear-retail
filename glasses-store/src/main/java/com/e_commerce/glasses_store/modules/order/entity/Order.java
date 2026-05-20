@@ -110,6 +110,6 @@ public class Order extends BaseEntity {
     }
 
     public enum PaymentMethod {
-        COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA
+        COD, BANK_TRANSFER, VNPAY, ZALOPAY, MOMO, ATM, VISA, PAYOS
     }
 }

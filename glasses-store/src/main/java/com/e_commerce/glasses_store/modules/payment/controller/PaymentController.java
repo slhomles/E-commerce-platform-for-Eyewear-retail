@@ -4,8 +4,10 @@ import com.e_commerce.glasses_store.common.ApiResponse;
 import com.e_commerce.glasses_store.modules.order.entity.Order;
 import com.e_commerce.glasses_store.modules.order.repository.OrderRepository;
 import com.e_commerce.glasses_store.modules.payment.service.MoMoService;
+import com.e_commerce.glasses_store.modules.payment.service.PayOsService;
 import com.e_commerce.glasses_store.modules.payment.service.VnpayService;
 import com.e_commerce.glasses_store.modules.payment.service.ZaloPayService;
+import vn.payos.model.webhooks.WebhookData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class PaymentController {
     private final VnpayService vnpayService;
     private final ZaloPayService zaloPayService;
     private final MoMoService moMoService;
+    private final PayOsService payOsService;
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -203,5 +206,87 @@ public class PaymentController {
             return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
         }
         return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán không thành công hoặc đã hủy (mã: " + resultCode + ")"));
+    }
+
+    // ==================== PayOS ====================
+
+    /**
+     * PayOS Webhook (IPN): PayOS POSTs JSON với signature.
+     * Xác thực chữ ký → cập nhật order PAID.
+     * Trả về {"code": "00", "desc": "success"} khi thành công.
+     */
+    @PostMapping("/payos-webhook")
+    public ResponseEntity<Map<String, Object>> payOsWebhook(@RequestBody Map<String, Object> body) {
+        log.info("PayOS Webhook body: {}", body);
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            WebhookData webhookData = payOsService.verifyWebhookData(body);
+
+            String orderCodeStr = String.valueOf(webhookData.getOrderCode());
+            Optional<Order> orderOpt = orderRepository.findByGatewayTxnRef(orderCodeStr);
+
+            if (orderOpt.isEmpty()) {
+                log.warn("PayOS Webhook: order not found for orderCode={}", orderCodeStr);
+                resp.put("code", "00");
+                resp.put("desc", "success");
+                return ResponseEntity.ok(resp);
+            }
+
+            Order order = orderOpt.get();
+            // PayOS trả code "00" nghĩa là thanh toán thành công
+            if ("00".equals(webhookData.getCode())) {
+                order.setPaymentStatus(Order.PaymentStatus.PAID);
+                order.setStatus(Order.OrderStatus.PAID);
+                orderRepository.save(order);
+                log.info("PayOS: order {} marked as PAID", order.getCode());
+            }
+
+            resp.put("code", "00");
+            resp.put("desc", "success");
+            return ResponseEntity.ok(resp);
+
+        } catch (Exception e) {
+            log.error("PayOS Webhook error: {}", e.getMessage(), e);
+            resp.put("code", "01");
+            resp.put("desc", e.getMessage());
+            return ResponseEntity.ok(resp);
+        }
+    }
+
+    /**
+     * User redirect sau khi thanh toán PayOS.
+     * Frontend gọi endpoint này sau khi PayOS redirect về.
+     */
+    @GetMapping("/payos-return")
+    public ResponseEntity<ApiResponse<String>> payOsReturn(@RequestParam Map<String, String> params) {
+        log.info("PayOS Return Params: {}", params);
+        String orderCodeStr = params.get("orderCode");
+        String code = params.get("code");
+
+        if (orderCodeStr == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Missing orderCode"));
+        }
+
+        // Tìm đơn hàng theo gatewayTxnRef (= orderCode PayOS)
+        Optional<Order> orderOpt = orderRepository.findByGatewayTxnRef(orderCodeStr);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Không tìm thấy đơn hàng"));
+        }
+
+        Order order = orderOpt.get();
+
+        if (order.getPaymentStatus() == Order.PaymentStatus.PAID) {
+            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+        }
+
+        if ("00".equals(code)) {
+            // Webhook có thể chưa tới, mark paid tạm
+            order.setPaymentStatus(Order.PaymentStatus.PAID);
+            order.setStatus(Order.OrderStatus.PAID);
+            orderRepository.save(order);
+            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+        }
+
+        return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán không thành công hoặc đã hủy"));
     }
 }
