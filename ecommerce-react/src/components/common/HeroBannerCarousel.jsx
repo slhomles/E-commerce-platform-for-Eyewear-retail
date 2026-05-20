@@ -286,8 +286,7 @@ const HeroBannerCarousel = () => {
     <div
       style={{
         position: 'relative', width: '100%', marginBottom: '40px',
-        borderRadius: '16px', overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,0,.12)',
+        overflow: 'hidden',
         aspectRatio: '16 / 4.5',
       }}
       onMouseEnter={() => setIsHovered(true)}

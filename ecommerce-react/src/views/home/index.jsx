@@ -45,10 +45,11 @@ const Home = () => {
   } = useRecommendedProducts(homeRecommendedCount);
 
   return (
-    <main className="content">
-      <div className="home">
-        <HeroBannerCarousel />
-        <div className="display">
+    <>
+      <HeroBannerCarousel />
+      <main className="content">
+        <div className="home">
+          <div className="display">
           <div className="display-header">
             <h1>Featured Products</h1>
             <Link to={FEATURED_PRODUCTS}>See All</Link>
@@ -84,8 +85,8 @@ const Home = () => {
             />
           )}
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 
