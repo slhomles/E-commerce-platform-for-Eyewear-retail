@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useHistory } from 'react-router-dom';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useDocumentTitle, useScrollTop } from '@/hooks';
 import api from '@/services/api';
@@ -10,6 +10,7 @@ const PaymentSuccess = () => {
     const location = useLocation();
     const [status, setStatus] = useState('loading');
     const [message, setMessage] = useState('Đang kiểm tra kết quả thanh toán với máy chủ...');
+    const history = useHistory();
 
     useEffect(() => {
         const verifyPayment = async () => {
@@ -59,6 +60,16 @@ const PaymentSuccess = () => {
         verifyPayment();
     }, [location]);
 
+    useEffect(() => {
+        let timer;
+        if (status === 'success') {
+            timer = setTimeout(() => {
+                history.push('/account?tab=orders');
+            }, 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [status, history]);
+
     return (
         <div className="checkout">
             <div className="checkout-step-3" style={{ textAlign: 'center', padding: '50px 20px' }}>
@@ -72,7 +83,7 @@ const PaymentSuccess = () => {
                 <p className="text-subtle" style={{ fontSize: '18px', margin: '20px 0' }}>{message}</p>
                 
                 <div style={{ marginTop: '40px' }}>
-                    <Link to="/account" className="button">
+                    <Link to="/account?tab=orders" className="button">
                         Xem đơn hàng của tôi
                     </Link>
                     &nbsp;

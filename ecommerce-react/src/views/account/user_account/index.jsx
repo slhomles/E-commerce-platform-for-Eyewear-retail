@@ -2,6 +2,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { useDocumentTitle, useScrollTop } from '@/hooks';
 import React, { lazy, Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 import UserTab from '../components/UserTab';
 
 const UserAccountTab = lazy(() => import('../components/UserAccountTab'));
@@ -18,9 +19,11 @@ const Loader = () => (
 const UserAccount = () => {
   useScrollTop();
   useDocumentTitle('My Account | Salinaka');
+  const location = useLocation();
+  const isOrdersTab = location.search.includes('tab=orders');
 
   return (
-    <UserTab>
+    <UserTab defaultIndex={isOrdersTab ? 2 : 0}>
       <div index={0} label="Account">
         <Suspense fallback={<Loader />}>
           <UserAccountTab />
