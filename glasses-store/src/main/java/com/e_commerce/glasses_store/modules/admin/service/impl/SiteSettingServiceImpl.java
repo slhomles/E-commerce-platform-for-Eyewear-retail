@@ -32,9 +32,9 @@ public class SiteSettingServiceImpl implements SiteSettingService {
         SiteSetting setting = siteSettingRepository.findBySettingKey(key)
                 .orElseThrow(() -> new IllegalArgumentException("Setting not found: " + key));
 
-        // Boolean settings (no min/max) only accept "true" or "false" (Except for shop_ identity keys which are text/url)
+        // Boolean settings (no min/max) only accept "true" or "false" (Except for shop_ identity keys and product_ids list which are text/url)
         if (setting.getMinValue() == null && setting.getMaxValue() == null) {
-            if (!key.startsWith("shop_")) {
+            if (!key.startsWith("shop_") && !key.endsWith("_product_ids")) {
                 String trimmed = value.trim().toLowerCase();
                 if (!trimmed.equals("true") && !trimmed.equals("false")) {
                     throw new IllegalArgumentException("Value must be 'true' or 'false': " + value);

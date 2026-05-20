@@ -5,10 +5,16 @@ import com.e_commerce.glasses_store.modules.product.entity.*;
 import com.e_commerce.glasses_store.modules.product.exception.ProductNotFoundException;
 import com.e_commerce.glasses_store.modules.product.repository.*;
 import com.e_commerce.glasses_store.modules.product.service.ProductService;
+import com.e_commerce.glasses_store.modules.admin.repository.SiteSettingRepository;
+import com.e_commerce.glasses_store.modules.admin.entity.SiteSetting;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
+    private final SiteSettingRepository siteSettingRepository;
     private final com.e_commerce.glasses_store.modules.review.repository.ReviewRepository reviewRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -102,12 +109,86 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductListResponse> getFeaturedProducts(int limit) {
+        Optional<String> customIdsOpt = siteSettingRepository.findBySettingKey("featured_product_ids")
+                .map(SiteSetting::getSettingValue)
+                .filter(val -> !val.trim().isEmpty());
+
+        if (customIdsOpt.isPresent()) {
+            List<String> idList = Arrays.stream(customIdsOpt.get().split(","))
+                    .map(String::trim)
+                    .filter(id -> !id.isEmpty())
+                    .toList();
+            if (!idList.isEmpty()) {
+                List<Product> customProducts = productRepository.findAllById(idList).stream()
+                        .filter(p -> Boolean.TRUE.equals(p.getIsActive()) && !Boolean.TRUE.equals(p.getIsDeleted()))
+                        .toList();
+
+                // Sort to keep custom order
+                List<Product> sortedProducts = new ArrayList<>(customProducts);
+                sortedProducts.sort(java.util.Comparator.comparingInt(p -> idList.indexOf(p.getId())));
+
+                List<ProductListResponse> responseList = new ArrayList<>(sortedProducts.stream()
+                        .map(this::toListResponse).toList());
+
+                // If not enough to fill limit, fill from fallback
+                if (responseList.size() < limit) {
+                    List<ProductListResponse> fallback = productRepository.findFeatured(PageRequest.of(0, limit))
+                            .stream()
+                            .filter(p -> !idList.contains(p.getId()))
+                            .map(this::toListResponse)
+                            .toList();
+                    for (ProductListResponse p : fallback) {
+                        if (responseList.size() >= limit) break;
+                        responseList.add(p);
+                    }
+                }
+                return responseList.size() > limit ? responseList.subList(0, limit) : responseList;
+            }
+        }
+
         return productRepository.findFeatured(PageRequest.of(0, limit))
                 .stream().map(this::toListResponse).toList();
     }
 
     @Override
     public List<ProductListResponse> getRecommendedProducts(int limit) {
+        Optional<String> customIdsOpt = siteSettingRepository.findBySettingKey("recommended_product_ids")
+                .map(SiteSetting::getSettingValue)
+                .filter(val -> !val.trim().isEmpty());
+
+        if (customIdsOpt.isPresent()) {
+            List<String> idList = Arrays.stream(customIdsOpt.get().split(","))
+                    .map(String::trim)
+                    .filter(id -> !id.isEmpty())
+                    .toList();
+            if (!idList.isEmpty()) {
+                List<Product> customProducts = productRepository.findAllById(idList).stream()
+                        .filter(p -> Boolean.TRUE.equals(p.getIsActive()) && !Boolean.TRUE.equals(p.getIsDeleted()))
+                        .toList();
+
+                // Sort to keep custom order
+                List<Product> sortedProducts = new ArrayList<>(customProducts);
+                sortedProducts.sort(java.util.Comparator.comparingInt(p -> idList.indexOf(p.getId())));
+
+                List<ProductListResponse> responseList = new ArrayList<>(sortedProducts.stream()
+                        .map(this::toListResponse).toList());
+
+                // If not enough to fill limit, fill from fallback
+                if (responseList.size() < limit) {
+                    List<ProductListResponse> fallback = productRepository.findRecommended(PageRequest.of(0, limit))
+                            .stream()
+                            .filter(p -> !idList.contains(p.getId()))
+                            .map(this::toListResponse)
+                            .toList();
+                    for (ProductListResponse p : fallback) {
+                        if (responseList.size() >= limit) break;
+                        responseList.add(p);
+                    }
+                }
+                return responseList.size() > limit ? responseList.subList(0, limit) : responseList;
+            }
+        }
+
         return productRepository.findRecommended(PageRequest.of(0, limit))
                 .stream().map(this::toListResponse).toList();
     }

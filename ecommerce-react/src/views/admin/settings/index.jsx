@@ -269,8 +269,8 @@ const AdminSettings = () => {
   };
 
   // ── Split settings into groups ──────────────────────────────────────
-  const numericSettings = settings.filter((s) => !s.key.startsWith('shop_') && (s.minValue != null || s.maxValue != null));
-  const booleanSettings = settings.filter((s) => !s.key.startsWith('shop_') && s.minValue == null && s.maxValue == null);
+  const numericSettings = settings.filter((s) => !s.key.startsWith('shop_') && !s.key.endsWith('_product_ids') && (s.minValue != null || s.maxValue != null));
+  const booleanSettings = settings.filter((s) => !s.key.startsWith('shop_') && !s.key.endsWith('_product_ids') && s.minValue == null && s.maxValue == null);
 
   const getIdentitySettingVal = (key) => localValues[key] ?? '';
 
@@ -931,6 +931,119 @@ const AdminSettings = () => {
               </div>
             </div>
 
+          </div>
+        </div>
+
+        {/* ── Section 4: Custom Featured & Recommended Products ──────────────── */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #f0f0f0',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          marginBottom: '24px',
+        }}>
+          {/* Section header */}
+          <div style={{
+            padding: '16px 20px',
+            borderBottom: '1px solid #f5f5f5',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}>
+            <SettingOutlined style={{ fontSize: '18px', color: '#1a1a1a' }} />
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
+                Custom Featured & Recommended Products
+              </div>
+              <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
+                Assign specific products to display on home/sub-pages instead of automated rules.
+              </div>
+            </div>
+          </div>
+
+          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Custom Featured */}
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>
+                CUSTOM FEATURED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  value={getIdentitySettingVal('featured_product_ids')}
+                  onChange={(e) => handleIdentityChange('featured_product_ids', e.target.value)}
+                  placeholder="e.g. 5e1b764c-b17a-4284-814d-91b5c928befd, 82d92956-6a3f-42e7-8178-5777328bf3c8..."
+                  style={inputStyle}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleIdentitySave('featured_product_ids')}
+                  className="button button-small"
+                  disabled={saving['featured_product_ids']}
+                >
+                  Save
+                </button>
+              </div>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                Enter product UUIDs separated by commas. If empty, the system defaults to products currently on sale.
+              </div>
+              {feedback['featured_product_ids'] && (
+                <div style={{ ...feedbackStyle, color: feedback['featured_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
+                  {feedback['featured_product_ids'].msg}
+                </div>
+              )}
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: 0 }} />
+
+            {/* Custom Recommended */}
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>
+                CUSTOM RECOMMENDED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  value={getIdentitySettingVal('recommended_product_ids')}
+                  onChange={(e) => handleIdentityChange('recommended_product_ids', e.target.value)}
+                  placeholder="e.g. 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d, 9f8e7d6c-5b4a-3c2b-1a0f-9e8d7c6b5a4f..."
+                  style={inputStyle}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleIdentitySave('recommended_product_ids')}
+                  className="button button-small"
+                  disabled={saving['recommended_product_ids']}
+                >
+                  Save
+                </button>
+              </div>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                Enter product UUIDs separated by commas. If empty, the system automatically recommends the newest products.
+              </div>
+              {feedback['recommended_product_ids'] && (
+                <div style={{ ...feedbackStyle, color: feedback['recommended_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
+                  {feedback['recommended_product_ids'].msg}
+                </div>
+              )}
+            </div>
+
+            <div style={{
+              background: '#fcf8e3',
+              border: '1px solid #faebcc',
+              borderRadius: '6px',
+              padding: '12px 16px',
+              fontSize: '12px',
+              color: '#8a6d3b',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <InfoCircleOutlined />
+              <span>
+                <strong>💡 Tip:</strong> You can find and copy <strong>Product IDs</strong> directly from the <strong>Admin Product Catalog</strong> table (under Products list).
+              </span>
+            </div>
           </div>
         </div>
 
