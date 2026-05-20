@@ -16,64 +16,48 @@ import api from '@/services/api';
 
 const NUMERIC_META = {
   home_featured_count: {
-    label: 'Trang chủ — Số sản phẩm Featured',
-    description: 'Số lượng sản phẩm nổi bật hiển thị ở mục "Featured Products" trên trang chủ.',
-    page: 'Trang chủ',
+    label: 'Home Page — Featured Products Count',
+    description: 'Number of featured products displayed in the "Featured Products" section on the home page.',
+    page: 'Home Page',
   },
   home_recommended_count: {
-    label: 'Trang chủ — Số sản phẩm Recommended',
-    description: 'Số lượng sản phẩm gợi ý hiển thị ở mục "Recommended Products" trên trang chủ.',
-    page: 'Trang chủ',
+    label: 'Home Page — Recommended Products Count',
+    description: 'Number of recommended products displayed in the "Recommended Products" section on the home page.',
+    page: 'Home Page',
   },
   featured_page_count: {
-    label: 'Trang Featured — Số sản phẩm hiển thị',
-    description: 'Tổng số sản phẩm nổi bật hiển thị trên trang /featured.',
+    label: 'Featured Page — Display Count',
+    description: 'Total number of featured products displayed on the /featured page.',
     page: '/featured',
   },
   recommended_page_count: {
-    label: 'Trang Recommended — Số sản phẩm hiển thị',
-    description: 'Tổng số sản phẩm gợi ý hiển thị trên trang /recommended.',
+    label: 'Recommended Page — Display Count',
+    description: 'Total number of recommended products displayed on the /recommended page.',
     page: '/recommended',
   },
   shop_page_size: {
-    label: 'Trang Shop — Số sản phẩm trên một trang',
-    description: 'Số lượng sản phẩm hiển thị trên một trang của trang /shop.',
+    label: 'Shop Page — Products Per Page',
+    description: 'Number of products displayed per page on the /shop page.',
     page: '/shop',
   },
 };
 
 const PRICE_TOGGLE_META = {
   show_original_price: {
-    label: 'Giá gốc',
-    description: 'Hiển thị giá gốc (gạch ngang) phía trên giá khuyến mãi.',
+    label: 'Original Price',
+    description: 'Display the original price (crossed out) above the sale price.',
     icon: <TagOutlined />,
   },
   show_sale_price: {
-    label: 'Giá khuyến mãi',
-    description: 'Hiển thị giá bán / giá sau khuyến mãi trên card sản phẩm.',
+    label: 'Sale Price',
+    description: 'Display the sale / selling price on the product card.',
     icon: <DollarOutlined />,
   },
   show_discount_badge: {
-    label: '% Giảm giá',
-    description: 'Hiển thị nhãn đỏ phần trăm giảm giá góc trên-trái của card.',
+    label: 'Discount Percentage',
+    description: 'Display a red discount percentage badge at the top-left corner of the card.',
     icon: <PercentageOutlined />,
   },
-};
-
-const IDENTITY_META = {
-  shop_name: { label: 'Tên Cửa Hàng', placeholder: 'Nhập tên cửa hàng của bạn...', type: 'text', icon: <ShopOutlined /> },
-  shop_tagline: { label: 'Tagline / Slogan', placeholder: 'Mô tả ngắn hiển thị ở footer...', type: 'textarea', icon: <InfoCircleOutlined /> },
-  shop_logo_url: { label: 'Logo Cửa Hàng', placeholder: 'Đường dẫn logo...', type: 'image', icon: <ShopOutlined /> },
-  shop_favicon_url: { label: 'Favicon Trình Duyệt', placeholder: 'Đường dẫn favicon...', type: 'image', icon: <GlobalOutlined /> },
-  shop_phone: { label: 'Hotline / SĐT Liên Hệ', placeholder: 'Nhập số hotline của cửa hàng...', type: 'text', icon: <PhoneOutlined /> },
-  shop_email: { label: 'Email Hỗ Trợ', placeholder: 'Nhập email liên hệ hỗ trợ...', type: 'text', icon: <MailOutlined /> },
-  shop_address: { label: 'Địa Chỉ Cửa Hàng', placeholder: 'Nhập địa chỉ chi tiết hiển thị ở footer...', type: 'text', icon: <HomeOutlined /> },
-  shop_working_hours: { label: 'Giờ Mở Cửa', placeholder: 'Ví dụ: 8:00 - 22:00 (Hàng ngày)...', type: 'text', icon: <ClockCircleOutlined /> },
-  shop_copyright: { label: 'Bản Quyền (Copyright)', placeholder: 'Ví dụ: © 2026 Salinaka Eyewear...', type: 'text', icon: <InfoCircleOutlined /> },
-  shop_facebook_url: { label: 'Facebook Link', placeholder: 'https://facebook.com/trang-cua-ban', type: 'text', icon: <FacebookOutlined /> },
-  shop_instagram_url: { label: 'Instagram Link', placeholder: 'https://instagram.com/trang-cua-ban', type: 'text', icon: <InstagramOutlined /> },
-  shop_tiktok_url: { label: 'TikTok Link', placeholder: 'https://tiktok.com/@trang-cua-ban', type: 'text', icon: <GlobalOutlined /> },
-  shop_zalo_url: { label: 'Zalo Link', placeholder: 'https://zalo.me/so-dien-thoai-zalo', type: 'text', icon: <PhoneOutlined /> },
 };
 
 // ─── Toggle Switch component ─────────────────────────────────────────────────
@@ -116,10 +100,10 @@ const Toggle = ({ checked, onChange, disabled }) => (
 const SettingsNavbar = ({ total }) => (
   <div className="product-admin-header">
     <h3 className="product-admin-header-title">
-      Cấu Hình Hiển Thị & Thương Hiệu ({total} cài đặt)
+      Display & Brand Identity Settings ({total} settings)
     </h3>
     <span style={{ fontSize: '13px', color: '#999' }}>
-      Quản lý hiển thị sản phẩm, thông tin cửa hàng, Logo, Favicon và thông tin Footer liên hệ toàn hệ thống.
+      Manage product displays, store details, Logo, Favicon, and contact Footer info across the system.
     </span>
   </div>
 );
@@ -165,13 +149,13 @@ const AdminSettings = () => {
     const rawVal = localValues[setting.key];
     const num = parseInt(rawVal, 10);
     if (isNaN(num)) {
-      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'error', msg: 'Vui lòng nhập số nguyên.' } }));
+      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'error', msg: 'Please enter an integer.' } }));
       return;
     }
     if (num < setting.minValue || num > setting.maxValue) {
       setFeedback((prev) => ({
         ...prev,
-        [setting.key]: { type: 'error', msg: `Giá trị phải từ ${setting.minValue} đến ${setting.maxValue}.` }
+        [setting.key]: { type: 'error', msg: `Value must be between ${setting.minValue} and ${setting.maxValue}.` }
       }));
       return;
     }
@@ -179,12 +163,12 @@ const AdminSettings = () => {
     try {
       await api.updateSetting(setting.key, num);
       setSettings((prev) => prev.map((s) => s.key === setting.key ? { ...s, value: String(num) } : s));
-      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'success', msg: 'Đã lưu thành công.' } }));
+      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'success', msg: 'Saved successfully.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [setting.key]: null })), 3000);
     } catch (e) {
       setFeedback((prev) => ({
         ...prev,
-        [setting.key]: { type: 'error', msg: e?.data?.message || e?.message || 'Lưu thất bại.' }
+        [setting.key]: { type: 'error', msg: e?.data?.message || e?.message || 'Save failed.' }
       }));
     } finally {
       setSaving((prev) => ({ ...prev, [setting.key]: false }));
@@ -204,12 +188,12 @@ const AdminSettings = () => {
     try {
       await api.updateSetting(key, newVal);
       setSettings((prev) => prev.map((s) => s.key === key ? { ...s, value: newVal } : s));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Đã lưu.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Saved.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [key]: null })), 2000);
     } catch (e) {
       // revert on error
       setLocalValues((prev) => ({ ...prev, [key]: String(!newBool) }));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Lưu thất bại.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Save failed.' } }));
     } finally {
       setSaving((prev) => ({ ...prev, [key]: false }));
     }
@@ -227,12 +211,12 @@ const AdminSettings = () => {
     try {
       await api.updateSetting(key, val);
       setSettings((prev) => prev.map((s) => s.key === key ? { ...s, value: val } : s));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Đã lưu thành công.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Saved successfully.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [key]: null })), 3000);
     } catch (e) {
       setFeedback((prev) => ({
         ...prev,
-        [key]: { type: 'error', msg: 'Lưu cấu hình thất bại.' }
+        [key]: { type: 'error', msg: 'Save failed.' }
       }));
     } finally {
       setSaving((prev) => ({ ...prev, [key]: false }));
@@ -247,10 +231,10 @@ const AdminSettings = () => {
       setLocalValues((prev) => ({ ...prev, [key]: uploadedUrl }));
       await api.updateSetting(key, uploadedUrl);
       setSettings((prev) => prev.map((s) => s.key === key ? { ...s, value: uploadedUrl } : s));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Tải ảnh lên thành công.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Image uploaded successfully.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [key]: null })), 3000);
     } catch (error) {
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Không thể upload ảnh.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Failed to upload image.' } }));
     } finally {
       setSaving((prev) => ({ ...prev, [key]: false }));
     }
@@ -262,7 +246,7 @@ const AdminSettings = () => {
     );
 
     if (dirtySettings.length === 0) {
-      alert('Không có thông tin thương hiệu nào thay đổi để lưu.');
+      alert('No brand identity configurations have changed.');
       return;
     }
 
@@ -274,21 +258,19 @@ const AdminSettings = () => {
         await api.updateSetting(s.key, val);
         successCount++;
       } catch (e) {
-        console.error('Lưu lỗi key: ' + s.key, e);
+        console.error('Failed to save key: ' + s.key, e);
       } finally {
         setSaving((prev) => ({ ...prev, [s.key]: false }));
       }
     }
 
-    // Refresh lại settings
     fetchSettings();
-    alert(`Đã lưu thành công ${successCount}/${dirtySettings.length} cấu hình thương hiệu.`);
+    alert(`Successfully saved ${successCount}/${dirtySettings.length} brand configurations.`);
   };
 
   // ── Split settings into groups ──────────────────────────────────────
   const numericSettings = settings.filter((s) => !s.key.startsWith('shop_') && (s.minValue != null || s.maxValue != null));
   const booleanSettings = settings.filter((s) => !s.key.startsWith('shop_') && s.minValue == null && s.maxValue == null);
-  const identitySettings = settings.filter((s) => s.key.startsWith('shop_'));
 
   const getIdentitySettingVal = (key) => localValues[key] ?? '';
 
@@ -322,10 +304,10 @@ const AdminSettings = () => {
             <EyeOutlined style={{ fontSize: '16px', color: '#1a1a1a' }} />
             <div>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                Hiển thị giá trên card sản phẩm
+                Product Card Price Display
               </div>
               <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                Áp dụng cho trang Shop và trang Featured · Thay đổi có hiệu lực ngay lập tức
+                Applies to the Shop and Featured pages - changes take effect immediately
               </div>
             </div>
           </div>
@@ -333,7 +315,7 @@ const AdminSettings = () => {
           {/* Toggle rows */}
           {booleanSettings.length === 0 && !isLoading && (
             <div style={{ padding: '20px', color: '#bbb', fontSize: '13px' }}>
-              Không tìm thấy cài đặt hiển thị giá.
+              No price display settings found.
             </div>
           )}
           {booleanSettings.map((setting, idx) => {
@@ -405,7 +387,7 @@ const AdminSettings = () => {
                   minWidth: '36px',
                   textAlign: 'right',
                 }}>
-                  {isOn ? 'BẬT' : 'TẮT'}
+                  {isOn ? 'ON' : 'OFF'}
                 </span>
 
                 {/* Toggle */}
@@ -443,10 +425,10 @@ const AdminSettings = () => {
             <SettingOutlined style={{ fontSize: '16px', color: '#1a1a1a' }} />
             <div>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                Số lượng sản phẩm hiển thị
+                Displayed Product Counts
               </div>
               <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                Giá trị hợp lệ: <strong>5 – 20</strong> sản phẩm
+                Valid value: <strong>5 – 20</strong> products
               </div>
             </div>
           </div>
@@ -454,11 +436,11 @@ const AdminSettings = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={thStyle}>Trang</th>
-                <th style={thStyle}>Cài đặt</th>
-                <th style={thStyle}>Mô tả</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: '130px' }}>Giá trị</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: '120px' }}>Hành động</th>
+                <th style={thStyle}>Page</th>
+                <th style={thStyle}>Setting</th>
+                <th style={thStyle}>Description</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: '130px' }}>Value</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: '120px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -538,7 +520,7 @@ const AdminSettings = () => {
                           onClick={() => handleNumericSave(setting)}
                           style={{ opacity: (!isDirty || isSaving) ? 0.45 : 1 }}
                         >
-                          <SaveOutlined />&nbsp;{isSaving ? 'Đang lưu...' : 'Lưu'}
+                          <SaveOutlined />&nbsp;{isSaving ? 'Saving...' : 'Save'}
                         </button>
                         {isDirty && (
                           <button
@@ -558,7 +540,7 @@ const AdminSettings = () => {
           </table>
         </div>
 
-        {/* ── Section 3: Identity & Footer Settings (NEW & PREMIUM DESIGN) ── */}
+        {/* ── Section 3: Identity & Footer Settings (PREMIUM DESIGN) ── */}
         <div style={{
           background: '#fff',
           border: '1px solid #f0f0f0',
@@ -578,34 +560,34 @@ const AdminSettings = () => {
               <ShopOutlined style={{ fontSize: '18px', color: '#1a1a1a' }} />
               <div>
                 <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                  Thông tin Cửa hàng & Footer liên hệ
+                  Store Identity & Contact Footer
                 </div>
                 <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                  Chỉnh sửa Logo, Favicon, Tên cửa hàng, thông tin liên lạc và mạng xã hội.
+                  Configure Logo, Favicon, Shop Name, contact information, and social media links.
                 </div>
               </div>
             </div>
 
-            {/* Nút lưu nhanh tất cả */}
+            {/* Quick Save All */}
             <button
               onClick={handleSaveAllIdentity}
               className="button button-small"
               style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#1a1a1a', color: '#fff' }}
             >
-              <SaveOutlined /> Lưu toàn bộ thông tin
+              <SaveOutlined /> Save All Settings
             </button>
           </div>
 
           <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
-            {/* Nhóm 1: Nhận diện Thương hiệu */}
+            {/* Group 1: Brand Identity */}
             <div>
-              <h4 style={groupTitleStyle}>1. Nhận Diện Thương Hiệu & Ảnh Đại Diện</h4>
+              <h4 style={groupTitleStyle}>1. Brand Identity & Logos</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', flexWrap: 'wrap' }}>
                 
                 {/* File Upload Logo */}
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    <ShopOutlined />&nbsp;&nbsp;LOGO CỬA HÀNG
+                    <ShopOutlined />&nbsp;&nbsp;SHOP LOGO
                   </label>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{
@@ -635,7 +617,7 @@ const AdminSettings = () => {
                         type="text"
                         value={getIdentitySettingVal('shop_logo_url')}
                         onChange={(e) => handleIdentityChange('shop_logo_url', e.target.value)}
-                        placeholder="Nhập URL logo hoặc tải ảnh..."
+                        placeholder="Enter logo URL or upload image..."
                         style={inputStyle}
                       />
                       <div style={{ display: 'flex', gap: '8px' }}>
@@ -645,7 +627,7 @@ const AdminSettings = () => {
                           style={uploadBtnStyle}
                           disabled={saving['shop_logo_url']}
                         >
-                          <UploadOutlined /> Chọn File ảnh
+                          <UploadOutlined /> Choose File
                         </button>
                         <button
                           type="button"
@@ -653,7 +635,7 @@ const AdminSettings = () => {
                           style={saveSubBtnStyle}
                           disabled={saving['shop_logo_url'] || getIdentitySettingVal('shop_logo_url') === settings.find(s => s.key === 'shop_logo_url')?.value}
                         >
-                          Lưu URL
+                          Save URL
                         </button>
                         <input
                           type="file"
@@ -675,7 +657,7 @@ const AdminSettings = () => {
                 {/* File Upload Favicon */}
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>
-                    <GlobalOutlined />&nbsp;&nbsp;FAVICON TRÌNH DUYỆT (16x16 / 32x32)
+                    <GlobalOutlined />&nbsp;&nbsp;BROWSER FAVICON (16x16 / 32x32)
                   </label>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{
@@ -705,7 +687,7 @@ const AdminSettings = () => {
                         type="text"
                         value={getIdentitySettingVal('shop_favicon_url')}
                         onChange={(e) => handleIdentityChange('shop_favicon_url', e.target.value)}
-                        placeholder="Nhập URL favicon hoặc tải ảnh..."
+                        placeholder="Enter favicon URL or upload image..."
                         style={inputStyle}
                       />
                       <div style={{ display: 'flex', gap: '8px' }}>
@@ -715,7 +697,7 @@ const AdminSettings = () => {
                           style={uploadBtnStyle}
                           disabled={saving['shop_favicon_url']}
                         >
-                          <UploadOutlined /> Chọn File ảnh
+                          <UploadOutlined /> Choose File
                         </button>
                         <button
                           type="button"
@@ -723,7 +705,7 @@ const AdminSettings = () => {
                           style={saveSubBtnStyle}
                           disabled={saving['shop_favicon_url'] || getIdentitySettingVal('shop_favicon_url') === settings.find(s => s.key === 'shop_favicon_url')?.value}
                         >
-                          Lưu URL
+                          Save URL
                         </button>
                         <input
                           type="file"
@@ -744,13 +726,13 @@ const AdminSettings = () => {
 
                 {/* Shop Name */}
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}><ShopOutlined />&nbsp;&nbsp;TÊN CỬA HÀNG</label>
+                  <label style={labelStyle}><ShopOutlined />&nbsp;&nbsp;SHOP NAME</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"
                       value={getIdentitySettingVal('shop_name')}
                       onChange={(e) => handleIdentityChange('shop_name', e.target.value)}
-                      placeholder="Ví dụ: Salinaka Eyewear..."
+                      placeholder="e.g. Salinaka Eyewear..."
                       style={inputStyle}
                     />
                     <button
@@ -759,7 +741,7 @@ const AdminSettings = () => {
                       className="button button-small"
                       disabled={saving['shop_name']}
                     >
-                      Lưu
+                      Save
                     </button>
                   </div>
                 </div>
@@ -772,7 +754,7 @@ const AdminSettings = () => {
                       type="text"
                       value={getIdentitySettingVal('shop_tagline')}
                       onChange={(e) => handleIdentityChange('shop_tagline', e.target.value)}
-                      placeholder="Mô tả thương hiệu cực ngắn..."
+                      placeholder="A very short description of your brand..."
                       style={inputStyle}
                     />
                     <button
@@ -781,7 +763,7 @@ const AdminSettings = () => {
                       className="button button-small"
                       disabled={saving['shop_tagline']}
                     >
-                      Lưu
+                      Save
                     </button>
                   </div>
                 </div>
@@ -791,68 +773,68 @@ const AdminSettings = () => {
 
             <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: 0 }} />
 
-            {/* Nhóm 2: Thông tin Liên hệ */}
+            {/* Group 2: Contact Info */}
             <div>
-              <h4 style={groupTitleStyle}>2. Thông Tin Liên Hệ (Footer)</h4>
+              <h4 style={groupTitleStyle}>2. Contact Information (Footer)</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 
                 {/* Hotline */}
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}><PhoneOutlined />&nbsp;&nbsp;HOTLINE / ĐIỆN THOẠI</label>
+                  <label style={labelStyle}><PhoneOutlined />&nbsp;&nbsp;HOTLINE / PHONE</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"
                       value={getIdentitySettingVal('shop_phone')}
                       onChange={(e) => handleIdentityChange('shop_phone', e.target.value)}
-                      placeholder="Ví dụ: 0912 345 678..."
+                      placeholder="e.g. +84 912 345 678..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_phone')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_phone')} className="button button-small">Save</button>
                   </div>
                 </div>
 
                 {/* Email */}
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}><MailOutlined />&nbsp;&nbsp;EMAIL HỖ TRỢ</label>
+                  <label style={labelStyle}><MailOutlined />&nbsp;&nbsp;SUPPORT EMAIL</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="email"
                       value={getIdentitySettingVal('shop_email')}
                       onChange={(e) => handleIdentityChange('shop_email', e.target.value)}
-                      placeholder="Ví dụ: contact@shop.com..."
+                      placeholder="e.g. support@salinaka.com..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_email')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_email')} className="button button-small">Save</button>
                   </div>
                 </div>
 
-                {/* Địa chỉ */}
+                {/* Address */}
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}><HomeOutlined />&nbsp;&nbsp;ĐỊA CHỈ CHI TIẾT</label>
+                  <label style={labelStyle}><HomeOutlined />&nbsp;&nbsp;STORE ADDRESS</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"
                       value={getIdentitySettingVal('shop_address')}
                       onChange={(e) => handleIdentityChange('shop_address', e.target.value)}
-                      placeholder="Nhập địa chỉ trụ sở chính..."
+                      placeholder="Enter physical address of the store..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_address')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_address')} className="button button-small">Save</button>
                   </div>
                 </div>
 
-                {/* Giờ mở cửa */}
+                {/* Working Hours */}
                 <div style={formGroupStyle}>
-                  <label style={labelStyle}><ClockCircleOutlined />&nbsp;&nbsp;GIỜ MỞ CỬA</label>
+                  <label style={labelStyle}><ClockCircleOutlined />&nbsp;&nbsp;WORKING HOURS</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="text"
                       value={getIdentitySettingVal('shop_working_hours')}
                       onChange={(e) => handleIdentityChange('shop_working_hours', e.target.value)}
-                      placeholder="Ví dụ: 8:00 - 22:00 (Hàng ngày)..."
+                      placeholder="e.g. 8:00 AM - 10:00 PM (Daily)..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_working_hours')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_working_hours')} className="button button-small">Save</button>
                   </div>
                 </div>
 
@@ -861,9 +843,9 @@ const AdminSettings = () => {
 
             <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: 0 }} />
 
-            {/* Nhóm 3: Mạng xã hội */}
+            {/* Group 3: Social Media Links */}
             <div>
-              <h4 style={groupTitleStyle}>3. Liên Kết Mạng Xã Hội</h4>
+              <h4 style={groupTitleStyle}>3. Social Media Links</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 
                 {/* Facebook */}
@@ -877,7 +859,7 @@ const AdminSettings = () => {
                       placeholder="https://facebook.com/..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_facebook_url')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_facebook_url')} className="button button-small">Save</button>
                   </div>
                 </div>
 
@@ -892,7 +874,7 @@ const AdminSettings = () => {
                       placeholder="https://instagram.com/..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_instagram_url')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_instagram_url')} className="button button-small">Save</button>
                   </div>
                 </div>
 
@@ -907,7 +889,7 @@ const AdminSettings = () => {
                       placeholder="https://tiktok.com/@..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_tiktok_url')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_tiktok_url')} className="button button-small">Save</button>
                   </div>
                 </div>
 
@@ -922,7 +904,7 @@ const AdminSettings = () => {
                       placeholder="https://zalo.me/..."
                       style={inputStyle}
                     />
-                    <button type="button" onClick={() => handleIdentitySave('shop_zalo_url')} className="button button-small">Lưu</button>
+                    <button type="button" onClick={() => handleIdentitySave('shop_zalo_url')} className="button button-small">Save</button>
                   </div>
                 </div>
 
@@ -931,20 +913,20 @@ const AdminSettings = () => {
 
             <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: 0 }} />
 
-            {/* Nhóm 4: Bản quyền */}
+            {/* Group 4: Copyright */}
             <div>
-              <h4 style={groupTitleStyle}>4. Bản Quyền & Footer Copyright</h4>
+              <h4 style={groupTitleStyle}>4. Copyright & Footer Copyright</h4>
               <div style={formGroupStyle}>
-                <label style={labelStyle}><InfoCircleOutlined />&nbsp;&nbsp;DÒNG CHỮ BẢN QUYỀN (FOOTER COPYRIGHT)</label>
+                <label style={labelStyle}><InfoCircleOutlined />&nbsp;&nbsp;COPYRIGHT STATEMENT (FOOTER)</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
                     type="text"
                     value={getIdentitySettingVal('shop_copyright')}
                     onChange={(e) => handleIdentityChange('shop_copyright', e.target.value)}
-                    placeholder="Ví dụ: © 2026 Salinaka Eyewear. Tất cả quyền được bảo lưu."
+                    placeholder="e.g. © 2026 Salinaka Eyewear. All Rights Reserved."
                     style={inputStyle}
                   />
-                  <button type="button" onClick={() => handleIdentitySave('shop_copyright')} className="button button-small">Lưu</button>
+                  <button type="button" onClick={() => handleIdentitySave('shop_copyright')} className="button button-small">Save</button>
                 </div>
               </div>
             </div>
@@ -953,7 +935,7 @@ const AdminSettings = () => {
         </div>
 
         <p style={{ color: '#bbb', fontSize: '11px', textAlign: 'right', paddingBottom: '16px' }}>
-          Mọi thay đổi cấu hình hiển thị và thương hiệu sẽ có hiệu lực ngay khi khách hàng tải lại trang.
+          All changes to display settings and brand identity will take effect immediately when the page is reloaded.
         </p>
       </div>
     </Boundary>
