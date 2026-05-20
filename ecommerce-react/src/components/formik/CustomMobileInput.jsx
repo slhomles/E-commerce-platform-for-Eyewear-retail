@@ -2,7 +2,9 @@
 import { useField } from 'formik';
 import PropType from 'prop-types';
 import React from 'react';
-import PhoneInput from 'react-phone-input-2';
+import PhoneInputModule from 'react-phone-input-2';
+
+const PhoneInput = PhoneInputModule.default || PhoneInputModule;
 
 const CustomMobileInput = (props) => {
   const [field, meta, helpers] = useField(props);
