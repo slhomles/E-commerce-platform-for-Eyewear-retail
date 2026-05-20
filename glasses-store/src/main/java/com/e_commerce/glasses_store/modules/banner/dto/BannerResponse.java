@@ -38,6 +38,13 @@ public class BannerResponse {
     private String textColor;
     private String ctaText;
 
+    // Font & Layout fields
+    private String horizontalAlignment;
+    private String verticalAlignment;
+    private Integer titleFontSize;
+    private Integer subtitleFontSize;
+    private String fontFamily;
+
     /**
      * Trạng thái hiển thị thực tế (computed field).
      * - ACTIVE: đang hiển thị
@@ -84,6 +91,11 @@ public class BannerResponse {
                 .bgColor(banner.getBgColor())
                 .textColor(banner.getTextColor())
                 .ctaText(banner.getCtaText())
+                .horizontalAlignment(banner.getHorizontalAlignment())
+                .verticalAlignment(banner.getVerticalAlignment())
+                .titleFontSize(banner.getTitleFontSize())
+                .subtitleFontSize(banner.getSubtitleFontSize())
+                .fontFamily(banner.getFontFamily())
                 .build();
     }
 }

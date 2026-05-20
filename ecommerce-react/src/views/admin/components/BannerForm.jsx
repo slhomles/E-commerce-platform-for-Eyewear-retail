@@ -31,6 +31,11 @@ const EMPTY_FORM = {
   bgColor: '#E91E8C',
   textColor: '#ffffff',
   ctaText: 'SHOP NOW',
+  titleFontSize: 36,
+  subtitleFontSize: 18,
+  horizontalAlignment: 'CENTER',
+  verticalAlignment: 'BOTTOM',
+  fontFamily: "'Tajawal', Helvetica, Arial, sans-serif",
 };
 
 const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
@@ -60,6 +65,11 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
         bgColor: banner.bgColor || '#E91E8C',
         textColor: banner.textColor || '#ffffff',
         ctaText: banner.ctaText || 'SHOP NOW',
+        titleFontSize: banner.titleFontSize || 36,
+        subtitleFontSize: banner.subtitleFontSize || 18,
+        horizontalAlignment: banner.horizontalAlignment || 'CENTER',
+        verticalAlignment: banner.verticalAlignment || 'BOTTOM',
+        fontFamily: banner.fontFamily || "'Tajawal', Helvetica, Arial, sans-serif",
       });
       setImagePreview(banner.imageUrl || '');
     } else {
@@ -344,18 +354,72 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
 
           {/* Subtitle for IMAGE style */}
           {!isPromo && (
-            <div className="input-group">
-              <label className="label" htmlFor="subtitle">Subtitle (optional)</label>
-              <input
-                className="input-form"
-                id="subtitle"
-                name="subtitle"
-                onChange={handleChange}
-                placeholder="e.g. Up to 50% off all sunglasses"
-                type="text"
-                value={form.subtitle}
-              />
-            </div>
+            <>
+              <div className="input-group">
+                <label className="label" htmlFor="subtitle">Subtitle (optional)</label>
+                <input
+                  className="input-form"
+                  id="subtitle"
+                  name="subtitle"
+                  onChange={handleChange}
+                  placeholder="e.g. Up to 50% off all sunglasses"
+                  type="text"
+                  value={form.subtitle}
+                />
+              </div>
+
+              {/* Text Style Customizations */}
+              <div style={{ padding: '16px', background: '#f8f8f8', borderRadius: '8px', marginBottom: '20px' }}>
+                <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 'bold' }}>Text Appearance & Position</h4>
+                
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Horizontal Align</label>
+                    <select className="input-form" name="horizontalAlignment" value={form.horizontalAlignment} onChange={handleChange}>
+                      <option value="LEFT">Trái (Left)</option>
+                      <option value="CENTER">Giữa (Center)</option>
+                      <option value="RIGHT">Phải (Right)</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Vertical Align</label>
+                    <select className="input-form" name="verticalAlignment" value={form.verticalAlignment} onChange={handleChange}>
+                      <option value="TOP">Trên (Top)</option>
+                      <option value="CENTER">Giữa (Middle)</option>
+                      <option value="BOTTOM">Dưới (Bottom)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Title Size (px)</label>
+                    <input className="input-form" type="number" name="titleFontSize" value={form.titleFontSize} onChange={handleChange} min="10" max="120" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Subtitle Size (px)</label>
+                    <input className="input-form" type="number" name="subtitleFontSize" value={form.subtitleFontSize} onChange={handleChange} min="10" max="100" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <div style={{ flex: 2 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Font Style</label>
+                    <select className="input-form" name="fontFamily" value={form.fontFamily} onChange={handleChange}>
+                      <option value="'Tajawal', Helvetica, Arial, sans-serif">Tajawal (Default)</option>
+                      <option value="'Montserrat', sans-serif">Montserrat (Modern)</option>
+                      <option value="'Dancing Script', cursive">Dancing Script (Elegant)</option>
+                      <option value="Arial, sans-serif">Arial</option>
+                      <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Text Color</label>
+                    <input className="input-form" type="color" name="textColor" value={form.textColor} onChange={handleChange} style={{ height: '40px', padding: '2px', cursor: 'pointer' }} />
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
           {/* Link Type */}
@@ -510,6 +574,11 @@ BannerForm.propTypes = {
     bgColor: PropType.string,
     textColor: PropType.string,
     ctaText: PropType.string,
+    horizontalAlignment: PropType.string,
+    verticalAlignment: PropType.string,
+    titleFontSize: PropType.number,
+    subtitleFontSize: PropType.number,
+    fontFamily: PropType.string,
   }),
   isLoading: PropType.bool,
   isOpen: PropType.bool.isRequired,

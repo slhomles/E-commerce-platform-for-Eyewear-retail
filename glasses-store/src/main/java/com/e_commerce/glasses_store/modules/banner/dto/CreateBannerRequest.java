@@ -57,4 +57,20 @@ public class CreateBannerRequest {
 
     @Builder.Default
     private String ctaText = "SHOP NOW";
+
+    // Font & Layout fields
+    @Builder.Default
+    private String horizontalAlignment = "LEFT";
+
+    @Builder.Default
+    private String verticalAlignment = "BOTTOM";
+
+    @Builder.Default
+    private Integer titleFontSize = 36;
+
+    @Builder.Default
+    private Integer subtitleFontSize = 18;
+
+    @Builder.Default
+    private String fontFamily = "'Tajawal', Helvetica, Arial, sans-serif";
 }

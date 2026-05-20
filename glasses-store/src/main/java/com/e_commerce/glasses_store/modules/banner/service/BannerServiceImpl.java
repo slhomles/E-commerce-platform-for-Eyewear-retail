@@ -70,6 +70,11 @@ public class BannerServiceImpl implements BannerService {
                 .bgColor(request.getBgColor() != null ? request.getBgColor() : "#E91E8C")
                 .textColor(request.getTextColor() != null ? request.getTextColor() : "#ffffff")
                 .ctaText(request.getCtaText() != null ? request.getCtaText() : "SHOP NOW")
+                .horizontalAlignment(request.getHorizontalAlignment() != null ? request.getHorizontalAlignment() : "LEFT")
+                .verticalAlignment(request.getVerticalAlignment() != null ? request.getVerticalAlignment() : "BOTTOM")
+                .titleFontSize(request.getTitleFontSize() != null ? request.getTitleFontSize() : 36)
+                .subtitleFontSize(request.getSubtitleFontSize() != null ? request.getSubtitleFontSize() : 18)
+                .fontFamily(request.getFontFamily() != null ? request.getFontFamily() : "'Tajawal', Helvetica, Arial, sans-serif")
                 .build();
 
         banner = bannerRepository.save(banner);
@@ -119,6 +124,21 @@ public class BannerServiceImpl implements BannerService {
         }
         if (request.getCtaText() != null) {
             banner.setCtaText(request.getCtaText());
+        }
+        if (request.getHorizontalAlignment() != null) {
+            banner.setHorizontalAlignment(request.getHorizontalAlignment());
+        }
+        if (request.getVerticalAlignment() != null) {
+            banner.setVerticalAlignment(request.getVerticalAlignment());
+        }
+        if (request.getTitleFontSize() != null) {
+            banner.setTitleFontSize(request.getTitleFontSize());
+        }
+        if (request.getSubtitleFontSize() != null) {
+            banner.setSubtitleFontSize(request.getSubtitleFontSize());
+        }
+        if (request.getFontFamily() != null) {
+            banner.setFontFamily(request.getFontFamily());
         }
 
         // Validate và cập nhật ngày

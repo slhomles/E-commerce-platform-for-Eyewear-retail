@@ -179,45 +179,69 @@ const PromoSlide = ({ banner, onClick }) => {
 };
 
 // ─── Image Slide (original full-image) ───────────────────────────────────────
-const ImageSlide = ({ banner, onClick }) => (
-  <div
-    onClick={onClick}
-    style={{ width: '100%', height: '100%', position: 'relative', cursor: banner.linkValue ? 'pointer' : 'default' }}
-  >
-    <img
-      src={banner.imageUrl}
-      alt={banner.title}
-      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-      onError={(e) => { e.target.src = 'https://placehold.co/1600x500?text=Banner'; }}
-    />
-    {(banner.title || banner.subtitle) && (
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        padding: '40px 50px',
-        background: 'linear-gradient(transparent, rgba(0,0,0,0.65))',
-      }}>
-        {banner.title && (
-          <h2 style={{
-            color: '#fff', fontSize: 'clamp(20px, 3vw, 36px)', fontWeight: '700',
-            fontFamily: "'Tajawal', Helvetica, Arial, sans-serif",
-            margin: '0 0 6px', textShadow: '0 2px 8px rgba(0,0,0,.3)',
-          }}>
-            {banner.title}
-          </h2>
-        )}
-        {banner.subtitle && (
-          <p style={{
-            color: 'rgba(255,255,255,.9)', fontSize: 'clamp(13px, 1.6vw, 18px)',
-            fontFamily: "'Tajawal', Helvetica, Arial, sans-serif",
-            fontWeight: '400', margin: 0, textShadow: '0 1px 4px rgba(0,0,0,.3)',
-          }}>
-            {banner.subtitle}
-          </p>
-        )}
-      </div>
-    )}
-  </div>
-);
+const ImageSlide = ({ banner, onClick }) => {
+  const hAlign = banner.horizontalAlignment || 'LEFT';
+  const vAlign = banner.verticalAlignment || 'BOTTOM';
+  
+  let vPositionStyle = {};
+  if (vAlign === 'TOP') {
+    vPositionStyle = { top: 0, bottom: 'auto' };
+  } else if (vAlign === 'CENTER') {
+    vPositionStyle = { top: '50%', transform: 'translateY(-50%)', bottom: 'auto' };
+  } else {
+    vPositionStyle = { bottom: 0, top: 'auto' };
+  }
+
+  const textAlignMap = { LEFT: 'left', CENTER: 'center', RIGHT: 'right' };
+  const textAlign = textAlignMap[hAlign] || 'left';
+
+  return (
+    <div
+      onClick={onClick}
+      style={{ width: '100%', height: '100%', position: 'relative', cursor: banner.linkValue ? 'pointer' : 'default' }}
+    >
+      <img
+        src={banner.imageUrl}
+        alt={banner.title}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        onError={(e) => { e.target.src = 'https://placehold.co/1600x500?text=Banner'; }}
+      />
+      {(banner.title || banner.subtitle) && (
+        <div style={{
+          position: 'absolute', left: 0, right: 0,
+          padding: '40px 50px',
+          textAlign,
+          ...vPositionStyle
+        }}>
+          {banner.title && (
+            <h2 style={{
+              color: banner.textColor || '#fff', 
+              fontSize: banner.titleFontSize ? `clamp(20px, 4vw, ${banner.titleFontSize}px)` : 'clamp(20px, 3vw, 36px)', 
+              fontWeight: '700',
+              fontFamily: banner.fontFamily || "'Tajawal', Helvetica, Arial, sans-serif",
+              margin: '0 0 6px', 
+              textShadow: '0 2px 12px rgba(0,0,0,.4)',
+            }}>
+              {banner.title}
+            </h2>
+          )}
+          {banner.subtitle && (
+            <p style={{
+              color: banner.textColor || 'rgba(255,255,255,.9)', 
+              fontSize: banner.subtitleFontSize ? `clamp(13px, 2vw, ${banner.subtitleFontSize}px)` : 'clamp(13px, 1.6vw, 18px)',
+              fontFamily: banner.fontFamily || "'Tajawal', Helvetica, Arial, sans-serif",
+              fontWeight: '400', 
+              margin: 0, 
+              textShadow: '0 1px 6px rgba(0,0,0,.4)',
+            }}>
+              {banner.subtitle}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── Carousel ─────────────────────────────────────────────────────────────────
 const HeroBannerCarousel = () => {
@@ -264,7 +288,7 @@ const HeroBannerCarousel = () => {
         position: 'relative', width: '100%', marginBottom: '40px',
         borderRadius: '16px', overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0,0,0,.12)',
-        aspectRatio: '16 / 5',
+        aspectRatio: '16 / 4.5',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

@@ -42,4 +42,11 @@ public class UpdateBannerRequest {
     private String bgColor;
     private String textColor;
     private String ctaText;
+
+    // Font & Layout fields
+    private String horizontalAlignment;
+    private String verticalAlignment;
+    private Integer titleFontSize;
+    private Integer subtitleFontSize;
+    private String fontFamily;
 }

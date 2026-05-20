@@ -88,6 +88,28 @@ public class Banner extends BaseEntity {
     @Builder.Default
     private String ctaText = "SHOP NOW";
 
+    // ── Font & Layout fields (used for both IMAGE and PROMO styles) ──────────
+
+    @Column(name = "horizontal_alignment", length = 20)
+    @Builder.Default
+    private String horizontalAlignment = "LEFT";
+
+    @Column(name = "vertical_alignment", length = 20)
+    @Builder.Default
+    private String verticalAlignment = "BOTTOM";
+
+    @Column(name = "title_font_size")
+    @Builder.Default
+    private Integer titleFontSize = 36;
+
+    @Column(name = "subtitle_font_size")
+    @Builder.Default
+    private Integer subtitleFontSize = 18;
+
+    @Column(name = "font_family", length = 100)
+    @Builder.Default
+    private String fontFamily = "'Tajawal', Helvetica, Arial, sans-serif";
+
     // ==================== Enums ====================
 
     public enum LinkType {
