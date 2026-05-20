@@ -89,9 +89,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductListResponse> searchProducts(String keyword, Pageable pageable) {
-        // Append wildcard cho boolean mode search
+        // Thử FULLTEXT trước (nhanh, tốt cho từ dài trong name/description)
         String searchTerm = keyword.trim() + "*";
-        return productRepository.fulltextSearch(searchTerm, pageable).map(this::toListResponse);
+        Page<Product> results = productRepository.fulltextSearch(searchTerm, pageable);
+
+        // Fallback LIKE: xử lý brand/category, từ ngắn (<4 ký tự), tiếng Việt có dấu
+        if (results.isEmpty()) {
+            results = productRepository.searchByLike(keyword.trim(), pageable);
+        }
+        return results.map(this::toListResponse);
     }
 
     @Override

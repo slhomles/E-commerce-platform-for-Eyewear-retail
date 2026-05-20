@@ -31,15 +31,18 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
         Page<Product> fulltextSearch(@Param("keyword") String keyword, Pageable pageable);
 
         /**
-         * Fallback LIKE search — không phụ thuộc fulltext index,
-         * match được tiếng Việt có dấu và từ khoá ngắn (<4 ký tự).
+         * Fallback LIKE search — không phụ thuộc fulltext index.
+         * Tìm theo name, description, brand.name, category.name (LEFT JOIN).
+         * Xử lý được tiếng Việt có dấu và từ khoá ngắn (<4 ký tự).
          */
-        @Query("SELECT p FROM Product p WHERE p.isDeleted = false AND p.isActive = true AND (" +
+        @Query("SELECT DISTINCT p FROM Product p " +
+                        "LEFT JOIN p.brand b LEFT JOIN p.category c " +
+                        "WHERE p.isDeleted = false AND p.isActive = true AND (" +
                         "LOWER(p.name) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
-                        "LOWER(p.description) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
-                        "LOWER(p.frameShape) LIKE LOWER(CONCAT('%', :kw, '%'))) " +
-                        "ORDER BY p.createdAt DESC")
-        List<Product> searchByLike(@Param("kw") String kw, Pageable pageable);
+                        "LOWER(COALESCE(p.description,'')) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
+                        "LOWER(COALESCE(b.name,'')) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +
+                        "LOWER(COALESCE(c.name,'')) LIKE LOWER(CONCAT('%', :kw, '%')))")
+        Page<Product> searchByLike(@Param("kw") String kw, Pageable pageable);
 
         /**
          * Sản phẩm nổi bật: đang giảm giá (salePrice != null).

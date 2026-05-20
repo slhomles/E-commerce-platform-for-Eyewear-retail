@@ -344,10 +344,13 @@ public class AdminServiceImpl implements AdminService {
             var predicate = cb.isFalse(root.get("isDeleted"));
             if (keyword != null && !keyword.isBlank()) {
                 String pattern = "%" + keyword.toLowerCase() + "%";
+                // LEFT JOIN để không mất sản phẩm chưa gán brand/category
+                var catJoin = root.join("category", jakarta.persistence.criteria.JoinType.LEFT);
+                var brandJoin = root.join("brand", jakarta.persistence.criteria.JoinType.LEFT);
                 var searchPredicate = cb.or(
                         cb.like(cb.lower(root.get("name")), pattern),
-                        cb.like(cb.lower(root.join("category").get("name")), pattern),
-                        cb.like(cb.lower(root.join("brand").get("name")), pattern)
+                        cb.like(cb.lower(cb.coalesce(catJoin.get("name"), "")), pattern),
+                        cb.like(cb.lower(cb.coalesce(brandJoin.get("name"), "")), pattern)
                 );
                 predicate = cb.and(predicate, searchPredicate);
             }
