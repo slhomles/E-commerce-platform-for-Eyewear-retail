@@ -2,7 +2,7 @@
 .chat-fab {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  left: 28px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -28,7 +28,7 @@
 .chat-panel {
   position: fixed;
   bottom: 96px;
-  right: 28px;
+  left: 28px;
   width: 360px;
   max-height: 560px;
   background: #fff;
@@ -369,7 +369,7 @@
 /* ========== Responsive ========== */
 @media (max-width: 480px) {
   .chat-panel {
-    right: 0;
+    left: 0;
     bottom: 0;
     width: 100vw;
     max-height: 90vh;
@@ -378,6 +378,6 @@
 
   .chat-fab {
     bottom: 16px;
-    right: 16px;
+    left: 16px;
   }
 }
