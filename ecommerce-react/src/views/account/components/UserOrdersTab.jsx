@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '@/services/api';
 import { setOrders, setOrderLoading, setOrderError } from '@/redux/actions/orderActions';
-import { displayMoney } from '@/helpers/utils';
+import { displayActionMessage, displayMoney } from '@/helpers/utils';
 import ReviewModal from './ReviewModal';
 import Modal from '@/components/common/Modal';
 
@@ -67,7 +67,7 @@ const UserOrdersTab = () => {
       await api.cancelOrder(orderId);
       fetchOrders(); // Reload
     } catch (err) {
-      alert(err.message || 'Cannot cancel order');
+      displayActionMessage(err.message || 'Cannot cancel order', 'error');
     }
   };
 
@@ -89,7 +89,7 @@ const UserOrdersTab = () => {
          setOrderDetails(data);
       }
     } catch (err) {
-      alert('Failed to fetch order details');
+      displayActionMessage('Failed to fetch order details', 'error');
     }
     setLoadingDetails(false);
   };

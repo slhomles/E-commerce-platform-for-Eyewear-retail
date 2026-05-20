@@ -12,6 +12,7 @@ import PropType from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import api from '@/services/api';
+import { displayActionMessage } from '@/helpers/utils';
 
 const typeOptions = [
   { value: 'FRAME', label: 'Frame' },
@@ -142,7 +143,7 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
         imageCollection: imageFile.imageCollection
       });
     } else {
-      alert('Product thumbnail image is required.');
+      displayActionMessage('Product thumbnail image is required.', 'error');
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
+import { displayActionMessage } from '@/helpers/utils';
 
 const REVIEW_LINK_ERROR = 'Binh luan khong duoc chua link, URL hoac dia chi lien he.';
 
@@ -68,7 +69,7 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                 rating,
                 content
             });
-            alert('Your review has been submitted successfully.');
+            displayActionMessage('Your review has been submitted successfully.', 'success');
             if (onSuccess) onSuccess();
             onClose();
         } catch (err) {

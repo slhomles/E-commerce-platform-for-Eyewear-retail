@@ -53,18 +53,18 @@
 @keyframes slideInToast {
   0% {
     opacity: 0;
-    transform: translateY(-120%);
+    transform: translateX(120%);
   }
   20% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   90% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-120%);
+    transform: translateX(120%);
   }
 }

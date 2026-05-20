@@ -3,6 +3,7 @@ import { useDocumentTitle, useScrollTop } from '@/hooks';
 import React, { useEffect, useState, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import api from '@/services/api';
+import { displayActionMessage } from '@/helpers/utils';
 import BannersNavbar from '../components/BannersNavbar';
 import BannersTable from '../components/BannersTable';
 import BannerForm from '../components/BannerForm';
@@ -62,7 +63,7 @@ const Banners = () => {
       fetchBanners(currentPage);
     } catch (err) {
       console.error('Banner save failed', err);
-      alert('Failed to save banner: ' + (err?.data?.message || err.message));
+      displayActionMessage(`Failed to save banner: ${err?.data?.message || err.message}`, 'error');
     } finally {
       setFormLoading(false);
     }
@@ -74,7 +75,7 @@ const Banners = () => {
       fetchBanners(currentPage);
     } catch (err) {
       console.error('Delete banner failed', err);
-      alert('Failed to delete banner.');
+      displayActionMessage('Failed to delete banner.', 'error');
     }
   };
 

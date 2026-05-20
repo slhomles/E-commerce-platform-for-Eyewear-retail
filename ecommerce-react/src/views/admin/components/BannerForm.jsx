@@ -2,6 +2,7 @@ import { Modal } from '@/components/common';
 import PropType from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import api from '@/services/api';
+import { displayActionMessage } from '@/helpers/utils';
 
 const linkTypeOptions = [
   { value: 'PRODUCT', label: 'Specific Product' },
@@ -108,7 +109,7 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
       setForm(prev => ({ ...prev, imageUrl: url }));
       setImagePreview(url);
     } catch {
-      alert('Image upload failed. Please try again.');
+      displayActionMessage('Image upload failed. Please try again.', 'error');
     } finally {
       setUploading(false);
     }
