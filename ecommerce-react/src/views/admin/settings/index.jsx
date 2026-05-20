@@ -119,25 +119,35 @@ const AdminSettings = () => {
   const [saving, setSaving] = useState({});
   const [feedback, setFeedback] = useState({});
 
+  const [featuredPreview, setFeaturedPreview] = useState([]);
+  const [recommendedPreview, setRecommendedPreview] = useState([]);
+  const [loadingPreviews, setLoadingPreviews] = useState(false);
+  const [showFeaturedPreview, setShowFeaturedPreview] = useState(true);
+  const [showRecommendedPreview, setShowRecommendedPreview] = useState(true);
+
   const logoInputRef = useRef(null);
   const faviconInputRef = useRef(null);
 
-  const fetchSettings = useCallback(async () => {
-    setLoading(true);
+  const fetchPreviews = useCallback(async () => {
+    setLoadingPreviews(true);
     try {
-      const data = await api.getAdminSettings();
-      setSettings(data);
-      const init = {};
-      data.forEach((s) => { init[s.key] = s.value; });
-      setLocalValues(init);
+      const [featuredData, recommendedData] = await Promise.all([
+        api.getFeaturedProducts(15),
+        api.getRecommendedProducts(15)
+      ]);
+      setFeaturedPreview(featuredData || []);
+      setRecommendedPreview(recommendedData || []);
     } catch (e) {
-      console.error('Failed to load settings', e);
+      console.error('Failed to fetch product previews:', e);
     } finally {
-      setLoading(false);
+      setLoadingPreviews(false);
     }
   }, []);
 
-  useEffect(() => { fetchSettings(); }, [fetchSettings]);
+  useEffect(() => {
+    fetchSettings();
+    fetchPreviews();
+  }, [fetchSettings, fetchPreviews]);
 
   // ── Numeric setting handlers ─────────────────────────────────────────────
   const handleNumericChange = (key, val) => {
@@ -212,6 +222,12 @@ const AdminSettings = () => {
       await api.updateSetting(key, val);
       setSettings((prev) => prev.map((s) => s.key === key ? { ...s, value: val } : s));
       setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Saved successfully.' } }));
+      
+      // Auto refresh preview list if manual product IDs are updated
+      if (key === 'featured_product_ids' || key === 'recommended_product_ids') {
+        fetchPreviews();
+      }
+
       setTimeout(() => setFeedback((prev) => ({ ...prev, [key]: null })), 3000);
     } catch (e) {
       setFeedback((prev) => ({
@@ -273,6 +289,167 @@ const AdminSettings = () => {
   const booleanSettings = settings.filter((s) => !s.key.startsWith('shop_') && !s.key.endsWith('_product_ids') && s.minValue == null && s.maxValue == null);
 
   const getIdentitySettingVal = (key) => localValues[key] ?? '';
+
+  const renderProductPreviewList = (products, typeKey) => {
+    if (loadingPreviews) {
+      return (
+        <div style={{ padding: '16px', fontSize: '12px', color: '#999', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="loader-renderer" style={{ width: '16px', height: '16px' }} />
+          Loading dynamic product previews...
+        </div>
+      );
+    }
+    if (products.length === 0) {
+      return (
+        <div style={{ padding: '16px', fontSize: '12px', color: '#bbb', fontStyle: 'italic', background: '#fafafa', borderRadius: '8px' }}>
+          No active products displayed currently.
+        </div>
+      );
+    }
+
+    const customIdString = localValues[typeKey] || '';
+    const customIds = customIdString.split(',').map(s => s.trim()).filter(Boolean);
+
+    return (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+        gap: '12px',
+        marginTop: '12px',
+        maxHeight: '350px',
+        overflowY: 'auto',
+        padding: '12px',
+        border: '1.5px dashed #e9e9e9',
+        borderRadius: '8px',
+        background: '#fafafa'
+      }}>
+        {products.map((p, idx) => {
+          const isCustom = customIds.includes(p.id);
+          return (
+            <div
+              key={p.id}
+              style={{
+                display: 'flex',
+                gap: '12px',
+                padding: '10px',
+                background: '#fff',
+                borderRadius: '6px',
+                border: `1.5px solid ${isCustom ? '#e3f2fd' : '#f0f0f0'}`,
+                alignItems: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                position: 'relative',
+                transition: 'border-color 0.2s',
+              }}
+            >
+              {/* Index badge */}
+              <span style={{
+                position: 'absolute',
+                top: '-6px',
+                left: '-6px',
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                background: isCustom ? '#1e88e5' : '#777',
+                color: '#fff',
+                fontSize: '9px',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              }}>
+                {idx + 1}
+              </span>
+
+              {/* Product Image */}
+              <div style={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '4px',
+                background: '#fcfcfc',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid #f0f0f0',
+                flexShrink: 0
+              }}>
+                {p.image ? (
+                  <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                ) : (
+                  <span style={{ fontSize: '9px', color: '#ccc' }}>No Image</span>
+                )}
+              </div>
+
+              {/* Product Info */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <div style={{
+                  fontWeight: '700',
+                  fontSize: '12px',
+                  color: '#1a1a1a',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }} title={p.name}>
+                  {p.name}
+                </div>
+                
+                {/* Click to Copy ID */}
+                <div style={{
+                  fontSize: '10px',
+                  fontFamily: 'monospace',
+                  color: '#888',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  <span>ID:</span>
+                  <span
+                    onClick={() => {
+                      navigator.clipboard.writeText(p.id);
+                      alert(`Copied Product ID to clipboard: ${p.id}`);
+                    }}
+                    title="Click to copy full ID to clipboard"
+                    style={{
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      color: '#1a1a1a',
+                      fontWeight: '700',
+                      background: '#f5f5f5',
+                      padding: '1px 4px',
+                      borderRadius: '3px',
+                    }}
+                  >
+                    {p.id.substring(0, 8)}...
+                  </span>
+                </div>
+
+                {/* Badges and Price */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3px' }}>
+                  <span style={{
+                    fontSize: '9px',
+                    fontWeight: '800',
+                    color: isCustom ? '#1565c0' : '#616161',
+                    background: isCustom ? '#e3f2fd' : '#f5f5f5',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.02em'
+                  }}>
+                    {isCustom ? '★ Custom' : '⚙ Auto'}
+                  </span>
+                  
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: '#1a1a1a' }}>
+                    ${p.salePrice || p.basePrice}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <Boundary>
@@ -953,79 +1130,134 @@ const AdminSettings = () => {
             <SettingOutlined style={{ fontSize: '18px', color: '#1a1a1a' }} />
             <div>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                Custom Featured & Recommended Products
+                Custom Featured & Recommended Products Selection
               </div>
               <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                Assign specific products to display on home/sub-pages instead of automated rules.
+                Assign specific products to display on home/sub-pages and preview them real-time.
               </div>
             </div>
           </div>
 
-          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Custom Featured */}
-            <div style={formGroupStyle}>
-              <label style={labelStyle}>
-                CUSTOM FEATURED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
-              </label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  type="text"
-                  value={getIdentitySettingVal('featured_product_ids')}
-                  onChange={(e) => handleIdentityChange('featured_product_ids', e.target.value)}
-                  placeholder="e.g. 5e1b764c-b17a-4284-814d-91b5c928befd, 82d92956-6a3f-42e7-8178-5777328bf3c8..."
-                  style={inputStyle}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleIdentitySave('featured_product_ids')}
-                  className="button button-small"
-                  disabled={saving['featured_product_ids']}
-                >
-                  Save
-                </button>
-              </div>
-              <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                Enter product UUIDs separated by commas. If empty, the system defaults to products currently on sale.
-              </div>
-              {feedback['featured_product_ids'] && (
-                <div style={{ ...feedbackStyle, color: feedback['featured_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
-                  {feedback['featured_product_ids'].msg}
+          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            
+            {/* Custom Featured Segment */}
+            <div>
+              <div style={formGroupStyle}>
+                <label style={labelStyle}>
+                  CUSTOM FEATURED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={getIdentitySettingVal('featured_product_ids')}
+                    onChange={(e) => handleIdentityChange('featured_product_ids', e.target.value)}
+                    placeholder="e.g. 5e1b764c-b17a-4284-814d-91b5c928befd, 82d92956-6a3f-42e7-8178-5777328bf3c8..."
+                    style={inputStyle}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleIdentitySave('featured_product_ids')}
+                    className="button button-small"
+                    disabled={saving['featured_product_ids']}
+                  >
+                    Save
+                  </button>
                 </div>
-              )}
+                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                  Enter product UUIDs separated by commas. If empty, the system defaults to products currently on sale.
+                </div>
+                {feedback['featured_product_ids'] && (
+                  <div style={{ ...feedbackStyle, color: feedback['featured_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
+                    {feedback['featured_product_ids'].msg}
+                  </div>
+                )}
+              </div>
+
+              {/* Featured Preview Box */}
+              <div style={{ marginTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    🔍 Currently Displayed Featured Products ({featuredPreview.length} items)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowFeaturedPreview(!showFeaturedPreview)}
+                    style={{
+                      border: 'none',
+                      background: 'none',
+                      color: '#1a1a1a',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    {showFeaturedPreview ? 'Hide List View' : 'Show List View'}
+                  </button>
+                </div>
+                {showFeaturedPreview && renderProductPreviewList(featuredPreview, 'featured_product_ids')}
+              </div>
             </div>
 
             <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: 0 }} />
 
-            {/* Custom Recommended */}
-            <div style={formGroupStyle}>
-              <label style={labelStyle}>
-                CUSTOM RECOMMENDED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
-              </label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  type="text"
-                  value={getIdentitySettingVal('recommended_product_ids')}
-                  onChange={(e) => handleIdentityChange('recommended_product_ids', e.target.value)}
-                  placeholder="e.g. 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d, 9f8e7d6c-5b4a-3c2b-1a0f-9e8d7c6b5a4f..."
-                  style={inputStyle}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleIdentitySave('recommended_product_ids')}
-                  className="button button-small"
-                  disabled={saving['recommended_product_ids']}
-                >
-                  Save
-                </button>
-              </div>
-              <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                Enter product UUIDs separated by commas. If empty, the system automatically recommends the newest products.
-              </div>
-              {feedback['recommended_product_ids'] && (
-                <div style={{ ...feedbackStyle, color: feedback['recommended_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
-                  {feedback['recommended_product_ids'].msg}
+            {/* Custom Recommended Segment */}
+            <div>
+              <div style={formGroupStyle}>
+                <label style={labelStyle}>
+                  CUSTOM RECOMMENDED PRODUCTS (COMMA-SEPARATED PRODUCT IDS)
+                </label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={getIdentitySettingVal('recommended_product_ids')}
+                    onChange={(e) => handleIdentityChange('recommended_product_ids', e.target.value)}
+                    placeholder="e.g. 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d, 9f8e7d6c-5b4a-3c2b-1a0f-9e8d7c6b5a4f..."
+                    style={inputStyle}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleIdentitySave('recommended_product_ids')}
+                    className="button button-small"
+                    disabled={saving['recommended_product_ids']}
+                  >
+                    Save
+                  </button>
                 </div>
-              )}
+                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                  Enter product UUIDs separated by commas. If empty, the system automatically recommends the newest products.
+                </div>
+                {feedback['recommended_product_ids'] && (
+                  <div style={{ ...feedbackStyle, color: feedback['recommended_product_ids'].type === 'success' ? '#388e3c' : '#e53935' }}>
+                    {feedback['recommended_product_ids'].msg}
+                  </div>
+                )}
+              </div>
+
+              {/* Recommended Preview Box */}
+              <div style={{ marginTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#555', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    🔍 Currently Displayed Recommended Products ({recommendedPreview.length} items)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowRecommendedPreview(!showRecommendedPreview)}
+                    style={{
+                      border: 'none',
+                      background: 'none',
+                      color: '#1a1a1a',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    {showRecommendedPreview ? 'Hide List View' : 'Show List View'}
+                  </button>
+                </div>
+                {showRecommendedPreview && renderProductPreviewList(recommendedPreview, 'recommended_product_ids')}
+              </div>
             </div>
 
             <div style={{
@@ -1041,7 +1273,7 @@ const AdminSettings = () => {
             }}>
               <InfoCircleOutlined />
               <span>
-                <strong>💡 Tip:</strong> You can find and copy <strong>Product IDs</strong> directly from the <strong>Admin Product Catalog</strong> table (under Products list).
+                <strong>💡 Tip:</strong> You can find and copy <strong>Product IDs</strong> directly from the <strong>Admin Product Catalog</strong> table (under Products list). Click on any Product ID snippet above to copy it instantly.
               </span>
             </div>
           </div>
