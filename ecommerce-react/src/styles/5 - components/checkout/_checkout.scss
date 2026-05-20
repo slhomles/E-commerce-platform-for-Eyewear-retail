@@ -282,6 +282,7 @@
 .payment-img-zalopay,
 .payment-img-vnpay,
 .payment-img-momo,
+.payment-img-payos,
 .payment-img-atm,
 .payment-img-cod {
   width: 60px;
@@ -301,6 +302,11 @@
 .payment-img-vnpay {
   background-color: #fff;
   background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Vnpay-logo.png/512px-Vnpay-logo.png');
+}
+
+.payment-img-payos {
+  background-color: #fff;
+  background-image: url('https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png');
 }
 
 .payment-img-momo {

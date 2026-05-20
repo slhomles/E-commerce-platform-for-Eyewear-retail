@@ -10,7 +10,6 @@ import * as Yup from 'yup';
 import { StepTracker } from '../components';
 import withCheckout from '../hoc/withCheckout';
 import VNPayPayment from './VNPayPayment';
-import PayOsPayment from './PayOsPayment';
 import Total from './Total';
 import api from '@/services/api';
 import { placeOrderSuccess } from '@/redux/actions/orderActions';
@@ -103,7 +102,6 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
         {({ isSubmitting }) => (
           <Form className="checkout-step-3">
             <VNPayPayment />
-            <PayOsPayment />
             <Total
               subtotal={displayTotal}
             />

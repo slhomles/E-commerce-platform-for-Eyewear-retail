@@ -10,6 +10,12 @@ const PAYMENT_OPTIONS = [
         imgClass: 'payment-img-zalopay'
     },
     {
+        id: 'payos',
+        label: 'VietQR / PayOS',
+        description: 'Quét mã VietQR bằng ứng dụng ngân hàng bất kỳ để thanh toán.',
+        imgClass: 'payment-img-payos'
+    },
+    {
         id: 'vnpay',
         label: 'VNPAY',
         description: 'Thanh toán qua cổng VNPAY (QR / Ví / Internet Banking).',
