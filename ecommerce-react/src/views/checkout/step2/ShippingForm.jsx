@@ -27,7 +27,7 @@ const ShippingForm = () => {
         }));
         setProvinces(formatted);
       } catch (err) {
-        console.error('Lỗi khi tải danh sách tỉnh thành:', err);
+        console.error('Failed to load provinces:', err);
       } finally {
         setLoadingProvinces(false);
       }
@@ -55,7 +55,7 @@ const ShippingForm = () => {
           setDistricts(formatted);
         }
       } catch (err) {
-        console.error('Lỗi khi tải danh sách quận huyện:', err);
+        console.error('Failed to load districts:', err);
       } finally {
         setLoadingDistricts(false);
       }
@@ -84,7 +84,7 @@ const ShippingForm = () => {
           setWards(formatted);
         }
       } catch (err) {
-        console.error('Lỗi khi tải danh sách phường xã:', err);
+        console.error('Failed to load wards:', err);
       } finally {
         setLoadingWards(false);
       }
@@ -179,8 +179,8 @@ const ShippingForm = () => {
           <div className="d-block checkout-field">
             <CustomSelect
               name="provinceCode"
-              label="* Tỉnh / Thành phố"
-              placeholder={loadingProvinces ? 'Đang tải...' : 'Chọn Tỉnh / Thành phố'}
+              label="* Province / City"
+              placeholder={loadingProvinces ? 'Loading...' : 'Select province / city'}
               disabled={loadingProvinces || provinces.length === 0}
               options={provinces}
             />
@@ -188,8 +188,8 @@ const ShippingForm = () => {
           <div className="d-block checkout-field">
             <CustomSelect
               name="districtCode"
-              label="* Quận / Huyện"
-              placeholder={loadingDistricts ? 'Đang tải...' : 'Chọn Quận / Huyện'}
+              label="* District"
+              placeholder={loadingDistricts ? 'Loading...' : 'Select district'}
               disabled={loadingDistricts || !values.provinceCode || districts.length === 0}
               options={districts}
             />
@@ -201,8 +201,8 @@ const ShippingForm = () => {
           <div className="d-block checkout-field">
             <CustomSelect
               name="wardCode"
-              label="* Phường / Xã"
-              placeholder={loadingWards ? 'Đang tải...' : 'Chọn Phường / Xã'}
+              label="* Ward"
+              placeholder={loadingWards ? 'Loading...' : 'Select ward'}
               disabled={loadingWards || !values.districtCode || wards.length === 0}
               options={wards}
             />
@@ -211,8 +211,8 @@ const ShippingForm = () => {
             <Field
               name="streetAddress"
               type="text"
-              label="* Địa chỉ chi tiết"
-              placeholder="Số nhà, ngõ ngách, tên đường..."
+              label="* Detailed Address"
+              placeholder="House number, alley, street name..."
               component={CustomInput}
             />
           </div>

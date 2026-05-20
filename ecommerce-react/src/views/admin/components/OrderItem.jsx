@@ -129,7 +129,7 @@ const OrderItem = ({ order }) => {
             </span>
           </div>
           
-          {/* Cột 7: Actions */}
+          {/* Column 7: Actions */}
           <div className="grid-col item-action-grid flex-justify-end d-flex-center" style={{ position: 'relative' }}>
             {order.id && (
               <>
@@ -160,7 +160,7 @@ const OrderItem = ({ order }) => {
         </div>
       </div>
 
-      {/* Chi tiết đơn hàng */}
+      {/* Order details */}
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} overrideStyle={{ width: '80%', maxWidth: '900px' }}>
         <div style={{ padding: '10px' }}>
           <div className="d-flex" style={{ justifyContent: 'space-between', borderBottom: '1px solid #e1e1e1', paddingBottom: '15px', marginBottom: '15px' }}>

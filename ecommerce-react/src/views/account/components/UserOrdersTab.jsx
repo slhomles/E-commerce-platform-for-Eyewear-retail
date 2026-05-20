@@ -7,13 +7,13 @@ import ReviewModal from './ReviewModal';
 import Modal from '@/components/common/Modal';
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'Tất cả' },
-  { value: 'PENDING', label: 'Chờ xác nhận' },
-  { value: 'PAID', label: 'Đã thanh toán' },
-  { value: 'PACKING', label: 'Đang đóng gói' },
-  { value: 'SHIPPING', label: 'Đang giao' },
-  { value: 'DELIVERED', label: 'Đã giao' },
-  { value: 'CANCELLED', label: 'Đã hủy' },
+  { value: '', label: 'All' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'PAID', label: 'Paid' },
+  { value: 'PACKING', label: 'Packing' },
+  { value: 'SHIPPING', label: 'Shipping' },
+  { value: 'DELIVERED', label: 'Delivered' },
+  { value: 'CANCELLED', label: 'Cancelled' },
 ];
 
 const STATUS_COLORS = {
@@ -62,7 +62,7 @@ const UserOrdersTab = () => {
   }, [fetchOrders]);
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
     try {
       await api.cancelOrder(orderId);
       fetchOrders(); // Reload
@@ -110,8 +110,8 @@ const UserOrdersTab = () => {
   if (isLoading && orders.length === 0) {
     return (
       <div className="loader" style={{ minHeight: '80vh' }}>
-        <h3>Đơn hàng của tôi</h3>
-        <p>Đang tải...</p>
+        <h3>My Orders</h3>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -119,7 +119,7 @@ const UserOrdersTab = () => {
   return (
     <div style={{ minHeight: '80vh', padding: '20px 0' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h3 style={{ margin: 0 }}>Đơn hàng của tôi</h3>
+        <h3 style={{ margin: 0 }}>My Orders</h3>
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
@@ -145,7 +145,7 @@ const UserOrdersTab = () => {
 
       {orders.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
-          <p style={{ fontSize: '16px' }}>Bạn chưa có đơn hàng nào</p>
+          <p style={{ fontSize: '16px' }}>You do not have any orders yet</p>
         </div>
       ) : (
         <div>
@@ -187,7 +187,7 @@ const UserOrdersTab = () => {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: '14px', color: '#666' }}>
-                  {order.totalItems} sản phẩm
+                  {order.totalItems} items
                   {order.paymentMethod && (
                     <span style={{ marginLeft: '12px' }}>• {order.paymentMethod}</span>
                   )}
@@ -211,7 +211,7 @@ const UserOrdersTab = () => {
                       }}
                       onClick={() => handleCancelOrder(order.id)}
                     >
-                      Hủy
+                      Cancel
                     </button>
                   )}
                   {order.status === 'DELIVERED' && (
@@ -229,7 +229,7 @@ const UserOrdersTab = () => {
                       }}
                       onClick={() => setReviewOrderId(order.id)}
                     >
-                      Đánh giá
+                      Review
                     </button>
                   )}
                 </div>
@@ -253,7 +253,7 @@ const UserOrdersTab = () => {
                   background: '#fff',
                 }}
               >
-                ← Trước
+                Previous
               </button>
               <span style={{ padding: '6px 14px', fontSize: '14px', color: '#666' }}>
                 {page + 1} / {totalPages}
@@ -271,7 +271,7 @@ const UserOrdersTab = () => {
                   background: '#fff',
                 }}
               >
-                Sau →
+                Next
               </button>
             </div>
           )}
@@ -286,7 +286,7 @@ const UserOrdersTab = () => {
         />
       )}
 
-      {/* Chi tiết đơn hàng Modal */}
+      {/* Order details modal */}
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} overrideStyle={{ width: '80%', maxWidth: '900px' }}>
         <div style={{ padding: '10px' }}>
           <div className="d-flex" style={{ justifyContent: 'space-between', borderBottom: '1px solid #e1e1e1', paddingBottom: '15px', marginBottom: '15px' }}>

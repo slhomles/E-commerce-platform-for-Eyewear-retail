@@ -56,7 +56,7 @@ const ProductFeatured = ({ product, priceSettings }) => {
             />
           ) : <Skeleton width="100%" height="100%" />}
 
-          {/* Price overlay - góc dưới bên phải của ảnh */}
+          {/* Price overlay - bottom-right of the image */}
           {product.price && (
             <div className="product-display-price-overlay">
               {showOriginalPrice ? (

@@ -64,24 +64,24 @@ public class ReviewServiceImpl implements ReviewService {
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("Order not found or you don't have permission"));
 
-        // Kiểm tra xem đơn hàng có thuộc về user hay không
+        // Check whether the order belongs to the user.
         if (!order.getUserId().equals(userId)) {
             throw new IllegalArgumentException("Order does not belong to you");
         }
 
-        // Kiểm tra xem đơn hàng đã DELIVERED chưa
+        // Check whether the order has been delivered.
         if (order.getStatus() != Order.OrderStatus.DELIVERED) {
             throw new IllegalStateException("You can only review products from delivered orders");
         }
 
-        // Kiểm tra xem sản phẩm có trong đơn hàng này không
+        // Check whether the product exists in this order.
         boolean hasProductInOrder = order.getItems().stream()
                 .anyMatch(item -> item.getProductId().equals(product.getId()));
         if (!hasProductInOrder) {
             throw new IllegalArgumentException("You did not purchase this product in the specified order");
         }
 
-        // Kiểm tra xem user đã review sản phẩm này trong đơn hàng này chưa
+        // Check whether the user already reviewed this product in this order.
         Optional<Review> existingReviewOpt = reviewRepository.findByUserIdAndOrderIdAndProductIdAndIsDeletedFalse(
                 userId, request.getOrderId(), request.getProductId());
 
@@ -148,7 +148,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void seedMockReviews() {
         try {
-            // Chỉ lấy tối đa 10 sản phẩm và 10 người dùng để tránh quá tải bộ nhớ (OOM) / Timeout trên EC2
+            // Limit to 10 products and 10 users to avoid memory pressure/timeouts on EC2.
             List<Product> products = productRepository.findAll(PageRequest.of(0, 10)).getContent();
             List<User> users = userRepository.findAll(PageRequest.of(0, 10)).getContent();
 
@@ -159,31 +159,31 @@ public class ReviewServiceImpl implements ReviewService {
 
             Random random = new Random();
             String[] comments = {
-                    "Sản phẩm rất tốt, đáng tiền!",
-                    "Kính đeo nhẹ, form chuẩn, rất hợp với mặt mình.",
-                    "Chất lượng ổn trong tầm giá. Giao hàng nhanh.",
-                    "Đóng gói cẩn thận, hàng đẹp bá cháy bọ chét 10 điểm.",
-                    "Hàng đẹp nhưng giao hơi lâu một chút.",
-                    "Rất ưng ý, sẽ ủng hộ shop lần sau.",
-                    "Kính thời trang, chống nắng tốt, viền chắc chắn.",
-                    "Gọng kính cứng cáp, tròng kính trong suốt, đáng mua.",
-                    "Shop tư vấn nhiệt tình, sản phẩm như hình.",
-                    "Tốt quá trời quá đất luôn mọi người ơi."
+                    "Great product and worth the price.",
+                    "Lightweight glasses with a comfortable fit.",
+                    "Good quality for the price. Fast delivery.",
+                    "Carefully packed and the product looks great.",
+                    "Nice product, although delivery was a little slow.",
+                    "Very satisfied. I will support the shop again.",
+                    "Stylish glasses with good sun protection and a sturdy frame.",
+                    "Strong frame, clear lenses, and worth buying.",
+                    "Helpful support and the product matches the photos.",
+                    "Excellent overall experience."
             };
 
             for (Product product : products) {
-                // Chỉ tạo review nếu product có variant để mapping vào OrderItem
+                // Only create reviews for products that have variants for OrderItem mapping.
                 if (product.getVariants() == null || product.getVariants().isEmpty()) {
                     log.warn("Skipping product {} - no variants found", product.getId());
                     continue;
                 }
                 ProductVariant firstVariant = product.getVariants().get(0);
 
-                int numReviews = random.nextInt(3) + 1; // 1 to 3 reviews per product để tối ưu hóa bộ nhớ
+                int numReviews = random.nextInt(3) + 1; // 1 to 3 reviews per product to limit memory use
                 for (int i = 0; i < numReviews; i++) {
                     User user = users.get(random.nextInt(users.size()));
 
-                    // Tự động tạo một đơn hàng ảo (MOCK) có trạng thái DELIVERED
+                    // Create a mock DELIVERED order.
                     Order order = Order.builder()
                             .userId(user.getId())
                             .code("M-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase())
@@ -208,8 +208,8 @@ public class ReviewServiceImpl implements ReviewService {
                     order.getItems().add(item);
                     order = orderRepository.save(order);
 
-                    // Tạo review dựa trên Order MOCK
-                    int rating = random.nextInt(2) + 4; // Ngẫu nhiên 4 hoặc 5 sao để seed cho đẹp, thay vì 1-5
+                    // Create a review from the mock order.
+                    int rating = random.nextInt(2) + 4; // Random 4 or 5 stars for nicer seed data.
                     String comment = comments[random.nextInt(comments.length)];
 
                     Review review = Review.builder()

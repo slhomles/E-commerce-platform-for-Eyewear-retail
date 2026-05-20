@@ -61,36 +61,34 @@ public class ChatServiceImpl implements ChatService {
 
     private static final String SYSTEM_PROMPT = """
             You are a friendly and professional assistant for Glasses Store, an eyewear shop.
-            Bạn là trợ lý thân thiện, chuyên nghiệp của Glasses Store — cửa hàng kính mắt.
             You help customers find the right glasses, check order status, and answer FAQs.
 
-            Store information / Thông tin cửa hàng:
+            Store information:
             - Product types: FRAME, LENS, SERVICE
             - Genders: MEN, WOMEN, UNISEX, KIDS
             - Frame shapes: oval, round, square, rectangle, cat-eye, aviator, wayfarer
             - Shipping: standard 3-5 business days, express 1-2 business days
             - Returns: 30-day return policy for unused items in original packaging
-            - Prescription lenses available on supported frames (check supportPrescription field)
+            - Prescription lenses are available on supported frames. Check the supportPrescription field.
 
-            MANDATORY behavior rules (luật BẮT BUỘC):
-            1. Khi người dùng hỏi BẤT KỲ câu nào liên quan đến sản phẩm, kính, gọng, mắt kính,
-               tròng, tư vấn chọn kính, gợi ý, "có kính nào ...", "shop có ...", dù câu hỏi ngắn
-               (ví dụ: "kính", "gọng tròn", "nam", "dưới 1 triệu") → PHẢI gọi function `searchProducts`.
-               TUYỆT ĐỐI KHÔNG trả lời bằng text chung chung như "Bạn hãy vào trang sản phẩm".
-            2. Khi user đã đăng nhập hỏi về đơn hàng cụ thể theo mã (ví dụ "đơn GS-001",
-               "kiểm tra đơn ABC123") → PHẢI gọi `lookupOrder` với orderCode đó.
-            3. Khi user đã đăng nhập hỏi chung về "đơn hàng của tôi", "các đơn gần đây",
-               "tôi có đơn nào không", "có bao nhiêu đơn đã giao/đang giao/đã hủy"
-               (không cung cấp mã cụ thể) → PHẢI gọi `listMyOrders`.
-               Truyền `status` khi user hỏi theo trạng thái cụ thể:
-               "đã giao" → DELIVERED, "đang giao" → SHIPPING, "đang đóng gói" → PACKING,
-               "đã thanh toán" → PAID, "chờ xử lý / chưa xử lý" → PENDING, "đã hủy" → CANCELLED.
-               Kết quả trả về `totalCount` (TỔNG số đơn khớp filter trong DB) và `orders` (tối đa 20).
-               Khi user hỏi số lượng ("bao nhiêu đơn"), DÙNG `totalCount` để trả lời,
-               KHÔNG dùng số lượng phần tử trong `orders`.
-            4. Khi user CHƯA đăng nhập hỏi về đơn hàng → lịch sự trả lời yêu cầu họ đăng nhập.
-            5. Luôn trả lời cùng ngôn ngữ với khách (Vietnamese hoặc English), ngắn gọn, thân thiện.
-            6. Nếu tool trả về rỗng, nói rõ "hiện không tìm thấy" và gợi ý tiêu chí khác.
+            Mandatory behavior rules:
+            1. When a customer asks anything about products, eyewear, frames, lenses, fit advice,
+               recommendations, availability, or price ranges, call the `searchProducts` function.
+               Do not answer with a generic instruction to visit the product page.
+            2. When an authenticated customer asks about a specific order code, call `lookupOrder`
+               with that orderCode.
+            3. When an authenticated customer asks generally about their orders or recent orders
+               without a specific order code, call `listMyOrders`.
+               Pass `status` when the customer asks about a specific status:
+               delivered -> DELIVERED, shipping -> SHIPPING, packing -> PACKING,
+               paid -> PAID, pending -> PENDING, cancelled -> CANCELLED.
+               The tool returns `totalCount` and `orders` with up to 20 rows.
+               When the customer asks how many orders match, use `totalCount`, not the array length.
+            4. If an unauthenticated customer asks about orders, politely ask them to sign in.
+            5. Reply in English by default. If the customer explicitly requests another language,
+               respond in that requested language.
+            6. If a tool returns no results, clearly say that no matching data was found and suggest
+               another search criterion.
             """;
 
     public ChatServiceImpl(
@@ -287,11 +285,10 @@ public class ChatServiceImpl implements ChatService {
         return Map.of(
                 "name", "listMyOrders",
                 "description", "List recent orders of the currently authenticated user, with an optional status filter. " +
-                        "Use for general order questions such as 'đơn hàng của tôi', 'đơn gần đây', " +
-                        "'tôi có bao nhiêu đơn đã giao', 'my delivered orders'. " +
+                        "Use for general order questions such as 'my orders', 'recent orders', " +
+                        "'how many delivered orders do I have', or 'my delivered orders'. " +
                         "Pass `status` when the user asks about a specific status " +
-                        "(DELIVERED = đã giao, SHIPPING = đang giao, PACKING = đang đóng gói, " +
-                        "PAID = đã thanh toán, PENDING = chờ xử lý, CANCELLED = đã hủy). " +
+                        "(DELIVERED, SHIPPING, PACKING, PAID, PENDING, CANCELLED). " +
                         "Returns up to 20 orders and a total count.",
                 "parameters", Map.of(
                         "type", "object",
@@ -367,7 +364,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private String fallbackReply() {
-        return "Xin lỗi, tôi không thể xử lý yêu cầu của bạn lúc này. Vui lòng thử lại sau.";
+        return "Sorry, I cannot process your request right now. Please try again later.";
     }
 
     @SuppressWarnings("unchecked")
@@ -434,18 +431,18 @@ public class ChatServiceImpl implements ChatService {
 
         List<Product> products = new ArrayList<>();
         if (keyword != null && !keyword.isBlank()) {
-            // 1. MySQL FULLTEXT (yêu cầu token >= 4 ký tự, không dấu)
+            // 1. MySQL FULLTEXT (requires tokens >= 4 characters).
             try {
                 products = productRepository.fulltextSearch(keyword, PageRequest.of(0, 10)).getContent();
             } catch (Exception e) {
                 log.warn("fulltextSearch failed for keyword '{}': {}", keyword, e.getMessage());
             }
-            // 2. Fallback LIKE (hỗ trợ tiếng Việt có dấu, từ ngắn)
+            // 2. Fallback LIKE for short or accented keywords.
             if (products.isEmpty()) {
                 products = productRepository.searchByLike(keyword.trim(), PageRequest.of(0, 10));
             }
         }
-        // 3. Fallback cuối: luôn có sản phẩm để gợi ý
+        // 3. Final fallback: always return products to recommend.
         if (products.isEmpty()) {
             products = productRepository.findRecommended(PageRequest.of(0, 10));
         }

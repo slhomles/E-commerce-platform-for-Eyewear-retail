@@ -9,7 +9,7 @@ public final class ReviewContentPolicy {
             "Review content cannot contain links, URLs, or contact addresses.";
 
     private static final String HIDDEN_CONTENT_MESSAGE =
-            "Noi dung danh gia da bi an vi chua lien ket khong an toan.";
+            "Review content was hidden because it contains an unsafe link.";
 
     private static final Pattern URL_SCHEME_PATTERN = Pattern.compile(
             "(?:https?|ftp|file)\\s*://|(?:javascript|data|mailto)\\s*:",
@@ -25,7 +25,7 @@ public final class ReviewContentPolicy {
 
     private static final Pattern DOMAIN_PATTERN = Pattern.compile(
             "(^|[^a-z0-9_-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\s*"
-                    + "(?:\\.|\\[\\.\\]|\\(\\.\\)|\\{\\.\\}|\\s+dot\\s+|\\s+cham\\s+|\\s+chấm\\s+)\\s*)+"
+                    + "(?:\\.|\\[\\.\\]|\\(\\.\\)|\\{\\.\\}|\\s+dot\\s+|\\s+cham\\s+|\\s+ch\\u1ea5m\\s+)\\s*)+"
                     + "[a-z]{2,24}($|[^a-z0-9_-])",
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 

@@ -28,7 +28,7 @@ function* initRequest() {
   yield put(setAuthStatus({}));
 }
 
-/** Logic chung: gọi API đăng nhập, trả về user object + role */
+/** Shared login flow: call API and return user object with role. */
 function* performLogin(email, password) {
   const response = yield call(api.login, email, password);
   const role = response.data?.role || 'USER';
@@ -50,20 +50,20 @@ function* performLogin(email, password) {
 function* authSaga({ type, payload }) {
   switch (type) {
 
-    // ─── Đăng nhập từ trang Admin (/admin-signin) ──────────────────────────────
+    // Admin sign-in page (/admin-signin)
     case SIGNIN_ADMIN: {
       try {
         yield initRequest();
         const { response, user, role } = yield performLogin(payload.email, payload.password);
 
-        // Kiểm tra: chỉ cho phép ADMIN
+        // Only ADMIN users may access the admin area.
         if (role !== 'ADMIN') {
           yield put(setAuthenticating(false));
           yield put(setAuthStatus({
             success: false,
             type: 'auth',
             isError: true,
-            message: '⛔ Tài khoản của bạn không có quyền truy cập trang quản trị. Vui lòng đăng nhập bằng trang dành cho khách hàng.'
+            message: 'Your account does not have permission to access the admin area. Please sign in from the customer page.'
           }));
           return;
         }
@@ -78,7 +78,7 @@ function* authSaga({ type, payload }) {
           success: true,
           type: 'auth',
           isError: false,
-          message: 'Đăng nhập thành công. Đang chuyển hướng...'
+          message: 'Signed in successfully. Redirecting...'
         }));
         yield put(setAuthenticating(false));
         yield call(history.push, ADMIN_DASHBOARD);
@@ -88,13 +88,13 @@ function* authSaga({ type, payload }) {
       break;
     }
 
-    // ─── Đăng nhập từ trang User (/signin) ────────────────────────────────────
+    // Customer sign-in page (/signin)
     case SIGNIN_USER: {
       try {
         yield initRequest();
         const { response, user, role } = yield performLogin(payload.email, payload.password);
 
-        // Nếu là ADMIN đăng nhập nhầm trang user → redirect sang admin dashboard
+        // Redirect admins who sign in from the customer page.
         if (role === 'ADMIN') {
           yield put(setProfile(user));
           yield put(signInSuccess({
@@ -106,7 +106,7 @@ function* authSaga({ type, payload }) {
             success: true,
             type: 'auth',
             isError: false,
-            message: 'Đăng nhập thành công. Đang chuyển hướng trang quản trị...'
+            message: 'Signed in successfully. Redirecting to the admin dashboard...'
           }));
           yield put(setAuthenticating(false));
           yield call(history.push, ADMIN_DASHBOARD);

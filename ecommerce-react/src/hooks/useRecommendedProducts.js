@@ -34,10 +34,10 @@ const useRecommendedProducts = (itemsCount) => {
     }
   };
 
-  // Re-fetch mỗi khi itemsCount thay đổi (bao gồm lần đầu mount)
+  // Re-fetch whenever itemsCount changes, including first mount.
   useEffect(() => {
     if (didMount && itemsCount) {
-      setRecommendedProducts([]); // reset để re-fetch
+      setRecommendedProducts([]); // reset before re-fetch
       fetchRecommendedProducts(itemsCount);
     }
   }, [itemsCount]);

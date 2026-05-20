@@ -13,7 +13,7 @@ const ImportModal = ({ isOpen, onRequestClose }) => {
 
     const onImport = async () => {
         if (!file) {
-            displayActionMessage('Vui lòng chọn file Excel', 'error');
+            displayActionMessage('Please select an Excel file', 'error');
             return;
         }
 
@@ -23,11 +23,11 @@ const ImportModal = ({ isOpen, onRequestClose }) => {
         setIsImporting(true);
         try {
             await api.importProducts(formData);
-            displayActionMessage('Nhập sản phẩm thành công!', 'success');
+            displayActionMessage('Products imported successfully', 'success');
             onRequestClose();
             window.location.reload(); 
         } catch (e) {
-            displayActionMessage(e.message || 'Nhập liệu thất bại', 'error');
+            displayActionMessage(e.message || 'Import failed', 'error');
         } finally {
             setIsImporting(false);
         }
@@ -40,8 +40,8 @@ const ImportModal = ({ isOpen, onRequestClose }) => {
         >
             <div className="import-modal">
                 <div className="import-modal-header">
-                    <h3>Nhập sản phẩm thông minh (Excel)</h3>
-                    <p>Chọn file Excel chứa thông tin sản phẩm và ảnh đã được chèn trực tiếp vào file.</p>
+                    <h3>Smart Product Import (Excel)</h3>
+                    <p>Select an Excel file that contains product information and images embedded directly in the file.</p>
                 </div>
                 <div className="import-modal-content">
                     <div className="input-group">
@@ -60,14 +60,14 @@ const ImportModal = ({ isOpen, onRequestClose }) => {
                         onClick={onRequestClose}
                         disabled={isImporting}
                     >
-                        Hủy
+                        Cancel
                     </button>
                     <button
                         className="button button-small"
                         onClick={onImport}
                         disabled={isImporting || !file}
                     >
-                        {isImporting ? 'Đang nhập...' : 'Bắt đầu Nhập'}
+                        {isImporting ? 'Importing...' : 'Start Import'}
                     </button>
                 </div>
             </div>

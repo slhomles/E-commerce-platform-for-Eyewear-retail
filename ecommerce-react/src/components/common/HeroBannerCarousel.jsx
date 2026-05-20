@@ -130,7 +130,7 @@ const PromoSlide = ({ banner, onClick }) => {
           </div>
         )}
 
-        {/* Subtitle (e.g. "MUA 1 TẶNG 1") */}
+        {/* Subtitle (e.g. "BUY 1 GET 1") */}
         {subtitle && (
           <div style={{
             color: textColor,

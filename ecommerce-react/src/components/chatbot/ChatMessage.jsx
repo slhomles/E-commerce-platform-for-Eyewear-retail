@@ -8,7 +8,7 @@ const formatPrice = (amount) => {
 
 const OrderStatusCard = ({ orderStatus }) => (
     <div className="chat-order-status">
-        <span className="chat-order-code">Đơn hàng #{orderStatus.code}</span>
+        <span className="chat-order-code">Order #{orderStatus.code}</span>
         <span className={`chat-order-status-badge status-${orderStatus.status}`}>
             {orderStatus.status}
         </span>

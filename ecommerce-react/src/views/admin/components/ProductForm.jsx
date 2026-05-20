@@ -250,15 +250,15 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
               </div>
 
               {/* ── Price Display on Card ── */}
-              <h4 className="margin-top-s">Hiển thị giá trên card sản phẩm</h4>
+              <h4 className="margin-top-s">Product Card Price Display</h4>
               <Field name="priceDisplayOverridden">
                 {({ field, form }) => {
                   const overridden = field.value === true;
                   const TOGGLES = [
                     {
                       name: 'showOriginalPrice',
-                      label: 'Giá gốc',
-                      desc: 'Chỉ hiện giá gốc — tự động tắt giá KM và badge giảm giá',
+                      label: 'Original Price',
+                      desc: 'Show only the original price - automatically hides the sale price and discount badge',
                       onToggleOn: (form) => {
                         form.setFieldValue('showSalePrice', false);
                         form.setFieldValue('showDiscountBadge', false);
@@ -268,8 +268,8 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                         form.setFieldValue('showDiscountBadge', true);
                       },
                     },
-                    { name: 'showSalePrice', label: 'Giá khuyến mãi', desc: 'Hiển thị giá bán hiện tại trên card' },
-                    { name: 'showDiscountBadge', label: '% Giảm giá', desc: 'Hiển thị nhãn phần trăm giảm giá' },
+                    { name: 'showSalePrice', label: 'Sale Price', desc: 'Show the current selling price on cards' },
+                    { name: 'showDiscountBadge', label: '% Discount', desc: 'Show the percentage discount badge' },
                   ];
                   return (
                     <div style={{
@@ -294,12 +294,12 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                       >
                         <div>
                           <div style={{ fontWeight: '700', fontSize: '13px', color: overridden ? '#fff' : '#1a1a1a' }}>
-                            Tùy chỉnh riêng cho sản phẩm này
+                            Custom settings for this product
                           </div>
                           <div style={{ fontSize: '11px', color: overridden ? '#aaa' : '#999', marginTop: '2px' }}>
                             {overridden
-                              ? 'Đang dùng cấu hình riêng — cài đặt tổng thể không ảnh hưởng sản phẩm này'
-                              : 'Đang theo cài đặt tổng thể — bật để cấu hình riêng'}
+                              ? 'Using custom settings - global settings do not affect this product'
+                              : 'Using global settings - enable this to customize this product'}
                           </div>
                         </div>
                         {/* Toggle knob */}
@@ -326,7 +326,7 @@ const ProductForm = ({ product, onSubmit, isLoading }) => {
                         </div>
                       </div>
 
-                      {/* Individual toggles — chỉ active khi overridden = true */}
+                      {/* Individual toggles are active only when override is enabled */}
                       {TOGGLES.map(({ name: tName, label, desc }, idx) => (
                         <div
                           key={tName}

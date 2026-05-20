@@ -34,10 +34,10 @@ const useFeaturedProducts = (itemsCount) => {
     }
   };
 
-  // Re-fetch mỗi khi itemsCount thay đổi (bao gồm lần đầu mount)
+  // Re-fetch whenever itemsCount changes, including first mount.
   useEffect(() => {
     if (didMount && itemsCount) {
-      setFeaturedProducts([]); // reset để re-fetch
+      setFeaturedProducts([]); // reset before re-fetch
       fetchFeaturedProducts(itemsCount);
     }
   }, [itemsCount]);

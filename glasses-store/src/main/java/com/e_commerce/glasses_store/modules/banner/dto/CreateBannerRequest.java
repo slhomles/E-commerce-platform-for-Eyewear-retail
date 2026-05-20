@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * DTO tạo banner mới.
+ * DTO for creating a new banner.
  */
 @Data
 @NoArgsConstructor
@@ -19,32 +19,32 @@ import java.time.LocalDateTime;
 @Builder
 public class CreateBannerRequest {
 
-    @NotBlank(message = "Tiêu đề không được để trống")
+    @NotBlank(message = "Title is required")
     private String title;
 
     private String subtitle;
 
-    @NotBlank(message = "URL ảnh không được để trống")
+    @NotBlank(message = "Image URL is required")
     private String imageUrl;
 
-    @NotNull(message = "Loại liên kết không được để trống")
+    @NotNull(message = "Link type is required")
     private Banner.LinkType linkType;
 
     /**
-     * linkValue có thể rỗng khi linkType = NONE
+     * linkValue can be empty when linkType = NONE.
      */
     private String linkValue;
 
     @Builder.Default
     private Integer position = 0;
 
-    @NotNull(message = "Ngày bắt đầu không được để trống")
+    @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
 
-    @NotNull(message = "Ngày kết thúc không được để trống")
+    @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
-    // Promo / split-layout fields (optional — only used when displayStyle = PROMO)
+    // Promo / split-layout fields (optional - only used when displayStyle = PROMO)
     @Builder.Default
     private Banner.DisplayStyle displayStyle = Banner.DisplayStyle.IMAGE;
 

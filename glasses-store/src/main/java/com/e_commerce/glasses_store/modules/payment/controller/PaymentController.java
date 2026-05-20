@@ -54,14 +54,14 @@ public class PaymentController {
                     order.setPaymentStatus(Order.PaymentStatus.PAID);
                     order.setStatus(Order.OrderStatus.PAID);
                     orderRepository.save(order);
-                    return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+                    return ResponseEntity.ok(ApiResponse.success("Payment successful"));
                 } else {
-                    return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán thất bại, mã lỗi: " + vnp_ResponseCode));
+                    return ResponseEntity.ok(ApiResponse.error(400, "Payment failed, error code: " + vnp_ResponseCode));
                 }
             }
-            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Không tìm thấy đơn hàng"));
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Order not found"));
         }
-        return ResponseEntity.badRequest().body(ApiResponse.error(400, "Xác thực chữ ký thất bại"));
+        return ResponseEntity.badRequest().body(ApiResponse.error(400, "Signature verification failed"));
     }
 
     // ==================== ZaloPay ====================
@@ -125,19 +125,19 @@ public class PaymentController {
         }
         Optional<Order> orderOpt = orderRepository.findByGatewayTxnRef(appTransId);
         if (orderOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Không tìm thấy đơn hàng"));
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Order not found"));
         }
         Order order = orderOpt.get();
 
         // Trust IPN-driven state. The redirect status is informational only.
         if (order.getPaymentStatus() == Order.PaymentStatus.PAID) {
-            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+            return ResponseEntity.ok(ApiResponse.success("Payment successful"));
         }
         if ("1".equals(status)) {
             // ZaloPay reports success but IPN may not have arrived yet; show pending.
-            return ResponseEntity.ok(ApiResponse.success("Đang xác nhận thanh toán, vui lòng đợi..."));
+            return ResponseEntity.ok(ApiResponse.success("Payment is being confirmed. Please wait..."));
         }
-        return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán không thành công hoặc đã hủy"));
+        return ResponseEntity.ok(ApiResponse.error(400, "Payment failed or was cancelled"));
     }
 
     // ==================== MoMo ====================
@@ -190,7 +190,7 @@ public class PaymentController {
 
         Optional<Order> orderOpt = orderRepository.findByGatewayTxnRef(momoOrderId);
         if (orderOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Không tìm thấy đơn hàng"));
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Order not found"));
         }
         Order order = orderOpt.get();
 
@@ -203,17 +203,17 @@ public class PaymentController {
         }
 
         if (order.getPaymentStatus() == Order.PaymentStatus.PAID) {
-            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+            return ResponseEntity.ok(ApiResponse.success("Payment successful"));
         }
-        return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán không thành công hoặc đã hủy (mã: " + resultCode + ")"));
+        return ResponseEntity.ok(ApiResponse.error(400, "Payment failed or was cancelled (code: " + resultCode + ")"));
     }
 
     // ==================== PayOS ====================
 
     /**
-     * PayOS Webhook (IPN): PayOS POSTs JSON với signature.
-     * Xác thực chữ ký → cập nhật order PAID.
-     * Trả về {"code": "00", "desc": "success"} khi thành công.
+     * PayOS Webhook (IPN): PayOS POSTs JSON with a signature.
+     * Verify the signature, then update the order to PAID.
+     * Return {"code": "00", "desc": "success"} on success.
      */
     @PostMapping("/payos-webhook")
     public ResponseEntity<Map<String, Object>> payOsWebhook(@RequestBody com.fasterxml.jackson.databind.node.ObjectNode body) {
@@ -233,7 +233,7 @@ public class PaymentController {
             }
 
             Order order = orderOpt.get();
-            // PayOS trả code "00" nghĩa là thanh toán thành công
+            // PayOS returns code "00" for a successful payment.
             if ("00".equals(webhookData.getCode())) {
                 order.setPaymentStatus(Order.PaymentStatus.PAID);
                 order.setStatus(Order.OrderStatus.PAID);
@@ -254,8 +254,8 @@ public class PaymentController {
     }
 
     /**
-     * User redirect sau khi thanh toán PayOS.
-     * Frontend gọi endpoint này sau khi PayOS redirect về.
+     * User redirect after PayOS payment.
+     * The frontend calls this endpoint after PayOS redirects back.
      */
     @GetMapping("/payos-return")
     public ResponseEntity<ApiResponse<String>> payOsReturn(@RequestParam Map<String, String> params) {
@@ -267,26 +267,26 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, "Missing orderCode"));
         }
 
-        // Tìm đơn hàng theo gatewayTxnRef (= orderCode PayOS)
+        // Find the order by gatewayTxnRef (= PayOS orderCode).
         Optional<Order> orderOpt = orderRepository.findByGatewayTxnRef(orderCodeStr);
         if (orderOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Không tìm thấy đơn hàng"));
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Order not found"));
         }
 
         Order order = orderOpt.get();
 
         if (order.getPaymentStatus() == Order.PaymentStatus.PAID) {
-            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+            return ResponseEntity.ok(ApiResponse.success("Payment successful"));
         }
 
         if ("00".equals(code)) {
-            // Webhook có thể chưa tới, mark paid tạm
+            // The webhook may not have arrived yet; mark paid optimistically.
             order.setPaymentStatus(Order.PaymentStatus.PAID);
             order.setStatus(Order.OrderStatus.PAID);
             orderRepository.save(order);
-            return ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+            return ResponseEntity.ok(ApiResponse.success("Payment successful"));
         }
 
-        return ResponseEntity.ok(ApiResponse.error(400, "Thanh toán không thành công hoặc đã hủy"));
+        return ResponseEntity.ok(ApiResponse.error(400, "Payment failed or was cancelled"));
     }
 }

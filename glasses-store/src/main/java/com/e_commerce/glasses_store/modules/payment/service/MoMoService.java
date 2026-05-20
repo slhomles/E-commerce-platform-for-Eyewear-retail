@@ -35,7 +35,7 @@ public class MoMoService {
         // Append short UUID suffix so the orderId stays unique even if the same Order is retried.
         String momoOrderId = order.getCode() + "-" + requestId.substring(0, 8);
         long amount = order.getFinalAmount().longValue();
-        String orderInfo = "Thanh toan don hang #" + order.getCode();
+        String orderInfo = "Payment for order #" + order.getCode();
         String extraData = "";
 
         String rawSignature = "accessKey=" + moMoConfig.getAccessKey()
@@ -63,7 +63,7 @@ public class MoMoService {
         body.put("extraData", extraData);
         body.put("requestType", moMoConfig.getRequestType());
         body.put("signature", signature);
-        body.put("lang", "vi");
+        body.put("lang", "en");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -91,7 +91,7 @@ public class MoMoService {
             return String.valueOf(payUrl);
         } catch (Exception e) {
             log.error("MoMo createPaymentUrl error for order {}: {}", order.getCode(), e.getMessage(), e);
-            throw new IllegalStateException("Không thể tạo giao dịch MoMo: " + e.getMessage(), e);
+            throw new IllegalStateException("Cannot create MoMo transaction: " + e.getMessage(), e);
         }
     }
 

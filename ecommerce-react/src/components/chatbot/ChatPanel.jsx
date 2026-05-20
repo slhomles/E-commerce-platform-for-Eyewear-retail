@@ -38,7 +38,7 @@ const ChatPanel = ({ messages, inputText, isLoading, onInput, onSend, onClose })
                     <div className="chat-header-avatar">👓</div>
                     <div>
                         <div className="chat-header-title">Glasses Store</div>
-                        <div className="chat-header-subtitle">Trợ lý AI · Luôn sẵn sàng hỗ trợ</div>
+                        <div className="chat-header-subtitle">AI assistant - Always ready to help</div>
                     </div>
                 </div>
                 <button className="chat-close-btn" onClick={onClose} aria-label="Close chat">✕</button>
@@ -60,7 +60,7 @@ const ChatPanel = ({ messages, inputText, isLoading, onInput, onSend, onClose })
                     value={inputText}
                     onChange={(e) => onInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Nhập câu hỏi..."
+                    placeholder="Type your question..."
                     rows={1}
                     disabled={isLoading}
                 />

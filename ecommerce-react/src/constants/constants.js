@@ -28,8 +28,8 @@ export const SET_CHECKOUT_PAYMENT_DETAILS = 'SET_CHECKOUT_PAYMENT_DETAILS';
 export const RESET_CHECKOUT = 'RESET_CHECKOUT';
 
 export const SIGNIN = 'SIGNIN';
-export const SIGNIN_ADMIN = 'SIGNIN_ADMIN'; // Đăng nhập từ trang admin
-export const SIGNIN_USER = 'SIGNIN_USER';   // Đăng nhập từ trang người dùng
+export const SIGNIN_ADMIN = 'SIGNIN_ADMIN'; // Admin sign-in page
+export const SIGNIN_USER = 'SIGNIN_USER';   // Customer sign-in page
 export const SIGNIN_SUCCESS = 'SIGNIN_SUCCESS';
 export const SIGNUP = 'SIGNUP';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';

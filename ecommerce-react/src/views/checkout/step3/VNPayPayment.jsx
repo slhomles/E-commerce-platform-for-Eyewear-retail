@@ -5,44 +5,44 @@ import React from 'react';
 const PAYMENT_OPTIONS = [
     {
         id: 'zalopay',
-        label: 'Ví ZaloPay',
-        description: 'Quét QR ZaloPay hoặc app ngân hàng để thanh toán.',
+        label: 'ZaloPay Wallet',
+        description: 'Scan the ZaloPay QR code or use a banking app to pay.',
         imgClass: 'payment-img-zalopay'
     },
     {
         id: 'payos',
         label: 'VietQR / PayOS',
-        description: 'Quét mã VietQR bằng ứng dụng ngân hàng bất kỳ để thanh toán.',
+        description: 'Scan the VietQR code with any banking app to pay.',
         imgClass: 'payment-img-payos'
     },
     {
         id: 'vnpay',
         label: 'VNPAY',
-        description: 'Thanh toán qua cổng VNPAY (QR / Ví / Internet Banking).',
+        description: 'Pay through the VNPAY gateway (QR / Wallet / Internet Banking).',
         imgClass: 'payment-img-vnpay'
     },
     {
         id: 'momo',
-        label: 'Ví MoMo',
-        description: 'Quét QR MoMo hoặc mở app MoMo để thanh toán.',
+        label: 'MoMo Wallet',
+        description: 'Scan the MoMo QR code or open the MoMo app to pay.',
         imgClass: 'payment-img-momo'
     },
     {
         id: 'atm',
         label: 'ATM / Internet Banking',
-        description: 'Thanh toán bằng thẻ ATM nội địa của các ngân hàng tại Việt Nam.',
+        description: 'Pay with a domestic ATM card from banks in Vietnam.',
         imgClass: 'payment-img-atm'
     },
     {
         id: 'visa',
         label: 'Visa / Master / JCB',
-        description: 'Thanh toán bằng thẻ thanh toán quốc tế Visa, MasterCard, JCB.',
+        description: 'Pay with an international Visa, MasterCard, or JCB card.',
         imgClass: 'payment-img-visa'
     },
     {
         id: 'cod',
-        label: 'Thanh toán bằng tiền mặt khi nhận hàng',
-        description: 'Bạn sẽ trả tiền mặt cho nhân viên giao hàng khi nhận sản phẩm.',
+        label: 'Cash on Delivery',
+        description: 'Pay the delivery staff in cash when you receive your order.',
         imgClass: 'payment-img-cod'
     }
 ];

@@ -30,23 +30,23 @@ const Shop = () => {
     isLoading: state.app.loading
   }), shallowEqual);
 
-  // Helper: dispatch GET_PRODUCTS_SUCCESS trực tiếp
+  // Helper: dispatch GET_PRODUCTS_SUCCESS directly
   const dispatchProducts = useCallback((products, lastKey, total, append = false) => {
     dispatch({
       type: GET_PRODUCTS_SUCCESS,
       payload: {
-        products: append ? products : products, // reducer cộng dồn
+        products: append ? products : products, // reducer appends
         lastKey,
         total
       }
     });
   }, [dispatch]);
 
-  // Reset store và fetch với page size mới
+  // Reset store and fetch with the new page size
   const fetchInitial = useCallback(async (pageSize) => {
     dispatch(setLoading(true));
     dispatch(setRequestStatus(null));
-    // Reset products store về rỗng
+    // Reset products store to empty
     dispatch({ type: 'RESET_PRODUCTS' });
     try {
       const result = await api.getProducts(null, { page: 0, size: pageSize });
@@ -63,7 +63,7 @@ const Shop = () => {
     }
   }, [dispatch, dispatchProducts]);
 
-  // Bước 1: đọc settings
+  // Step 1: read settings
   useEffect(() => {
     api.getPublicSettings()
       .then((settingsList) => {
@@ -86,7 +86,7 @@ const Shop = () => {
       .finally(() => setSettingsLoaded(true));
   }, []);
 
-  // Bước 2: fetch sản phẩm sau khi có settings
+  // Step 2: fetch products after settings are loaded
   useEffect(() => {
     if (settingsLoaded) {
       fetchInitial(shopPageSize);
@@ -145,7 +145,7 @@ const Shop = () => {
                   onClick={handleLoadMore}
                   type="button"
                 >
-                  {isFetching ? 'Đang tải...' : 'Show More Items'}
+                  {isFetching ? 'Loading...' : 'Show More Items'}
                 </button>
               </div>
             )}

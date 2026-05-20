@@ -25,10 +25,10 @@ const FormSchema = Yup.object().shape({
     .email('Email is not valid.')
     .required('Email is required.'),
   address: Yup.string(),
-  provinceCode: Yup.string().required('Vui lòng chọn Tỉnh/Thành phố.'),
-  districtCode: Yup.string().required('Vui lòng chọn Quận/Huyện.'),
-  wardCode: Yup.string().required('Vui lòng chọn Phường/Xã.'),
-  streetAddress: Yup.string().required('Vui lòng nhập địa chỉ chi tiết (số nhà, tên đường).'),
+  provinceCode: Yup.string().required('Please select a province/city.'),
+  districtCode: Yup.string().required('Please select a district.'),
+  wardCode: Yup.string().required('Please select a ward.'),
+  streetAddress: Yup.string().required('Please enter the detailed street address.'),
   mobile: Yup.object()
     .shape({
       country: Yup.string(),
@@ -36,7 +36,7 @@ const FormSchema = Yup.object().shape({
       dialCode: Yup.string().required('Mobile number is required'),
       value: Yup.string()
         .required('Mobile number is required')
-        .matches(/^(84[35789][0-9]{8}|0[35789][0-9]{8})$/, 'Số điện thoại di động Việt Nam không đúng định dạng (ví dụ: 0912345678).')
+        .matches(/^(84[35789][0-9]{8}|0[35789][0-9]{8})$/, 'Vietnamese mobile number format is invalid. Example: 0912345678.')
     })
     .required('Mobile number is required.'),
   isInternational: Yup.boolean(),

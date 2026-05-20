@@ -8,7 +8,7 @@ const REVIEW_LINK_PATTERNS = [
     /\b(?:javascript|data)\s*:/i,
     /(^|[^a-z0-9_-])www\s*(?:\.|\[\.\]|\(\.\)|\{\.\})/i,
     /(^|[^a-z0-9._%+-])[a-z0-9._%+-]+\s*@\s*[a-z0-9.-]+\.[a-z]{2,24}($|[^a-z0-9_-])/i,
-    /(^|[^a-z0-9_-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\s*(?:\.|\[\.\]|\(\.\)|\{\.\}|\s+dot\s+|\s+cham\s+|\s+chấm\s+)\s*)+[a-z]{2,24}($|[^a-z0-9_-])/i
+    /(^|[^a-z0-9_-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\s*(?:\.|\[\.\]|\(\.\)|\{\.\}|\s+dot\s+|\s+cham\s+|\s+ch\u1ea5m\s+)\s*)+[a-z]{2,24}($|[^a-z0-9_-])/i
 ];
 
 const containsBlockedReviewLink = (value = '') => {
@@ -35,7 +35,7 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                     setSelectedProductId(data.items[0].productId);
                 }
             } catch (err) {
-                setError('Không thể tải chi tiết đơn hàng.');
+            setError('Cannot load order details.');
             } finally {
                 setLoading(false);
             }
@@ -46,11 +46,11 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedProductId) {
-            setError('Vui lòng chọn sản phẩm để đánh giá.');
+            setError('Please select a product to review.');
             return;
         }
         if (rating < 1 || rating > 5) {
-            setError('Số sao phải từ 1 đến 5.');
+            setError('Rating must be between 1 and 5 stars.');
             return;
         }
 
@@ -68,11 +68,11 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                 rating,
                 content
             });
-            alert('Đánh giá của bạn đã được gửi thành công!');
+            alert('Your review has been submitted successfully.');
             if (onSuccess) onSuccess();
             onClose();
         } catch (err) {
-            setError(err.message || 'Có lỗi xảy ra khi gửi đánh giá.');
+            setError(err.message || 'An error occurred while submitting the review.');
         } finally {
             setSubmitting(false);
         }
@@ -81,10 +81,10 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
     return (
         <div style={styles.overlay}>
             <div style={styles.modal}>
-                <h3 style={{ marginTop: 0 }}>Đánh giá sản phẩm</h3>
+                <h3 style={{ marginTop: 0 }}>Product Review</h3>
 
                 {loading ? (
-                    <p>Đang tải dữ liệu đơn hàng...</p>
+                    <p>Loading order data...</p>
                 ) : error && !selectedProductId ? (
                     <div style={styles.error}>{error}</div>
                 ) : (
@@ -92,7 +92,7 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                         {error && <div style={styles.error}>{error}</div>}
 
                         <div style={styles.formGroup}>
-                            <label style={styles.label}>Chọn sản phẩm:</label>
+                            <label style={styles.label}>Select product:</label>
                             <select
                                 value={selectedProductId}
                                 onChange={(e) => setSelectedProductId(e.target.value)}
@@ -101,14 +101,14 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                             >
                                 {orderDetails?.items?.map((item) => (
                                     <option key={item.id} value={item.productId}>
-                                        {item.productName} ({item.quantity} cái)
+                                        {item.productName} ({item.quantity} items)
                                     </option>
                                 ))}
                             </select>
                         </div>
 
                         <div style={styles.formGroup}>
-                            <label style={styles.label}>Đánh giá số sao:</label>
+                            <label style={styles.label}>Star rating:</label>
                             <div style={styles.starContainer}>
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <span
@@ -126,12 +126,12 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                         </div>
 
                         <div style={styles.formGroup}>
-                            <label style={styles.label}>Nội dung nhận xét (tùy chọn):</label>
+                            <label style={styles.label}>Review content (optional):</label>
                             <textarea
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 style={styles.textarea}
-                                placeholder="Sản phẩm dùng tốt không? Có đúng mô tả không?"
+                                placeholder="How was the product? Did it match the description?"
                                 rows={4}
                             />
                         </div>
@@ -144,7 +144,7 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                                 disabled={submitting}
                                 style={styles.cancelButton}
                             >
-                                Hủy
+                                Cancel
                             </button>
                             <button
                                 type="submit"
@@ -152,7 +152,7 @@ const ReviewModal = ({ orderId, onClose, onSuccess }) => {
                                 disabled={submitting || !selectedProductId}
                                 style={styles.submitButton}
                             >
-                                {submitting ? 'Đang gửi...' : 'Gửi đánh giá'}
+                                {submitting ? 'Submitting...' : 'Submit Review'}
                             </button>
                         </div>
                     </form>

@@ -46,7 +46,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Implementation of OrderService.
- * Xử lý toàn bộ business logic: đặt hàng, filter, cập nhật trạng thái.
+ * Handles order business logic: placement, filtering, and status updates.
  */
 @Service
 @RequiredArgsConstructor
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse placeOrder(String userId, PlaceOrderRequest request) {
-        // 1. Lấy cart của user
+        // 1. Load the user's cart.
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Cart is empty"));
 
@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Cart is empty");
         }
 
-        // 2. Kiểm tra tồn kho cho từng item trước khi tạo order
+        // 2. Validate stock for each item before creating the order.
         for (CartItem item : cartItems) {
             ProductVariant variant = item.getProductVariant();
             InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId()).orElse(null);
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // 3. Tính toán tổng tiền
+        // 3. Calculate the item total.
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
             ProductVariant variant = item.getProductVariant();
@@ -103,8 +103,8 @@ public class OrderServiceImpl implements OrderService {
             totalAmount = totalAmount.add(lineTotal);
         }
 
-        // 4. Tính phí ship & discount
-        BigDecimal shippingFee = BigDecimal.valueOf(30000); // Khớp với SHIPPING_FEE = 30000 ở Frontend
+        // 4. Calculate shipping fee and discount.
+        BigDecimal shippingFee = BigDecimal.valueOf(30000); // Matches SHIPPING_FEE = 30000 in the frontend.
         BigDecimal discountAmount = BigDecimal.ZERO;
         if (request.getVoucherCode() != null) {
             Optional<Voucher> voucher = voucherRepository.findByCode(request.getVoucherCode());
@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Invalid shipping address data");
         }
 
-        // 6. Tạo Order
+        // 6. Create the order.
         Order order = Order.builder()
                 .code(generateOrderCode())
                 .userId(userId)
@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
                 .voucherCode(request.getVoucherCode())
                 .build();
 
-        // 7. Tạo OrderItems (snapshot data từ cart)
+        // 7. Create order items using cart snapshots.
         for (CartItem cartItem : cartItems) {
             ProductVariant variant = cartItem.getProductVariant();
             Product product = variant.getProduct();
@@ -159,23 +159,23 @@ public class OrderServiceImpl implements OrderService {
             order.getItems().add(orderItem);
         }
 
-        // 8. Tạo initial status history
+        // 8. Create the initial status history.
         OrderStatusHistory history = OrderStatusHistory.builder()
                 .order(order)
                 .status(Order.OrderStatus.PENDING)
-                .note("Đơn hàng được tạo")
+                .note("Order created")
                 .build();
         order.getStatusHistory().add(history);
 
-        // 9. Lưu order
+        // 9. Save the order.
         Order savedOrder = orderRepository.save(order);
 
-        // 9.5. Trừ tồn kho cho từng item bằng UPDATE trực tiếp
+        // 9.5. Decrement stock for each item using a direct update.
         for (CartItem cartItem : cartItems) {
             String variantId = cartItem.getProductVariant().getId();
             int updated = inventoryStockRepository.decrementStock(variantId, cartItem.getQuantity());
             if (updated == 0) {
-                log.warn("Không tìm thấy inventory_stock cho variant: {} — bỏ qua trừ kho", variantId);
+                log.warn("inventory_stock not found for variant: {}; skipping stock decrement", variantId);
             }
         }
 
@@ -195,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
             });
         }
 
-        // 11. Xóa cart items sau khi đặt hàng thành công
+        // 11. Clear cart items after the order is created successfully.
         cartItemRepository.deleteAll(cartItems);
         cart.getItems().clear();
         cart.setVoucherCode(null);
@@ -210,7 +210,7 @@ public class OrderServiceImpl implements OrderService {
             case MOMO -> response.setPaymentUrl(moMoService.createPaymentUrl(savedOrder));
             case PAYOS -> {
                 String checkoutUrl = payOsService.createPaymentLink(savedOrder);
-                // Lưu lại gatewayTxnRef (orderCode PayOS) vào DB
+                // Store gatewayTxnRef (PayOS orderCode) in the database.
                 orderRepository.save(savedOrder);
                 response.setPaymentUrl(checkoutUrl);
             }
@@ -243,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-        // Kiểm tra quyền sở hữu
+        // Check ownership.
         if (!order.getUserId().equals(userId)) {
             throw new OrderNotFoundException(orderId);
         }
@@ -271,7 +271,7 @@ public class OrderServiceImpl implements OrderService {
         OrderStatusHistory history = OrderStatusHistory.builder()
                 .order(order)
                 .status(Order.OrderStatus.CANCELLED)
-                .note("Khách hàng hủy đơn")
+                .note("Customer cancelled the order")
                 .build();
         order.getStatusHistory().add(history);
 
@@ -318,13 +318,13 @@ public class OrderServiceImpl implements OrderService {
             newStatus = Order.OrderStatus.valueOf(request.getStatus().toUpperCase());
         }
 
-        // Validate trạng thái chuyển đổi
+        // Validate the status transition.
         if (newStatus != null) {
             validateStatusTransition(order.getStatus(), newStatus);
             order.setStatus(newStatus);
         }
 
-        // Auto-update payment status khi cần, HOẶC ghi đè bằng request explicit.
+        // Auto-update payment status when needed, or override with the explicit request.
         if (request.getPaymentStatus() != null && !request.getPaymentStatus().isEmpty()) {
             order.setPaymentStatus(Order.PaymentStatus.valueOf(request.getPaymentStatus().toUpperCase()));
         } else if (newStatus == Order.OrderStatus.PAID) {
@@ -352,7 +352,7 @@ public class OrderServiceImpl implements OrderService {
     // ==================== Private Helpers ====================
 
     /**
-     * Generate mã đơn hàng: ORD-YYMM-XXXX (random 4 chữ số).
+     * Generate order code: ORD-YYMM-XXXX (random 4 digits).
      */
     private String generateOrderCode() {
         String datePrefix = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMM"));
@@ -361,7 +361,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Validate chuyển đổi trạng thái hợp lệ.
+     * Validate a legal status transition.
      */
     private void validateStatusTransition(Order.OrderStatus current, Order.OrderStatus next) {
         if (false && current == Order.OrderStatus.CANCELLED) {
@@ -373,7 +373,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Map Order entity → OrderResponse (chi tiết).
+     * Map Order entity to OrderResponse (details).
      */
     private OrderResponse toOrderResponse(Order order) {
         // Parse shipping address JSON
@@ -428,12 +428,12 @@ public class OrderServiceImpl implements OrderService {
                 .statusHistory(historyResponses)
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
-                .paymentUrl(null) // Sẽ được set thủ công nếu cần
+                .paymentUrl(null) // Set manually when needed.
                 .build();
     }
 
     /**
-     * Map Order entity → OrderListResponse (lightweight cho danh sách).
+     * Map Order entity to OrderListResponse (lightweight list item).
      */
     private OrderListResponse toOrderListResponse(Order order) {
         int totalItems = order.getItems().stream()

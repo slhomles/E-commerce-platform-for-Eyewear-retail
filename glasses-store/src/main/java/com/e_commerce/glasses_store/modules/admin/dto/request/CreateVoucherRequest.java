@@ -14,18 +14,18 @@ import java.util.List;
 @Builder
 public class CreateVoucherRequest {
 
-    @NotBlank(message = "Mã voucher không được để trống")
-    @Size(max = 50, message = "Mã voucher tối đa 50 ký tự")
+    @NotBlank(message = "Voucher code is required")
+    @Size(max = 50, message = "Voucher code must be at most 50 characters")
     private String code;
 
-    @Size(max = 255, message = "Mô tả tối đa 255 ký tự")
+    @Size(max = 255, message = "Description must be at most 255 characters")
     private String description;
 
-    @NotNull(message = "Loại giảm giá không được để trống")
+    @NotNull(message = "Discount type is required")
     private String discountType; // PERCENTAGE or FIXED_AMOUNT
 
-    @NotNull(message = "Giá trị giảm giá không được để trống")
-    @DecimalMin(value = "0.01", message = "Giá trị giảm giá phải lớn hơn 0")
+    @NotNull(message = "Discount value is required")
+    @DecimalMin(value = "0.01", message = "Discount value must be greater than 0")
     private BigDecimal discountValue;
 
     private BigDecimal minOrderAmount;
@@ -36,10 +36,10 @@ public class CreateVoucherRequest {
 
     private Integer perUserLimit;
 
-    @NotNull(message = "Ngày bắt đầu không được để trống")
+    @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
 
-    @NotNull(message = "Ngày kết thúc không được để trống")
+    @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
     @Builder.Default

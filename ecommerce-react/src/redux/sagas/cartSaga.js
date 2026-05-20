@@ -32,11 +32,11 @@ function* cartSaga({ type, payload }) {
                 yield put(setLoading(true));
                 const cartData = yield call(api.addToCart, payload.variantId, payload.quantity);
                 yield put(syncCartSuccess(cartData));
-                yield call(displayActionMessage, 'Đã thêm vào giỏ hàng', 'success');
+                yield call(displayActionMessage, 'Added to cart', 'success');
                 yield put(setLoading(false));
             } catch (e) {
-                yield put(setRequestStatus(e?.message || 'Không thể thêm vào giỏ'));
-                yield call(displayActionMessage, e?.message || 'Không thể thêm vào giỏ', 'error');
+                yield put(setRequestStatus(e?.message || 'Cannot add to cart'));
+                yield call(displayActionMessage, e?.message || 'Cannot add to cart', 'error');
                 yield put(setLoading(false));
             }
             break;
@@ -46,8 +46,8 @@ function* cartSaga({ type, payload }) {
                 const cartData = yield call(api.updateCartItem, payload.itemId, payload.quantity);
                 yield put(syncCartSuccess(cartData));
             } catch (e) {
-                yield put(setRequestStatus(e?.message || 'Không thể cập nhật giỏ hàng'));
-                yield call(displayActionMessage, e?.message || 'Không thể cập nhật', 'error');
+                yield put(setRequestStatus(e?.message || 'Cannot update cart'));
+                yield call(displayActionMessage, e?.message || 'Cannot update', 'error');
             }
             break;
         }
@@ -55,9 +55,9 @@ function* cartSaga({ type, payload }) {
             try {
                 const cartData = yield call(api.removeCartItem, payload);
                 yield put(syncCartSuccess(cartData));
-                yield call(displayActionMessage, 'Đã xóa khỏi giỏ hàng', 'info');
+                yield call(displayActionMessage, 'Removed from cart', 'info');
             } catch (e) {
-                yield put(setRequestStatus(e?.message || 'Không thể xóa'));
+                yield put(setRequestStatus(e?.message || 'Cannot remove item'));
             }
             break;
         }
@@ -66,11 +66,11 @@ function* cartSaga({ type, payload }) {
                 yield put(setLoading(true));
                 const cartData = yield call(api.applyVoucher, payload);
                 yield put(syncCartSuccess(cartData));
-                yield call(displayActionMessage, 'Đã áp dụng voucher', 'success');
+                yield call(displayActionMessage, 'Voucher applied', 'success');
                 yield put(setLoading(false));
             } catch (e) {
-                yield put(setRequestStatus(e?.message || 'Voucher không hợp lệ'));
-                yield call(displayActionMessage, e?.message || 'Voucher không hợp lệ', 'error');
+                yield put(setRequestStatus(e?.message || 'Invalid voucher'));
+                yield call(displayActionMessage, e?.message || 'Invalid voucher', 'error');
                 yield put(setLoading(false));
             }
             break;
@@ -79,9 +79,9 @@ function* cartSaga({ type, payload }) {
             try {
                 const cartData = yield call(api.removeVoucher);
                 yield put(syncCartSuccess(cartData));
-                yield call(displayActionMessage, 'Đã xóa voucher', 'info');
+                yield call(displayActionMessage, 'Voucher removed', 'info');
             } catch (e) {
-                yield put(setRequestStatus(e?.message || 'Không thể xóa voucher'));
+                yield put(setRequestStatus(e?.message || 'Cannot remove voucher'));
             }
             break;
         }

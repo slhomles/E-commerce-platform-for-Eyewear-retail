@@ -73,28 +73,28 @@ const ProductReviews = ({ productId, averageRating = 0, reviewCount = 0 }) => {
 
     return (
         <div className="reviews">
-            <h2 className="reviews__title">Đánh giá sản phẩm</h2>
+            <h2 className="reviews__title">Product Reviews</h2>
 
             <div className="reviews__summary">
                 <div className="reviews__score">
                     <span className="reviews__score-number">{roundedRating}</span>
-                    <span className="reviews__score-label">trên 5</span>
+                    <span className="reviews__score-label">out of 5</span>
                 </div>
                 <div className="reviews__summary-right">
                     <div className="reviews__stars-row">
                         {renderStars(Math.round(averageRating || 0), 20)}
                     </div>
-                    <span className="reviews__count">{reviewCount} đánh giá</span>
+                    <span className="reviews__count">{reviewCount} reviews</span>
                 </div>
             </div>
 
             <div className="reviews__list">
                 {loading && (
-                    <div className="reviews__loading">Đang tải đánh giá...</div>
+                    <div className="reviews__loading">Loading reviews...</div>
                 )}
 
                 {!loading && reviews.length === 0 && (
-                    <div className="reviews__empty">Chưa có đánh giá nào cho sản phẩm này.</div>
+                    <div className="reviews__empty">There are no reviews for this product yet.</div>
                 )}
 
                 {!loading && reviews.map((review) => (
@@ -117,7 +117,7 @@ const ProductReviews = ({ productId, averageRating = 0, reviewCount = 0 }) => {
                                     </div>
                                     {review.isVerifiedPurchase && (
                                         <span className="reviews__verified">
-                                            ✓ Đã mua hàng
+                                            Verified purchase
                                         </span>
                                     )}
                                 </div>
@@ -150,7 +150,7 @@ const ProductReviews = ({ productId, averageRating = 0, reviewCount = 0 }) => {
                         disabled={page === 0}
                         onClick={() => setPage((p) => Math.max(0, p - 1))}
                     >
-                        ← Trước
+                        Previous
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => (
                         <button
@@ -166,7 +166,7 @@ const ProductReviews = ({ productId, averageRating = 0, reviewCount = 0 }) => {
                         disabled={page >= totalPages - 1}
                         onClick={() => setPage((p) => p + 1)}
                     >
-                        Sau →
+                        Next
                     </button>
                 </div>
             )}

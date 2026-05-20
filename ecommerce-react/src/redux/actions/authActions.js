@@ -5,13 +5,13 @@ export const signIn = (email, password) => ({
   payload: { email, password }
 });
 
-/** Dùng khi đăng nhập từ trang Admin (/admin-signin) */
+/** Used for signing in from the Admin page (/admin-signin). */
 export const signInAdmin = (email, password) => ({
   type: type.SIGNIN_ADMIN,
   payload: { email, password }
 });
 
-/** Dùng khi đăng nhập từ trang User (/signin) */
+/** Used for signing in from the Customer page (/signin). */
 export const signInUser = (email, password) => ({
   type: type.SIGNIN_USER,
   payload: { email, password }

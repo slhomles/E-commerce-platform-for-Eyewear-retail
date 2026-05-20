@@ -102,7 +102,7 @@ const VoucherInput = ({ basket = [] }) => {
       ? `${voucher.discountValue}%`
       : formatCurrency(voucher.discountValue);
     const estimated = voucher.estimatedDiscountAmount > 0
-      ? ` - giảm ${formatCurrency(voucher.estimatedDiscountAmount)}`
+      ? ` - save ${formatCurrency(voucher.estimatedDiscountAmount)}`
       : '';
     return `${voucher.code} (${discount}${estimated})`;
   };
@@ -182,14 +182,14 @@ const VoucherInput = ({ basket = [] }) => {
               color: availableVouchers.length === 0 ? '#9e9e9e' : '#333',
               background: '#fff'
             }}
-            aria-label="Chọn voucher có thể dùng"
+            aria-label="Select an available voucher"
           >
             <option value="">
               {isLoadingVouchers
-                ? 'Đang tải voucher...'
+                ? 'Loading vouchers...'
                 : availableVouchers.length > 0
-                  ? 'Chọn voucher có thể dùng'
-                  : 'Không có voucher phù hợp'}
+                  ? 'Select an available voucher'
+                  : 'No matching vouchers'}
             </option>
             {availableVouchers.map((voucher) => (
               <option key={voucher.id || voucher.code} value={voucher.code}>

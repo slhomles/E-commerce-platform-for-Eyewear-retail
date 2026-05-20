@@ -12,8 +12,8 @@ import vn.payos.model.webhooks.WebhookData;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Service xử lý thanh toán qua PayOS (VietQR).
- * SDK v2.0.1 — docs: https://github.com/payOSHQ/payos-lib-java
+ * Service for PayOS (VietQR) payments.
+ * SDK v2.0.1 - docs: https://github.com/payOSHQ/payos-lib-java
  */
 @Service
 @RequiredArgsConstructor
@@ -24,22 +24,22 @@ public class PayOsService {
     private final PayOsConfig payOsConfig;
 
     /**
-     * Tạo link thanh toán PayOS từ đơn hàng.
-     * Trả về checkoutUrl để redirect người dùng quét QR.
+     * Create a PayOS payment link from an order.
+     * Returns checkoutUrl so the user can scan the QR code.
      *
-     * @param order đơn hàng cần thanh toán
-     * @return checkoutUrl (trang QR của PayOS)
+     * @param order order to pay
+     * @return checkoutUrl (PayOS QR page)
      */
     public String createPaymentLink(Order order) {
         try {
-            // PayOS yêu cầu orderCode phải là số nguyên (long), unique
+            // PayOS requires orderCode to be a unique integer (long).
             long orderCode = Math.abs((long) order.getCode().hashCode());
 
-            // Số tiền VND (số nguyên, không thập phân)
+            // VND amount as an integer.
             long amount = order.getFinalAmount().longValue();
 
-            // Mô tả tối đa 25 ký tự (yêu cầu PayOS)
-            String description = "Thanh toan " + order.getCode();
+            // PayOS requires description to be at most 25 characters.
+            String description = "Payment " + order.getCode();
             if (description.length() > 25) {
                 description = description.substring(0, 25);
             }
@@ -58,7 +58,7 @@ public class PayOsService {
 
             CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
 
-            // Lưu orderCode PayOS vào gatewayTxnRef để tra cứu webhook sau
+            // Store PayOS orderCode in gatewayTxnRef for webhook lookup.
             order.setGatewayTxnRef(String.valueOf(orderCode));
 
             log.info("PayOS payment link created: orderCode={}, checkoutUrl={}",
@@ -67,23 +67,23 @@ public class PayOsService {
 
         } catch (Exception e) {
             log.error("PayOS createPaymentLink error for order {}: {}", order.getCode(), e.getMessage(), e);
-            throw new RuntimeException("Không thể tạo link thanh toán PayOS: " + e.getMessage(), e);
+            throw new RuntimeException("Cannot create PayOS payment link: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Xác thực webhook data từ PayOS.
-     * SDK tự động verify chữ ký HMAC-SHA256.
+     * Verify webhook data from PayOS.
+     * The SDK verifies the HMAC-SHA256 signature.
      *
-     * @param webhookBody raw body từ request PayOS gửi đến
-     * @return WebhookData đã được xác thực
+     * @param webhookBody raw body sent by PayOS
+     * @return verified WebhookData
      */
     public WebhookData verifyWebhookData(ObjectNode webhookBody) {
         try {
             return payOS.webhooks().verify(webhookBody);
         } catch (Exception e) {
             log.error("PayOS webhook verification error: {}", e.getMessage(), e);
-            throw new RuntimeException("Xác thực webhook PayOS thất bại: " + e.getMessage(), e);
+            throw new RuntimeException("PayOS webhook verification failed: " + e.getMessage(), e);
         }
     }
 }

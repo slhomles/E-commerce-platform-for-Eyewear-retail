@@ -50,7 +50,7 @@ const ViewProduct = () => {
   };
 
   const handleAddToBasket = () => {
-    // Tìm variant phù hợp dựa trên màu đã chọn, hoặc dùng variant đầu tiên
+    // Find the matching variant by selected color, or use the first variant.
     const matchedVariant = product.variants?.find((v) =>
       v.colorHex === selectedColor || v.colorName === selectedColor
     ) || product.variants?.[0];

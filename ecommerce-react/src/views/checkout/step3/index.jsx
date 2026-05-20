@@ -17,7 +17,7 @@ import { clearBasket } from '@/redux/actions/basketActions';
 import { resetCheckout } from '@/redux/actions/checkoutActions';
 
 const FormSchema = Yup.object().shape({
-  type: Yup.string().required('Vui lòng chọn phương thức thanh toán')
+  type: Yup.string().required('Please select a payment method')
 });
 
 const Payment = ({ shipping, payment, subtotal, profile }) => {
@@ -69,7 +69,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
       dispatch(clearBasket());
       dispatch(resetCheckout());
 
-      displayActionMessage('Đang chuyển hướng tới trang thanh toán...', 'success');
+      displayActionMessage('Redirecting to the payment page...', 'success');
 
       if (order.paymentUrl) {
           window.location.href = order.paymentUrl;
@@ -80,7 +80,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
           }, 1500);
       }
     } catch (err) {
-      displayActionMessage(err.message || 'Đặt hàng thất bại', 'error');
+      displayActionMessage(err.message || 'Failed to place order', 'error');
     } finally {
       setIsPlacingOrder(false);
     }
@@ -107,7 +107,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
             />
             {isPlacingOrder && (
               <div style={{ textAlign: 'center', padding: '12px', color: '#666' }}>
-                Đang xử lý đơn hàng...
+                Processing your order...
               </div>
             )}
           </Form>

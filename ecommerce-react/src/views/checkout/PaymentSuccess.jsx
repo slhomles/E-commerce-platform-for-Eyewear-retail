@@ -5,18 +5,18 @@ import { useDocumentTitle, useScrollTop } from '@/hooks';
 import api from '@/services/api';
 
 const PaymentSuccess = () => {
-    useDocumentTitle('Kết quả thanh toán | Glasses Store');
+    useDocumentTitle('Payment Result | Glasses Store');
     useScrollTop();
     const location = useLocation();
     const [status, setStatus] = useState('loading');
-    const [message, setMessage] = useState('Đang kiểm tra kết quả thanh toán với máy chủ...');
+    const [message, setMessage] = useState('Checking the payment result with the server...');
     const history = useHistory();
 
     useEffect(() => {
         const verifyPayment = async () => {
             if (!location.search) {
                 setStatus('error');
-                setMessage('Không tìm thấy thông tin thanh toán.');
+                setMessage('Payment information was not found.');
                 return;
             }
 
@@ -39,7 +39,7 @@ const PaymentSuccess = () => {
 
             if (!verifyFn) {
                 setStatus('error');
-                setMessage('Không nhận diện được cổng thanh toán.');
+                setMessage('The payment gateway could not be identified.');
                 return;
             }
 
@@ -47,14 +47,14 @@ const PaymentSuccess = () => {
                 const res = await verifyFn(location.search);
                 if (res.status === 200) {
                     setStatus('success');
-                    setMessage(res.data || 'Thanh toán thành công! Đơn hàng của bạn đã được cập nhật.');
+                    setMessage(res.data || 'Payment successful. Your order has been updated.');
                 } else {
                     setStatus('error');
-                    setMessage(res.message || `Xác thực thanh toán ${gateway} thất bại.`);
+                    setMessage(res.message || `${gateway} payment verification failed.`);
                 }
             } catch (error) {
-                console.error(`Lỗi xác thực ${gateway}:`, error);
-                const backendMsg = error.data?.message || `Thanh toán ${gateway} thất bại hoặc đã hủy.`;
+                console.error(`${gateway} verification error:`, error);
+                const backendMsg = error.data?.message || `${gateway} payment failed or was cancelled.`;
                 setStatus('error');
                 setMessage(backendMsg);
             }
@@ -82,16 +82,16 @@ const PaymentSuccess = () => {
                     <CloseCircleOutlined style={{ fontSize: '64px', color: '#f5222d' }} />
                 )}
                 
-                <h2 style={{ marginTop: '20px' }}>{status === 'success' ? 'Cảm ơn bạn!' : 'Rất tiếc!'}</h2>
+                <h2 style={{ marginTop: '20px' }}>{status === 'success' ? 'Thank you!' : 'Payment failed'}</h2>
                 <p className="text-subtle" style={{ fontSize: '18px', margin: '20px 0' }}>{message}</p>
                 
                 <div style={{ marginTop: '40px' }}>
                     <Link to="/account?tab=orders" className="button">
-                        Xem đơn hàng của tôi
+                        View My Orders
                     </Link>
                     &nbsp;
                     <Link to="/shop" className="button button-muted">
-                        Tiếp tục mua sắm
+                        Continue Shopping
                     </Link>
                 </div>
             </div>

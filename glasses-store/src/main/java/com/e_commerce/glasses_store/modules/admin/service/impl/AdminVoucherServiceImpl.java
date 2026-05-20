@@ -63,18 +63,18 @@ public class AdminVoucherServiceImpl implements AdminVoucherService {
     public VoucherResponse createVoucher(CreateVoucherRequest request) {
         // Validate uniqueness
         if (voucherRepository.existsByCode(request.getCode().toUpperCase())) {
-            throw new IllegalArgumentException("Mã voucher đã tồn tại: " + request.getCode());
+            throw new IllegalArgumentException("Voucher code already exists: " + request.getCode());
         }
 
         // Validate dates
         if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new IllegalArgumentException("Ngày kết thúc phải sau ngày bắt đầu");
+            throw new IllegalArgumentException("End date must be after start date");
         }
 
         // Validate percentage
         Voucher.DiscountType discountType = Voucher.DiscountType.valueOf(request.getDiscountType().toUpperCase());
         if (discountType == Voucher.DiscountType.PERCENTAGE && request.getDiscountValue().compareTo(BigDecimal.valueOf(100)) > 0) {
-            throw new IllegalArgumentException("Phần trăm giảm giá không được vượt quá 100%");
+            throw new IllegalArgumentException("Percentage discount cannot exceed 100%");
         }
 
         Voucher voucher = Voucher.builder()
@@ -112,17 +112,17 @@ public class AdminVoucherServiceImpl implements AdminVoucherService {
         // Validate code uniqueness if changed
         if (!voucher.getCode().equalsIgnoreCase(request.getCode())
                 && voucherRepository.existsByCodeAndIdNot(request.getCode().toUpperCase(), id)) {
-            throw new IllegalArgumentException("Mã voucher đã tồn tại: " + request.getCode());
+            throw new IllegalArgumentException("Voucher code already exists: " + request.getCode());
         }
 
         // Validate dates
         if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new IllegalArgumentException("Ngày kết thúc phải sau ngày bắt đầu");
+            throw new IllegalArgumentException("End date must be after start date");
         }
 
         Voucher.DiscountType discountType = Voucher.DiscountType.valueOf(request.getDiscountType().toUpperCase());
         if (discountType == Voucher.DiscountType.PERCENTAGE && request.getDiscountValue().compareTo(BigDecimal.valueOf(100)) > 0) {
-            throw new IllegalArgumentException("Phần trăm giảm giá không được vượt quá 100%");
+            throw new IllegalArgumentException("Percentage discount cannot exceed 100%");
         }
 
         voucher.setCode(request.getCode().toUpperCase());

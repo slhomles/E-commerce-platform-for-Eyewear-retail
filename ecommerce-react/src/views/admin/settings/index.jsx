@@ -40,18 +40,18 @@ const NUMERIC_META = {
 
 const PRICE_TOGGLE_META = {
   show_original_price: {
-    label: 'Giá gốc',
-    description: 'Hiển thị giá gốc (gạch ngang) phía trên giá khuyến mãi.',
+    label: 'Original Price',
+    description: 'Show the original price with a strikethrough above the sale price.',
     icon: <TagOutlined />,
   },
   show_sale_price: {
-    label: 'Giá khuyến mãi',
-    description: 'Hiển thị giá bán / giá sau khuyến mãi trên card sản phẩm.',
+    label: 'Sale Price',
+    description: 'Show the current selling price on product cards.',
     icon: <DollarOutlined />,
   },
   show_discount_badge: {
-    label: '% Giảm giá',
-    description: 'Hiển thị nhãn đỏ phần trăm giảm giá góc trên-trái của card.',
+    label: '% Discount',
+    description: 'Show the red percentage discount badge in the top-left corner of cards.',
     icon: <PercentageOutlined />,
   },
 };
@@ -99,7 +99,7 @@ const SettingsNavbar = ({ total }) => (
       Display Settings &nbsp;({total} settings)
     </h3>
     <span style={{ fontSize: '13px', color: '#999' }}>
-      Quản lý hiển thị sản phẩm và thông tin giá trên toàn hệ thống
+      Manage product display and pricing information across the system
     </span>
   </div>
 );
@@ -142,13 +142,13 @@ const AdminSettings = () => {
     const rawVal = localValues[setting.key];
     const num = parseInt(rawVal, 10);
     if (isNaN(num)) {
-      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'error', msg: 'Vui lòng nhập số nguyên.' } }));
+      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'error', msg: 'Please enter an integer.' } }));
       return;
     }
     if (num < setting.minValue || num > setting.maxValue) {
       setFeedback((prev) => ({
         ...prev,
-        [setting.key]: { type: 'error', msg: `Giá trị phải từ ${setting.minValue} đến ${setting.maxValue}.` }
+        [setting.key]: { type: 'error', msg: `Value must be between ${setting.minValue} and ${setting.maxValue}.` }
       }));
       return;
     }
@@ -156,12 +156,12 @@ const AdminSettings = () => {
     try {
       await api.updateSetting(setting.key, num);
       setSettings((prev) => prev.map((s) => s.key === setting.key ? { ...s, value: String(num) } : s));
-      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'success', msg: 'Đã lưu.' } }));
+      setFeedback((prev) => ({ ...prev, [setting.key]: { type: 'success', msg: 'Saved.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [setting.key]: null })), 3000);
     } catch (e) {
       setFeedback((prev) => ({
         ...prev,
-        [setting.key]: { type: 'error', msg: e?.data?.message || e?.message || 'Lưu thất bại.' }
+        [setting.key]: { type: 'error', msg: e?.data?.message || e?.message || 'Save failed.' }
       }));
     } finally {
       setSaving((prev) => ({ ...prev, [setting.key]: false }));
@@ -181,12 +181,12 @@ const AdminSettings = () => {
     try {
       await api.updateSetting(key, newVal);
       setSettings((prev) => prev.map((s) => s.key === key ? { ...s, value: newVal } : s));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Đã lưu.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'success', msg: 'Saved.' } }));
       setTimeout(() => setFeedback((prev) => ({ ...prev, [key]: null })), 2000);
     } catch (e) {
       // revert on error
       setLocalValues((prev) => ({ ...prev, [key]: String(!newBool) }));
-      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Lưu thất bại.' } }));
+      setFeedback((prev) => ({ ...prev, [key]: { type: 'error', msg: 'Save failed.' } }));
     } finally {
       setSaving((prev) => ({ ...prev, [key]: false }));
     }
@@ -226,10 +226,10 @@ const AdminSettings = () => {
             <EyeOutlined style={{ fontSize: '16px', color: '#1a1a1a' }} />
             <div>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                Hiển thị giá trên card sản phẩm
+                Product Card Price Display
               </div>
               <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                Áp dụng cho trang Shop và trang Featured · Thay đổi có hiệu lực ngay lập tức
+                Applies to the Shop and Featured pages - changes take effect immediately
               </div>
             </div>
           </div>
@@ -237,7 +237,7 @@ const AdminSettings = () => {
           {/* Toggle rows */}
           {booleanSettings.length === 0 && !isLoading && (
             <div style={{ padding: '20px', color: '#bbb', fontSize: '13px' }}>
-              Không tìm thấy cài đặt hiển thị giá.
+              No price display settings found.
             </div>
           )}
           {booleanSettings.map((setting, idx) => {
@@ -309,7 +309,7 @@ const AdminSettings = () => {
                   minWidth: '36px',
                   textAlign: 'right',
                 }}>
-                  {isOn ? 'BẬT' : 'TẮT'}
+                  {isOn ? 'ON' : 'OFF'}
                 </span>
 
                 {/* Toggle */}
@@ -347,10 +347,10 @@ const AdminSettings = () => {
             <SettingOutlined style={{ fontSize: '16px', color: '#1a1a1a' }} />
             <div>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#1a1a1a' }}>
-                Số lượng sản phẩm hiển thị
+                Displayed Product Counts
               </div>
               <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
-                Giá trị hợp lệ: <strong>5 – 20</strong> sản phẩm
+                Valid value: <strong>5 - 20</strong> products
               </div>
             </div>
           </div>
@@ -359,10 +359,10 @@ const AdminSettings = () => {
             <thead>
               <tr>
                 <th style={thStyle}>Trang</th>
-                <th style={thStyle}>Cài đặt</th>
-                <th style={thStyle}>Mô tả</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: '130px' }}>Giá trị</th>
-                <th style={{ ...thStyle, textAlign: 'center', width: '120px' }}>Hành động</th>
+                <th style={thStyle}>Setting</th>
+                <th style={thStyle}>Description</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: '130px' }}>Value</th>
+                <th style={{ ...thStyle, textAlign: 'center', width: '120px' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -442,7 +442,7 @@ const AdminSettings = () => {
                           onClick={() => handleNumericSave(setting)}
                           style={{ opacity: (!isDirty || isSaving) ? 0.45 : 1 }}
                         >
-                          <SaveOutlined />&nbsp;{isSaving ? 'Đang lưu...' : 'Lưu'}
+                          <SaveOutlined />&nbsp;{isSaving ? 'Saving...' : 'Save'}
                         </button>
                         {isDirty && (
                           <button
@@ -464,13 +464,13 @@ const AdminSettings = () => {
           {!isLoading && numericSettings.length === 0 && (
             <div style={{ padding: '24px', textAlign: 'center', color: '#ccc' }}>
               <SettingOutlined style={{ fontSize: '28px' }} />
-              <p style={{ marginTop: '8px' }}>Không tìm thấy cài đặt.</p>
+              <p style={{ marginTop: '8px' }}>No settings found.</p>
             </div>
           )}
         </div>
 
         <p style={{ color: '#bbb', fontSize: '11px', textAlign: 'right', paddingBottom: '16px' }}>
-          Thay đổi có hiệu lực ngay lập tức khi khách hàng tải lại trang.
+          Changes take effect immediately when customers reload the page.
         </p>
       </div>
     </Boundary>

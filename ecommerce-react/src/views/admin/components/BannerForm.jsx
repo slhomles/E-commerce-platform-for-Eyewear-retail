@@ -214,7 +214,7 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
                 <span style={{ color: '#aaa' }}>
                   {isPromo
                     ? 'Click or drag & drop — Product photo for left side'
-                    : 'Click or drag & drop — Recommended: 1600 × 500px'}
+                    : 'Click or drag & drop - Recommended: 1600 x 500px'}
                 </span>
               )}
               <input
@@ -389,17 +389,17 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
                   <div style={{ flex: 1 }}>
                     <label className="label" style={{ fontSize: '12px' }}>Horizontal Align</label>
                     <select className="input-form" name="horizontalAlignment" value={form.horizontalAlignment} onChange={handleChange}>
-                      <option value="LEFT">Trái (Left)</option>
-                      <option value="CENTER">Giữa (Center)</option>
-                      <option value="RIGHT">Phải (Right)</option>
+                      <option value="LEFT">Left</option>
+                      <option value="CENTER">Center</option>
+                      <option value="RIGHT">Right</option>
                     </select>
                   </div>
                   <div style={{ flex: 1 }}>
                     <label className="label" style={{ fontSize: '12px' }}>Vertical Align</label>
                     <select className="input-form" name="verticalAlignment" value={form.verticalAlignment} onChange={handleChange}>
-                      <option value="TOP">Trên (Top)</option>
-                      <option value="CENTER">Giữa (Middle)</option>
-                      <option value="BOTTOM">Dưới (Bottom)</option>
+                      <option value="TOP">Top</option>
+                      <option value="CENTER">Middle</option>
+                      <option value="BOTTOM">Bottom</option>
                     </select>
                   </div>
                 </div>

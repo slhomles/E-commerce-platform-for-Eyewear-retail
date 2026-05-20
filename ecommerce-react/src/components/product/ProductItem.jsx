@@ -32,8 +32,8 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
       ? Math.round((1 - Number(product.salePrice) / Number(product.basePrice)) * 100)
       : 0);
 
-  // Nếu sản phẩm đã được cấu hình riêng → dùng per-product, global không ảnh hưởng
-  // Ngược lại → dùng hoàn toàn global settings
+  // If the product has custom display settings, ignore global settings.
+  // Otherwise, use the global settings.
   const overridden = product.priceDisplayOverridden === true;
   const showOriginalPrice = overridden ? product.showOriginalPrice !== false : priceSettings.showOriginalPrice;
   const showSalePrice = overridden ? product.showSalePrice !== false : priceSettings.showSalePrice;
@@ -93,7 +93,7 @@ const ProductItem = ({ product, isItemOnBasket, addToBasket, priceSettings }) =>
           </div>
         </div>
 
-        {/* Giá - góc dưới bên phải của card */}
+        {/* Price - bottom-right of the card */}
         {product.price && (
           <div className="product-card-price-overlay">
             {showOriginalPrice ? (

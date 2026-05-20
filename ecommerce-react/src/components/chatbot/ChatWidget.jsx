@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 const INITIAL_MESSAGE = {
     role: 'assistant',
-    text: 'Xin chào! Tôi có thể giúp bạn tìm kính mắt phù hợp, kiểm tra đơn hàng, hoặc trả lời mọi câu hỏi về sản phẩm. Bạn cần hỗ trợ gì?',
+    text: 'Hello! I can help you find suitable eyewear, check your orders, or answer product questions. How can I help?',
 };
 
 const ChatWidget = () => {
@@ -41,7 +41,7 @@ const ChatWidget = () => {
                 ...prev,
                 {
                     role: 'assistant',
-                    text: 'Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau.',
+                    text: 'Sorry, something went wrong. Please try again later.',
                 },
             ]);
         } finally {
@@ -65,7 +65,7 @@ const ChatWidget = () => {
                 className="chat-fab"
                 onClick={() => setIsOpen((prev) => !prev)}
                 aria-label={isOpen ? 'Close chat' : 'Open chat'}
-                title="Chat với trợ lý AI"
+                title="Chat with AI assistant"
             >
                 {isOpen ? '✕' : '💬'}
             </button>

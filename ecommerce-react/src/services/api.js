@@ -498,7 +498,7 @@ const cartAPI = {
 
 const orderAPI = {
     /**
-     * POST /api/v1/orders — Đặt hàng từ giỏ hàng.
+     * POST /api/v1/orders - Place an order from the cart.
      * @param {object} data - { paymentMethod, shippingAddress, customerNote, voucherCode }
      */
     placeOrder: async (data) => {
@@ -511,7 +511,7 @@ const orderAPI = {
     },
 
     /**
-     * GET /api/v1/orders — Danh sách đơn hàng của tôi.
+     * GET /api/v1/orders - My order list.
      * @param {object} filters - { status, paymentStatus, keyword, fromDate, toDate, page, size, sortBy }
      */
     getMyOrders: async (filters = {}) => {
@@ -538,7 +538,7 @@ const orderAPI = {
     },
 
     /**
-     * GET /api/v1/orders/{id} — Chi tiết đơn hàng.
+     * GET /api/v1/orders/{id} - Order details.
      */
     getOrderDetail: async (orderId) => {
         const response = await request(`/orders/${orderId}`, { auth: true });
@@ -546,7 +546,7 @@ const orderAPI = {
     },
 
     /**
-     * PUT /api/v1/orders/{id}/cancel — Hủy đơn hàng.
+     * PUT /api/v1/orders/{id}/cancel - Cancel order.
      */
     cancelOrder: async (orderId) => {
         const response = await request(`/orders/${orderId}/cancel`, {
@@ -579,7 +579,7 @@ const orderAPI = {
     // ---- Admin Order APIs ----
 
     /**
-     * GET /api/v1/admin/orders — Tất cả đơn hàng (admin).
+     * GET /api/v1/admin/orders - All orders (admin).
      */
     getAdminOrders: async (filters = {}) => {
         const params = new URLSearchParams();
@@ -605,7 +605,7 @@ const orderAPI = {
     },
 
     /**
-     * GET /api/v1/admin/orders/{id} — Chi tiết đơn hàng (admin).
+     * GET /api/v1/admin/orders/{id} - Order details (admin).
      */
     getAdminOrderDetail: async (orderId) => {
         const response = await request(`/admin/orders/${orderId}`, { auth: true });
@@ -613,7 +613,7 @@ const orderAPI = {
     },
 
     /**
-     * PUT /api/v1/admin/orders/{id}/status — Cập nhật trạng thái (admin).
+     * PUT /api/v1/admin/orders/{id}/status - Update status (admin).
      */
     updateOrderStatus: async (orderId, data) => {
         const response = await request(`/admin/orders/${orderId}/status`, {
@@ -625,7 +625,7 @@ const orderAPI = {
     },
 
     /**
-     * DELETE /api/v1/admin/orders/{id} — Xóa đơn hàng (admin).
+     * DELETE /api/v1/admin/orders/{id} - Delete order (admin).
      */
     deleteOrder: async (orderId) => {
         const response = await request(`/admin/orders/${orderId}`, {
@@ -857,7 +857,7 @@ const chatAPI = {
 
 const bannerAPI = {
     /**
-     * GET /api/v1/banners/active — Banner đang hiển thị (public, không cần auth).
+     * GET /api/v1/banners/active - Active banners (public, no auth required).
      */
     getActiveBanners: async (location = 'HOME') => {
         const response = await request(`/banners/active?location=${location}`);
@@ -865,7 +865,7 @@ const bannerAPI = {
     },
 
     /**
-     * GET /api/v1/admin/banners — Tất cả banner (admin).
+     * GET /api/v1/admin/banners - All banners (admin).
      */
     getAdminBanners: async (page = 0, size = 20) => {
         const response = await request(`/admin/banners?page=${page}&size=${size}`, { auth: true });
@@ -873,7 +873,7 @@ const bannerAPI = {
     },
 
     /**
-     * POST /api/v1/admin/banners — Tạo banner mới.
+     * POST /api/v1/admin/banners - Create a new banner.
      */
     createBanner: async (bannerData) => {
         const response = await request('/admin/banners', {
@@ -885,7 +885,7 @@ const bannerAPI = {
     },
 
     /**
-     * PUT /api/v1/admin/banners/{id} — Cập nhật banner.
+     * PUT /api/v1/admin/banners/{id} - Update banner.
      */
     updateBanner: async (id, bannerData) => {
         const response = await request(`/admin/banners/${id}`, {
@@ -897,7 +897,7 @@ const bannerAPI = {
     },
 
     /**
-     * DELETE /api/v1/admin/banners/{id} — Xóa banner.
+     * DELETE /api/v1/admin/banners/{id} - Delete banner.
      */
     deleteBanner: async (id) => {
         await request(`/admin/banners/${id}`, {
@@ -908,7 +908,7 @@ const bannerAPI = {
     },
 
     /**
-     * PATCH /api/v1/admin/banners/{id}/toggle — Bật/tắt banner.
+     * PATCH /api/v1/admin/banners/{id}/toggle - Enable/disable banner.
      */
     toggleBanner: async (id) => {
         const response = await request(`/admin/banners/${id}/toggle`, {
@@ -923,8 +923,8 @@ const bannerAPI = {
 
 const settingsAPI = {
     /**
-     * GET /api/v1/settings — Public, không cần auth.
-     * Trả về array: [{ id, key, value, description, minValue, maxValue }]
+     * GET /api/v1/settings - Public, no auth required.
+     * Returns array: [{ id, key, value, description, minValue, maxValue }]
      */
     getPublicSettings: async () => {
         const response = await request('/settings');
@@ -932,7 +932,7 @@ const settingsAPI = {
     },
 
     /**
-     * GET /api/v1/admin/settings — Cần auth ADMIN.
+     * GET /api/v1/admin/settings - Requires ADMIN auth.
      */
     getAdminSettings: async () => {
         const response = await request('/admin/settings', { auth: true });
@@ -940,9 +940,9 @@ const settingsAPI = {
     },
 
     /**
-     * PUT /api/v1/admin/settings/{key} — Cập nhật một setting.
-     * @param {string} key - setting key, ví dụ: 'shop_page_size'
-     * @param {number|string} value - giá trị mới
+     * PUT /api/v1/admin/settings/{key} - Update one setting.
+     * @param {string} key - setting key, for example: 'shop_page_size'
+     * @param {number|string} value - new value
      */
     updateSetting: async (key, value) => {
         const response = await request(`/admin/settings/${key}`, {

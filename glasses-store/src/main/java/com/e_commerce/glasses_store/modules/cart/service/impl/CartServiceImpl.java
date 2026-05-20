@@ -53,7 +53,7 @@ public class CartServiceImpl implements CartService {
         // Validate stock
         validateStock(variant, quantity);
 
-        // Upsert: nếu đã có variant trong giỏ → cộng dồn quantity
+        // Upsert: if the variant already exists in the cart, add to its quantity.
         Optional<CartItem> existing = cartItemRepository.findByCartIdAndProductVariantId(cart.getId(), variantId);
         if (existing.isPresent()) {
             CartItem item = existing.get();
@@ -106,17 +106,17 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(userId);
 
         Voucher voucher = voucherRepository.findByCode(voucherCode)
-                .orElseThrow(() -> new IllegalArgumentException("Voucher không tồn tại: " + voucherCode));
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found: " + voucherCode));
 
         if (!voucher.isValid()) {
-            throw new IllegalArgumentException("Voucher đã hết hạn hoặc đã hết lượt sử dụng");
+            throw new IllegalArgumentException("Voucher has expired or reached its usage limit");
         }
 
         // Check per-user usage limit
         if (voucher.getPerUserLimit() != null) {
             int userUsageCount = voucherUsageRepository.countByVoucherIdAndUserId(voucher.getId(), userId);
             if (userUsageCount >= voucher.getPerUserLimit()) {
-                throw new IllegalArgumentException("Bạn đã sử dụng hết lượt cho voucher này");
+                throw new IllegalArgumentException("You have reached the usage limit for this voucher");
             }
         }
 
@@ -139,7 +139,7 @@ public class CartServiceImpl implements CartService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             if (currentSubtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
                 throw new IllegalArgumentException(
-                        String.format("Đơn hàng tối thiểu %.0f VNĐ để sử dụng voucher này",
+                        String.format("Minimum order amount is %.0f VND to use this voucher",
                                 voucher.getMinOrderAmount()));
             }
         }
@@ -198,7 +198,7 @@ public class CartServiceImpl implements CartService {
     // ==================== Private Helpers ====================
 
     /**
-     * Lấy hoặc tạo cart cho user (lazy initialization).
+     * Get or create the user's cart (lazy initialization).
      */
     private Cart getOrCreateCart(String userId) {
         return cartRepository.findByUserId(userId)
@@ -209,7 +209,7 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * Validate voucher targeting — kiểm tra giỏ hàng có sản phẩm/danh mục phù hợp.
+     * Validate voucher targeting by checking matching products/categories in the cart.
      */
     private void validateVoucherTargeting(Voucher voucher, Cart cart) {
         List<VoucherApplicableItem> applicableItems = voucher.getApplicableItems();
@@ -230,12 +230,12 @@ public class CartServiceImpl implements CartService {
         });
 
         if (!hasMatch) {
-            throw new IllegalArgumentException("Voucher này không áp dụng cho sản phẩm trong giỏ hàng của bạn");
+            throw new IllegalArgumentException("This voucher does not apply to the products in your cart");
         }
     }
 
     /**
-     * Validate tồn kho — throw InsufficientStockException nếu không đủ.
+     * Validate stock and throw InsufficientStockException when stock is insufficient.
      */
     private void validateStock(ProductVariant variant, int requestedQty) {
         InventoryStock stock = inventoryStockRepository.findByProductVariantId(variant.getId())
@@ -247,7 +247,7 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * Build CartResponse với tính toán subtotal, discount, total.
+     * Build CartResponse with subtotal, discount, and total calculations.
      */
     private CartResponse buildCartResponse(Cart cart) {
         // Use explicit query to avoid stale lazy-collection state after save()
@@ -267,7 +267,7 @@ public class CartServiceImpl implements CartService {
             if (voucher.isPresent() && voucher.get().isValid()) {
                 discountAmount = voucher.get().calculateDiscount(subtotal);
             } else {
-                // Voucher hết hạn → tự động remove
+                // Remove expired vouchers automatically.
                 cart.setVoucherCode(null);
                 cartRepository.save(cart);
             }

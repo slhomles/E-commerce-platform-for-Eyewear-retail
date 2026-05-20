@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
  *  tag        — small uppercase label at top  (e.g. "INTERNATIONAL")
  *  title      — script-font headline          (e.g. "Women's Day")
  *  highlight  — giant bold text               (e.g. "SALE")
- *  subtitle   — secondary bold line           (e.g. "MUA 1 TẶNG 1")
+ *  subtitle   - secondary bold line           (e.g. "BUY 1 GET 1")
  *  ctaText    — button label                  (default "SHOP NOW")
  *  ctaLink    — route or url to navigate
  *  imageUrl   — product photo for left half

@@ -85,7 +85,7 @@ const OAuth2RedirectHandler = () => {
       height: '100vh',
       fontSize: '1.2rem'
     }}>
-      <p>Đang xử lý đăng nhập...</p>
+      <p>Processing sign-in...</p>
     </div>
   );
 };

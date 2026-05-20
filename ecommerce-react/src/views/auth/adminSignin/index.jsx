@@ -13,10 +13,10 @@ import * as Yup from 'yup';
 
 const AdminSignInSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Email không hợp lệ.')
-    .required('Vui lòng nhập Email.'),
+    .email('Email is invalid.')
+    .required('Please enter an email address.'),
   password: Yup.string()
-    .required('Vui lòng nhập Mật khẩu.')
+    .required('Please enter a password.')
 });
 
 const AdminSignIn = ({ history }) => {
@@ -28,7 +28,7 @@ const AdminSignIn = ({ history }) => {
   const dispatch = useDispatch();
 
   useScrollTop();
-  useDocumentTitle('Đăng nhập Admin | EyseGlass');
+  useDocumentTitle('Admin Sign In | EyseGlass');
 
   useEffect(() => () => {
     dispatch(setAuthStatus(null));
@@ -68,13 +68,13 @@ const AdminSignIn = ({ history }) => {
                 fontWeight: 'bold',
                 letterSpacing: '1px'
               }}>
-                KHU VỰC NHÂN VIÊN
+                STAFF AREA
               </span>
               <h2 style={{ marginTop: '2rem', marginBottom: '1rem', fontWeight: 'bold' }}>
-                Chào mừng trở lại
+                Welcome back
               </h2>
               <p style={{ color: '#666', fontSize: '1.4rem' }}>
-                Đăng nhập để vào trang quản trị dành cho nhân viên.
+                Sign in to access the staff admin dashboard.
               </p>
             </div>
 
@@ -106,7 +106,7 @@ const AdminSignIn = ({ history }) => {
                           disabled={isAuthenticating}
                           name="password"
                           type="password"
-                          label="Mật khẩu"
+                          label="Password"
                           placeholder="••••••"
                           component={CustomInput}
                         />
@@ -119,7 +119,7 @@ const AdminSignIn = ({ history }) => {
                           type="submit"
                           style={{ width: '100%', borderRadius: '4px', padding: '1.2rem', fontSize: '1.4rem' }}
                         >
-                          {isAuthenticating ? 'Đang đăng nhập' : 'Đăng nhập'}
+                          {isAuthenticating ? 'Signing in' : 'Sign In'}
                           &nbsp;
                           {isAuthenticating ? <LoadingOutlined /> : <ArrowRightOutlined />}
                         </button>
@@ -132,10 +132,10 @@ const AdminSignIn = ({ history }) => {
 
             <div style={{ textAlign: 'center', marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
               <span style={{ color: '#666', fontSize: '1.3rem' }}>
-                Không phải nhân viên?{' '}
+                Not a staff member?{' '}
               </span>
               <Link to={SIGNIN} style={{ fontWeight: 'bold', fontSize: '1.3rem', textDecoration: 'underline' }}>
-                Đăng nhập khách hàng
+                Customer sign in
               </Link>
             </div>
 

@@ -66,7 +66,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public BannerResponse createBanner(CreateBannerRequest request) {
-        // Validate thời gian
+        // Validate date range
         validateDateRange(request.getStartDate(), request.getEndDate());
 
         Banner banner = Banner.builder()
@@ -160,7 +160,7 @@ public class BannerServiceImpl implements BannerService {
             banner.setDisplayLocation(request.getDisplayLocation());
         }
 
-        // Validate và cập nhật ngày
+        // Validate and update dates
         LocalDateTime startDate = request.getStartDate() != null ? request.getStartDate() : banner.getStartDate();
         LocalDateTime endDate = request.getEndDate() != null ? request.getEndDate() : banner.getEndDate();
         validateDateRange(startDate, endDate);
@@ -197,7 +197,7 @@ public class BannerServiceImpl implements BannerService {
 
     private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         if (endDate.isBefore(startDate)) {
-            throw new IllegalArgumentException("Ngày kết thúc phải sau ngày bắt đầu");
+            throw new IllegalArgumentException("End date must be after start date");
         }
     }
 }

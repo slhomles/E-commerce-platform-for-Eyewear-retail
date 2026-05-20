@@ -39,7 +39,7 @@ public class ZaloPayService {
         long appTime = System.currentTimeMillis();
         long amount = order.getFinalAmount().longValue();
         String appUser = order.getUserId() != null ? order.getUserId() : "guest";
-        String description = "Thanh toan don hang #" + order.getCode();
+        String description = "Payment for order #" + order.getCode();
         String item = "[]";
 
         Map<String, Object> embed = new HashMap<>();
@@ -101,7 +101,7 @@ public class ZaloPayService {
             return String.valueOf(orderUrl);
         } catch (Exception e) {
             log.error("ZaloPay createPaymentUrl error for order {}: {}", order.getCode(), e.getMessage(), e);
-            throw new IllegalStateException("Không thể tạo giao dịch ZaloPay: " + e.getMessage(), e);
+            throw new IllegalStateException("Cannot create ZaloPay transaction: " + e.getMessage(), e);
         }
     }
 
