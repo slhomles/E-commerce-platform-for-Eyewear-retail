@@ -13,6 +13,15 @@ import api from '@/services/api';
 import { StepTracker } from '../components';
 import withCheckout from '../hoc/withCheckout';
 
+const resolveBasketVariantId = (item) => (
+  item.selectedVariantId
+  || item.variantId
+  || item.productVariantId
+  || item.selectedVariant?.id
+  || item.variants?.[0]?.id
+  || item.defaultVariantId
+);
+
 const OrderSummary = ({ basket, subtotal }) => {
   useDocumentTitle('Check Out Step 1 | Salinaka');
   useScrollTop();
@@ -26,8 +35,8 @@ const OrderSummary = ({ basket, subtotal }) => {
     // Sync client basket to server cart before proceeding,
     // so the order only contains exactly the items the user selected.
     const items = basket
-      .filter((p) => p.selectedVariantId)
-      .map((p) => ({ variantId: p.selectedVariantId, quantity: p.quantity || 1 }));
+      .map((p) => ({ variantId: resolveBasketVariantId(p), quantity: p.quantity || 1 }))
+      .filter((p) => p.variantId);
     if (items.length === 0) return;
     setIsSyncing(true);
     try {

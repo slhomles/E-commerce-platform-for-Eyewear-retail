@@ -4,6 +4,15 @@ import { serverApplyVoucher, serverRemoveVoucher, syncCartSuccess } from '@/redu
 import { CloseOutlined, GiftOutlined } from '@ant-design/icons';
 import api from '@/services/api';
 
+const resolveBasketVariantId = (item) => (
+  item.selectedVariantId
+  || item.variantId
+  || item.productVariantId
+  || item.selectedVariant?.id
+  || item.variants?.[0]?.id
+  || item.defaultVariantId
+);
+
 const VoucherInput = ({ basket = [] }) => {
   const dispatch = useDispatch();
   const { voucherCode, discountAmount } = useSelector((state) => state.cart);
@@ -12,13 +21,13 @@ const VoucherInput = ({ basket = [] }) => {
   const [isLoadingVouchers, setIsLoadingVouchers] = useState(false);
 
   const basketSignature = basket
-    .map((item) => `${item.selectedVariantId}:${item.quantity || 1}`)
+    .map((item) => `${resolveBasketVariantId(item) || ''}:${item.quantity || 1}`)
     .join('|');
 
   const syncServerCart = async () => {
     const items = basket
-      .filter((item) => item.selectedVariantId)
-      .map((item) => ({ variantId: item.selectedVariantId, quantity: item.quantity || 1 }));
+      .map((item) => ({ variantId: resolveBasketVariantId(item), quantity: item.quantity || 1 }))
+      .filter((item) => item.variantId);
 
     if (items.length === 0) return;
 
@@ -32,7 +41,11 @@ const VoucherInput = ({ basket = [] }) => {
     const loadAvailableVouchers = async () => {
       try {
         setIsLoadingVouchers(true);
-        await syncServerCart();
+        try {
+          await syncServerCart();
+        } catch (err) {
+          // Continue with the server cart already stored for this user.
+        }
         const vouchers = await api.getAvailableVouchers();
         if (mounted) {
           setAvailableVouchers(Array.isArray(vouchers) ? vouchers : []);

@@ -2,7 +2,6 @@ import { StarFilled } from '@ant-design/icons';
 import { displayDate } from '@/helpers/utils';
 import PropType from 'prop-types';
 import React, { useRef, useState } from 'react';
-import { CheckOutlined } from '@ant-design/icons';
 
 const ReviewItem = ({ review, onDelete, index }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -38,11 +37,6 @@ const ReviewItem = ({ review, onDelete, index }) => {
         >
           {review.productName || review.productId || 'Unknown Product'}
         </h5>
-        {review.isVerifiedPurchase && (
-          <span className="text-micro text-success">
-            <CheckOutlined /> Verified
-          </span>
-        )}
       </div>
       <div className="grid-col text-center">
         <div className="d-flex-center">
@@ -53,10 +47,12 @@ const ReviewItem = ({ review, onDelete, index }) => {
       </div>
       <div className="grid-col">
         <p className="text-micro margin-0" style={{ 
-          maxWidth: '200px', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          whiteSpace: 'nowrap' 
+          width: '100%',
+          overflow: 'visible',
+          whiteSpace: 'normal',
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
+          lineHeight: 1.5
         }}>
           {review.content}
         </p>
@@ -99,7 +95,6 @@ ReviewItem.propTypes = {
     productName: PropType.string,
     rating: PropType.number,
     content: PropType.string,
-    isVerifiedPurchase: PropType.bool,
     createdAt: PropType.string
   }).isRequired,
   onDelete: PropType.func.isRequired,

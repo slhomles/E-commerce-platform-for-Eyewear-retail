@@ -168,7 +168,10 @@ public class CartServiceImpl implements CartService {
         Cart cart = getOrCreateCart(userId);
         // Clear existing items
         List<CartItem> existing = cartItemRepository.findByCartId(cart.getId());
-        cartItemRepository.deleteAll(existing);
+        if (!existing.isEmpty()) {
+            cartItemRepository.deleteAll(existing);
+            cartItemRepository.flush();
+        }
         // Add new items
         List<CartItem> newItems = new ArrayList<>();
         for (AddToCartRequest req : items) {
@@ -216,7 +219,7 @@ public class CartServiceImpl implements CartService {
                 .map(VoucherApplicableItem::getItemId)
                 .collect(Collectors.toSet());
 
-        boolean hasMatch = cart.getItems().stream().anyMatch(cartItem -> {
+        boolean hasMatch = cartItemRepository.findByCartId(cart.getId()).stream().anyMatch(cartItem -> {
             Product product = cartItem.getProductVariant().getProduct();
             if (voucher.getApplicableTo() == Voucher.ApplicableTo.PRODUCT) {
                 return applicableIds.contains(product.getId());
@@ -310,7 +313,7 @@ public class CartServiceImpl implements CartService {
                 .map(VoucherApplicableItem::getItemId)
                 .collect(Collectors.toSet());
 
-        return cart.getItems().stream().anyMatch(cartItem -> {
+        return cartItemRepository.findByCartId(cart.getId()).stream().anyMatch(cartItem -> {
             Product product = cartItem.getProductVariant().getProduct();
             if (voucher.getApplicableTo() == Voucher.ApplicableTo.PRODUCT) {
                 return applicableIds.contains(product.getId());
