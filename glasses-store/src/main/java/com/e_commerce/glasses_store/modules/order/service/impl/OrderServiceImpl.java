@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 3. Tính phí ship & discount
-        BigDecimal shippingFee = BigDecimal.ZERO; // Có thể mở rộng sau
+        BigDecimal shippingFee = BigDecimal.valueOf(30000); // Khớp với SHIPPING_FEE = 30000 ở Frontend
         BigDecimal discountAmount = BigDecimal.ZERO;
         if (request.getVoucherCode() != null) {
             Optional<Voucher> voucher = voucherRepository.findByCode(request.getVoucherCode());
