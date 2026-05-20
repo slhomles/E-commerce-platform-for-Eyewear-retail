@@ -14,6 +14,8 @@ class ReviewContentPolicyTest {
         assertTrue(ReviewContentPolicy.containsBlockedLink("Visit http://bad.example/path"));
         assertTrue(ReviewContentPolicy.containsBlockedLink("Run javascript:alert(1)"));
         assertTrue(ReviewContentPolicy.containsBlockedLink("Open www.example.com"));
+        assertTrue(ReviewContentPolicy.containsBlockedLink(
+                "Moi nguoi vao link nay https://aistudio.google.com/api-keys?project=gen-lang-client-0857804304"));
     }
 
     @Test
@@ -37,5 +39,14 @@ class ReviewContentPolicyTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> ReviewContentPolicy.validate("Nhan qua tai phishing.example"));
+    }
+
+    @Test
+    void sanitizeForDisplayHidesExistingBlockedContent() {
+        String sanitized = ReviewContentPolicy.sanitizeForDisplay(
+                "Moi nguoi vao link nay https://aistudio.google.com/api-keys?project=gen-lang-client-0857804304");
+
+        assertFalse(sanitized.contains("https://"));
+        assertTrue(sanitized.contains("lien ket khong an toan"));
     }
 }

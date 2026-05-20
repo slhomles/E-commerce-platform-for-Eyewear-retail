@@ -8,8 +8,11 @@ public final class ReviewContentPolicy {
     private static final String LINK_ERROR_MESSAGE =
             "Review content cannot contain links, URLs, or contact addresses.";
 
+    private static final String HIDDEN_CONTENT_MESSAGE =
+            "Noi dung danh gia da bi an vi chua lien ket khong an toan.";
+
     private static final Pattern URL_SCHEME_PATTERN = Pattern.compile(
-            "\\b(?:https?|ftp|file)\\s*://|\\b(?:javascript|data)\\s*:",
+            "(?:https?|ftp|file)\\s*://|(?:javascript|data|mailto)\\s*:",
             Pattern.CASE_INSENSITIVE);
 
     private static final Pattern WWW_PATTERN = Pattern.compile(
@@ -47,6 +50,10 @@ public final class ReviewContentPolicy {
                 || WWW_PATTERN.matcher(normalized).find()
                 || EMAIL_PATTERN.matcher(normalized).find()
                 || DOMAIN_PATTERN.matcher(normalized).find();
+    }
+
+    public static String sanitizeForDisplay(String content) {
+        return containsBlockedLink(content) ? HIDDEN_CONTENT_MESSAGE : content;
     }
 
     private static String normalize(String content) {

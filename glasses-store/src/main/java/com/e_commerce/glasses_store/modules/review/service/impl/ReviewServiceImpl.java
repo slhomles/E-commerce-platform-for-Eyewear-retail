@@ -137,7 +137,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .userAvatar(r.getUser() != null ? r.getUser().getAvatar() : null)
                 .orderId(r.getOrder() != null ? r.getOrder().getId() : null)
                 .rating(r.getRating())
-                .content(r.getContent())
+                .content(ReviewContentPolicy.sanitizeForDisplay(r.getContent()))
                 .images(imagesList != null ? imagesList : java.util.Collections.emptyList())
                 .isVerifiedPurchase(r.getIsVerifiedPurchase() != null ? r.getIsVerifiedPurchase() : true)
                 .createdAt(r.getCreatedAt() != null ? r.getCreatedAt() : LocalDateTime.now())
