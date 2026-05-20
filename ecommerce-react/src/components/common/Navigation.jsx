@@ -1,12 +1,13 @@
 /* eslint-disable indent */
 import { FilterOutlined, ShoppingOutlined } from '@ant-design/icons';
 import * as ROUTE from '@/constants/routes';
-import logo from '@/images/logo-full.png';
 import React, { useEffect, useRef } from 'react';
+import logo from '@/images/logo-full.png';
 import { useSelector } from 'react-redux';
 import {
   Link, NavLink, useLocation
 } from 'react-router-dom';
+import { useSiteSettings } from '@/hooks';
 import UserAvatar from '@/views/account/components/UserAvatar';
 import BasketToggle from '../basket/BasketToggle';
 import Badge from './Badge';
@@ -17,6 +18,7 @@ import SearchBar from './SearchBar';
 const Navigation = () => {
   const navbar = useRef(null);
   const { pathname } = useLocation();
+  const { settings } = useSiteSettings();
 
   const store = useSelector((state) => ({
     basketLength: state.basket.length,
@@ -66,10 +68,13 @@ const Navigation = () => {
       />
     );
   }
+
+  const shopLogo = settings.shop_logo_url || logo;
+
   return (
     <nav className="navigation" ref={navbar}>
       <div className="logo">
-        <Link onClick={onClickLink} to="/"><img alt="Logo" src={logo} /></Link>
+        <Link onClick={onClickLink} to="/"><img alt={settings.shop_name || 'Logo'} src={shopLogo} /></Link>
       </div>
       <ul className="navigation-menu-main">
         <li><NavLink activeClassName="navigation-menu-active" exact to={ROUTE.HOME}>Home</NavLink></li>

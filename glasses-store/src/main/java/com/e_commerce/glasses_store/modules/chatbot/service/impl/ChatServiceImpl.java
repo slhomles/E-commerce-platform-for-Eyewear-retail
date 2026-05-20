@@ -439,7 +439,7 @@ public class ChatServiceImpl implements ChatService {
             }
             // 2. Fallback LIKE for short or accented keywords.
             if (products.isEmpty()) {
-                products = productRepository.searchByLike(keyword.trim(), PageRequest.of(0, 10));
+                products = productRepository.searchByLike(keyword.trim(), PageRequest.of(0, 10)).getContent();
             }
         }
         // 3. Final fallback: always return products to recommend.

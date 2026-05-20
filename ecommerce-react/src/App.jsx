@@ -1,5 +1,5 @@
-/* eslint-disable react/forbid-prop-types */
 import { Preloader } from '@/components/common';
+import { SiteSettingsProvider } from '@/hooks';
 import PropType from 'prop-types';
 import React, { StrictMode } from 'react';
 import { Provider } from 'react-redux';
@@ -10,7 +10,9 @@ const App = ({ store, persistor }) => (
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={<Preloader />} persistor={persistor}>
-        <AppRouter />
+        <SiteSettingsProvider>
+          <AppRouter />
+        </SiteSettingsProvider>
       </PersistGate>
     </Provider>
   </StrictMode>
