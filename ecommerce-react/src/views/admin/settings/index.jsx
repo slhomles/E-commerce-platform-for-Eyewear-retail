@@ -128,6 +128,21 @@ const AdminSettings = () => {
   const logoInputRef = useRef(null);
   const faviconInputRef = useRef(null);
 
+  const fetchSettings = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await api.getAdminSettings();
+      setSettings(data);
+      const init = {};
+      data.forEach((s) => { init[s.key] = s.value; });
+      setLocalValues(init);
+    } catch (e) {
+      console.error('Failed to load settings', e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const fetchPreviews = useCallback(async () => {
     setLoadingPreviews(true);
     try {
