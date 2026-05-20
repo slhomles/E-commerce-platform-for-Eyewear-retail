@@ -85,6 +85,7 @@ const Home = () => {
             />
           )}
         </div>
+        </div>
       </main>
     </>
   );

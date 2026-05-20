@@ -296,12 +296,12 @@
 
 .payment-img-zalopay {
   background-color: #fff;
-  background-image: url('https://upload.wikimedia.org/wikipedia/vi/thumb/7/77/ZaloPay_Logo.svg/512px-ZaloPay_Logo.svg.png');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 64'%3E%3Crect width='120' height='64' rx='10' fill='%23fff'/%3E%3Crect x='10' y='13' width='38' height='38' rx='9' fill='%230067ff'/%3E%3Ccircle cx='29' cy='32' r='13' fill='%23fff'/%3E%3Cpath d='M21 32h16M29 24v16' stroke='%230067ff' stroke-width='6' stroke-linecap='round'/%3E%3Ctext x='55' y='30' font-family='Arial,sans-serif' font-size='16' font-weight='700' fill='%230067ff'%3EZalo%3C/text%3E%3Ctext x='55' y='48' font-family='Arial,sans-serif' font-size='17' font-weight='700' fill='%2300a651'%3EPay%3C/text%3E%3C/svg%3E");
 }
 
 .payment-img-vnpay {
   background-color: #fff;
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Vnpay-logo.png/512px-Vnpay-logo.png');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 64'%3E%3Crect width='120' height='64' rx='10' fill='%23fff'/%3E%3Cg transform='translate(10 16)'%3E%3Crect x='0' y='0' width='16' height='16' rx='3' fill='%23005baa' transform='rotate(45 8 8)'/%3E%3Crect x='14' y='0' width='16' height='16' rx='3' fill='%23e7354a' transform='rotate(45 22 8)'/%3E%3Crect x='28' y='0' width='16' height='16' rx='3' fill='%23005baa' transform='rotate(45 36 8)'/%3E%3C/g%3E%3Ctext x='54' y='31' font-family='Arial,sans-serif' font-size='17' font-weight='800' fill='%23005baa'%3EVN%3C/text%3E%3Ctext x='80' y='31' font-family='Arial,sans-serif' font-size='17' font-weight='800' fill='%23e7354a'%3EPAY%3C/text%3E%3Ctext x='55' y='47' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='%23747f8f'%3EQR%3C/text%3E%3C/svg%3E");
 }
 
 .payment-img-payos {
@@ -311,7 +311,7 @@
 
 .payment-img-momo {
   background-color: #fff;
-  background-image: url('https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 64'%3E%3Crect width='120' height='64' rx='10' fill='%23fff'/%3E%3Crect x='12' y='10' width='44' height='44' rx='11' fill='%23a50064'/%3E%3Ctext x='34' y='29' text-anchor='middle' font-family='Arial,sans-serif' font-size='14' font-weight='800' fill='%23fff'%3EMo%3C/text%3E%3Ctext x='34' y='46' text-anchor='middle' font-family='Arial,sans-serif' font-size='14' font-weight='800' fill='%23fff'%3EMo%3C/text%3E%3Ctext x='64' y='39' font-family='Arial,sans-serif' font-size='23' font-weight='800' fill='%23a50064'%3EMoMo%3C/text%3E%3C/svg%3E");
 }
 
 .payment-img-atm {
