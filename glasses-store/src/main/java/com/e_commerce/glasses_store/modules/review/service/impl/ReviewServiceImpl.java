@@ -132,6 +132,7 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponse.builder()
                 .id(r.getId())
                 .productId(r.getProduct() != null ? r.getProduct().getId() : null)
+                .productName(r.getProduct() != null ? r.getProduct().getName() : "Unknown Product")
                 .userId(r.getUser() != null ? r.getUser().getId() : null)
                 .userFullName(r.getUser() != null ? r.getUser().getFullName() : "Unknown User")
                 .userAvatar(r.getUser() != null ? r.getUser().getAvatar() : null)

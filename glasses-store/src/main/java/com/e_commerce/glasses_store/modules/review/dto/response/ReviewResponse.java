@@ -15,6 +15,7 @@ import java.util.List;
 public class ReviewResponse {
     private String id;
     private String productId;
+    private String productName;
     private String userId;
     private String userFullName;
     private String userAvatar;

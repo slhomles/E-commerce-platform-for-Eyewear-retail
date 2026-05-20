@@ -12,7 +12,7 @@ const ReviewsTable = ({ reviews, onDelete, baseIndex }) => (
           <span>Customer</span>
       </div>
       <div className="grid-col">
-          <span>Product ID</span>
+          <span>Product</span>
       </div>
       <div className="grid-col text-center">
           <span>Rating</span>

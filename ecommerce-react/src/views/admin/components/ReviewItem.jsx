@@ -24,10 +24,20 @@ const ReviewItem = ({ review, onDelete, index }) => {
       </div>
       <div className="grid-col">
         <h5 className="margin-0 text-subtle">{review.userFullName || 'Anonymous'}</h5>
-        <span className="text-micro text-italic">{review.userId}</span>
       </div>
       <div className="grid-col">
-        <h5 className="margin-0 text-subtle">{review.productId}</h5>
+        <h5
+          className="margin-0 text-subtle"
+          title={review.productName || review.productId}
+          style={{
+            maxWidth: '200px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {review.productName || review.productId || 'Unknown Product'}
+        </h5>
         {review.isVerifiedPurchase && (
           <span className="text-micro text-success">
             <CheckOutlined /> Verified
@@ -86,6 +96,7 @@ ReviewItem.propTypes = {
     userId: PropType.string,
     userFullName: PropType.string,
     productId: PropType.string,
+    productName: PropType.string,
     rating: PropType.number,
     content: PropType.string,
     isVerifiedPurchase: PropType.bool,
