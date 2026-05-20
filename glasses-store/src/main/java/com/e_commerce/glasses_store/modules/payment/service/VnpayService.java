@@ -64,14 +64,16 @@ public class VnpayService {
             String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 try {
+                    String encodedValue = URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()).replace("+", "%20");
+                    String encodedName = URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()).replace("+", "%20");
                     // Build hash data
-                    hashData.append(fieldName);
+                    hashData.append(encodedName);
                     hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    hashData.append(encodedValue);
                     // Build query
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                    query.append(encodedName);
                     query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    query.append(encodedValue);
                 } catch (java.io.UnsupportedEncodingException e) {
                     log.error("Encoding error", e);
                 }
@@ -82,7 +84,7 @@ public class VnpayService {
                 }
             }
         }
-        String queryUrl = query.toString().replace("+", "%20");
+        String queryUrl = query.toString();
         log.debug("VNPay Hash Data String: [{}]", hashData.toString());
         String vnp_SecureHash = VnpayConfig.hmacSHA512(vnpayConfig.getHashSecret(), hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
@@ -117,9 +119,11 @@ public class VnpayService {
             String fieldValue = fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 try {
-                    sb.append(fieldName);
+                    String encodedValue = java.net.URLEncoder.encode(fieldValue, java.nio.charset.StandardCharsets.US_ASCII.toString()).replace("+", "%20");
+                    String encodedName = java.net.URLEncoder.encode(fieldName, java.nio.charset.StandardCharsets.US_ASCII.toString()).replace("+", "%20");
+                    sb.append(encodedName);
                     sb.append("=");
-                    sb.append(java.net.URLEncoder.encode(fieldValue, java.nio.charset.StandardCharsets.US_ASCII.toString()));
+                    sb.append(encodedValue);
                 } catch (java.io.UnsupportedEncodingException e) {
                     log.error("Encoding error", e);
                 }
