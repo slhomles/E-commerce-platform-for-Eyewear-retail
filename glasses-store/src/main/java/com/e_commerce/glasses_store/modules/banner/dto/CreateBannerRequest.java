@@ -30,7 +30,9 @@ public class CreateBannerRequest {
     @NotNull(message = "Loại liên kết không được để trống")
     private Banner.LinkType linkType;
 
-    @NotBlank(message = "Giá trị liên kết không được để trống")
+    /**
+     * linkValue có thể rỗng khi linkType = NONE
+     */
     private String linkValue;
 
     @Builder.Default

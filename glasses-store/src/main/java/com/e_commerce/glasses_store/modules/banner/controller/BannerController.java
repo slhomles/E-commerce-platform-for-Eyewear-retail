@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,16 +23,13 @@ public class BannerController {
     private final BannerService bannerService;
 
     /**
-     * GET /api/v1/banners/active — Lấy banner đang hiển thị.
-     * Trả về danh sách banner active + đang trong thời gian hiển thị.
+     * GET /api/v1/banners/active — Lấy banner đang hiển thị theo vị trí trang.
+     * @param location HOME | FEATURED | RECOMMENDED (mặc định HOME)
      */
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<BannerResponse>>> getActiveBanners(
             @RequestParam(required = false, defaultValue = "HOME") String location) {
         
-        // Gọi thẳng service (sẽ cập nhật service interface sau, hoặc dùng repository)
-        // Thay vì đổi signature của getActiveBanners, ta đổi service để nhận location
-        // Wait, let's update service later. For now, call bannerService.getActiveBannersByLocation
         List<BannerResponse> banners = bannerService.getActiveBannersByLocation(location);
         return ResponseEntity.ok(ApiResponse.success(banners));
     }
