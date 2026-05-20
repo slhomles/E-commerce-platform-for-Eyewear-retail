@@ -564,6 +564,11 @@ const orderAPI = {
         return response;
     },
 
+    verifyPayOS: async (queryString) => {
+        const response = await request(`/payment/payos-return${queryString}`);
+        return response;
+    },
+
     // ---- Admin Order APIs ----
 
     /**

@@ -32,6 +32,9 @@ const PaymentSuccess = () => {
             } else if (params.has('partnerCode') || (params.has('orderId') && params.has('resultCode'))) {
                 verifyFn = api.verifyMoMo;
                 gateway = 'MoMo';
+            } else if (params.has('code') && params.has('orderCode')) {
+                verifyFn = api.verifyPayOS;
+                gateway = 'PayOS';
             }
 
             if (!verifyFn) {

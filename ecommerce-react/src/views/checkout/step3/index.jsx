@@ -76,7 +76,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
       } else {
           // Redirect to account orders tab if no payment URL (e.g. COD)
           setTimeout(() => {
-            history.push('/account');
+            history.push('/account?tab=orders');
           }, 1500);
       }
     } catch (err) {
