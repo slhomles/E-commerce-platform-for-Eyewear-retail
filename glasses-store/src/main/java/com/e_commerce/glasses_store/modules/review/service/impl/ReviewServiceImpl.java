@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,8 +144,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void seedMockReviews() {
         try {
-            List<Product> products = productRepository.findAll();
-            List<User> users = userRepository.findAll();
+            // Chỉ lấy tối đa 10 sản phẩm và 10 người dùng để tránh quá tải bộ nhớ (OOM) / Timeout trên EC2
+            List<Product> products = productRepository.findAll(PageRequest.of(0, 10)).getContent();
+            List<User> users = userRepository.findAll(PageRequest.of(0, 10)).getContent();
 
             if (users.isEmpty() || products.isEmpty()) {
                 log.warn("Cannot seed reviews: users or products list is empty.");
@@ -173,7 +175,7 @@ public class ReviewServiceImpl implements ReviewService {
                 }
                 ProductVariant firstVariant = product.getVariants().get(0);
 
-                int numReviews = random.nextInt(10) + 1; // 1 to 10 reviews per product
+                int numReviews = random.nextInt(3) + 1; // 1 to 3 reviews per product để tối ưu hóa bộ nhớ
                 for (int i = 0; i < numReviews; i++) {
                     User user = users.get(random.nextInt(users.size()));
 
