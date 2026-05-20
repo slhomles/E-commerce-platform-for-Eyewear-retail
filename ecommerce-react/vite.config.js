@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 
-const backendTarget = process.env.VITE_BACKEND_URL || 'http://52.68.124.230:8081';
+const backendTarget = process.env.VITE_BACKEND_URL || 'http://localhost:8081';
 const backendProxy = {
   target: backendTarget,
   changeOrigin: true,
