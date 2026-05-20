@@ -1,13 +1,12 @@
-import { useFormikContext } from 'formik';
 import { displayMoney } from '@/helpers/utils';
 import PropType from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+const SHIPPING_FEE = 30000;
+
 const ShippingTotal = ({ subtotal }) => {
-  const { values } = useFormikContext();
   const { discountAmount = 0, voucherCode } = useSelector((state) => state.cart || {});
-  const shippingFee = values.isInternational ? 50000 : 0;
   const displaySubtotal = discountAmount > 0 ? subtotal - discountAmount : subtotal;
 
   return (
@@ -17,12 +16,12 @@ const ShippingTotal = ({ subtotal }) => {
           <tr>
             <td>
               <span className="d-block margin-0 padding-right-s text-right">
-                International Shipping: &nbsp;
+                Shipping Fee: &nbsp;
               </span>
             </td>
             <td>
               <h4 className="basket-total-amount text-subtle text-right margin-0 ">
-                {displayMoney(values.isInternational ? 50000 : 0)}
+                {displayMoney(SHIPPING_FEE)}
               </h4>
             </td>
           </tr>
@@ -60,7 +59,7 @@ const ShippingTotal = ({ subtotal }) => {
             </td>
             <td>
               <h2 className="basket-total-amount text-right">
-                {displayMoney(Number(displaySubtotal) + shippingFee)}
+                {displayMoney(Number(displaySubtotal) + SHIPPING_FEE)}
               </h2>
             </td>
           </tr>

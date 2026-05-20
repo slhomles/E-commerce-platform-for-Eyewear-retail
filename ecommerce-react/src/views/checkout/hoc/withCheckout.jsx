@@ -5,6 +5,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, withRouter } from 'react-router-dom';
 
+const SHIPPING_FEE = 30000;
+
 const withCheckout = (Component) => withRouter((props) => {
   const state = useSelector((store) => ({
     isAuth: !!store.auth?.id && !!store.auth?.role,
@@ -16,7 +18,6 @@ const withCheckout = (Component) => withRouter((props) => {
 
   // Only include selected items for checkout
   const selectedBasket = state.basket.filter((product) => product.selected !== false);
-  const shippingFee = state.shipping.isInternational ? 50000 : 0;
   const subtotal = calculateTotal(selectedBasket.map((product) => (product.price || 0) * (product.quantity || 1)));
 
   if (!state.isAuth) {
@@ -32,7 +33,7 @@ const withCheckout = (Component) => withRouter((props) => {
         payment={state.payment}
         profile={state.profile}
         shipping={state.shipping}
-        subtotal={Number(subtotal + shippingFee)}
+        subtotal={Number(subtotal + SHIPPING_FEE)}
       />
     );
   }

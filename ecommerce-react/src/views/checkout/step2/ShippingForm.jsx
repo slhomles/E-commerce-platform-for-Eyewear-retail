@@ -2,21 +2,20 @@
 import { CustomInput, CustomMobileInput, CustomSelect } from '@/components/formik';
 import { Field, useFormikContext } from 'formik';
 import React, { useState, useEffect, useRef } from 'react';
+import { displayMoney } from '@/helpers/utils';
 
 const ShippingForm = () => {
   const { values, setFieldValue } = useFormikContext();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  
+
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingWards, setLoadingWards] = useState(false);
 
   // Fetch provinces
   useEffect(() => {
-    if (values.isInternational) return;
-
     const fetchProvinces = async () => {
       setLoadingProvinces(true);
       try {
@@ -33,13 +32,12 @@ const ShippingForm = () => {
         setLoadingProvinces(false);
       }
     };
-
     fetchProvinces();
-  }, [values.isInternational]);
+  }, []);
 
   // Fetch districts when provinceCode changes
   useEffect(() => {
-    if (values.isInternational || !values.provinceCode) {
+    if (!values.provinceCode) {
       setDistricts([]);
       return;
     }
@@ -64,11 +62,11 @@ const ShippingForm = () => {
     };
 
     fetchDistricts();
-  }, [values.provinceCode, values.isInternational]);
+  }, [values.provinceCode]);
 
   // Fetch wards when districtCode changes
   useEffect(() => {
-    if (values.isInternational || !values.districtCode) {
+    if (!values.districtCode) {
       setWards([]);
       return;
     }
@@ -93,7 +91,7 @@ const ShippingForm = () => {
     };
 
     fetchWards();
-  }, [values.districtCode, values.isInternational]);
+  }, [values.districtCode]);
 
   // Synchronize provinceName when provinceCode changes
   useEffect(() => {
@@ -152,6 +150,8 @@ const ShippingForm = () => {
   return (
     <div className="checkout-shipping-wrapper">
       <div className="checkout-shipping-form">
+
+        {/* Full Name & Email */}
         <div className="checkout-fieldset">
           <div className="d-block checkout-field">
             <Field
@@ -174,65 +174,51 @@ const ShippingForm = () => {
           </div>
         </div>
 
-        {/* Shipping Address fields */}
-        {values.isInternational ? (
-          <div className="checkout-fieldset">
-            <div className="d-block checkout-field" style={{ width: '100%' }}>
-              <Field
-                name="address"
-                type="text"
-                label="* Shipping Address"
-                placeholder="Enter full shipping address"
-                component={CustomInput}
-              />
-            </div>
+        {/* Province & District */}
+        <div className="checkout-fieldset">
+          <div className="d-block checkout-field">
+            <CustomSelect
+              name="provinceCode"
+              label="* Tỉnh / Thành phố"
+              placeholder={loadingProvinces ? 'Đang tải...' : 'Chọn Tỉnh / Thành phố'}
+              disabled={loadingProvinces || provinces.length === 0}
+              options={provinces}
+            />
           </div>
-        ) : (
-          <>
-            <div className="checkout-fieldset">
-              <div className="d-block checkout-field">
-                <CustomSelect
-                  name="provinceCode"
-                  label="* Tỉnh / Thành phố"
-                  placeholder={loadingProvinces ? "Đang tải..." : "Chọn Tỉnh / Thành phố"}
-                  disabled={loadingProvinces || provinces.length === 0}
-                  options={provinces}
-                />
-              </div>
-              <div className="d-block checkout-field">
-                <CustomSelect
-                  name="districtCode"
-                  label="* Quận / Huyện"
-                  placeholder={loadingDistricts ? "Đang tải..." : "Chọn Quận / Huyện"}
-                  disabled={loadingDistricts || !values.provinceCode || districts.length === 0}
-                  options={districts}
-                />
-              </div>
-            </div>
-            
-            <div className="checkout-fieldset">
-              <div className="d-block checkout-field">
-                <CustomSelect
-                  name="wardCode"
-                  label="* Phường / Xã"
-                  placeholder={loadingWards ? "Đang tải..." : "Chọn Phường / Xã"}
-                  disabled={loadingWards || !values.districtCode || wards.length === 0}
-                  options={wards}
-                />
-              </div>
-              <div className="d-block checkout-field">
-                <Field
-                  name="streetAddress"
-                  type="text"
-                  label="* Địa chỉ chi tiết"
-                  placeholder="Số nhà, ngõ ngách, tên đường..."
-                  component={CustomInput}
-                />
-              </div>
-            </div>
-          </>
-        )}
+          <div className="d-block checkout-field">
+            <CustomSelect
+              name="districtCode"
+              label="* Quận / Huyện"
+              placeholder={loadingDistricts ? 'Đang tải...' : 'Chọn Quận / Huyện'}
+              disabled={loadingDistricts || !values.provinceCode || districts.length === 0}
+              options={districts}
+            />
+          </div>
+        </div>
 
+        {/* Ward & Street Address */}
+        <div className="checkout-fieldset">
+          <div className="d-block checkout-field">
+            <CustomSelect
+              name="wardCode"
+              label="* Phường / Xã"
+              placeholder={loadingWards ? 'Đang tải...' : 'Chọn Phường / Xã'}
+              disabled={loadingWards || !values.districtCode || wards.length === 0}
+              options={wards}
+            />
+          </div>
+          <div className="d-block checkout-field">
+            <Field
+              name="streetAddress"
+              type="text"
+              label="* Địa chỉ chi tiết"
+              placeholder="Số nhà, ngõ ngách, tên đường..."
+              component={CustomInput}
+            />
+          </div>
+        </div>
+
+        {/* Mobile Number */}
         <div className="checkout-fieldset">
           <div className="d-block checkout-field">
             <CustomMobileInput name="mobile" defaultValue={values.mobile} />
@@ -240,39 +226,29 @@ const ShippingForm = () => {
           <div className="d-block checkout-field" />
         </div>
 
+        {/* Shipping Option - fixed Standard Shipping */}
         <div className="checkout-fieldset">
-          <Field name="isInternational">
-            {({ field, form, meta }) => (
-              <div className="checkout-field">
-                {meta.touched && meta.error ? (
-                  <span className="label-input label-error">{meta.error}</span>
-                ) : (
-                  <label className="label-input" htmlFor={field.name}>
-                    Shipping Option
-                  </label>
-                )}
-                <div className="checkout-checkbox-field">
-                  <input
-                    checked={field.value}
-                    id={field.name}
-                    onChange={(e) => {
-                      form.setValues({ ...form.values, [field.name]: e.target.checked });
-                    }}
-                    value={meta.value}
-                    type="checkbox"
-                  />
-                  <label className="d-flex w-100" htmlFor={field.name}>
-                    <h5 className="d-flex-grow-1 margin-0">
-                      &nbsp; International Shipping &nbsp;
-                      <span className="text-subtle">7-14 days</span>
-                    </h5>
-                    <h4 className="margin-0">50.000 ₫</h4>
-                  </label>
-                </div>
-              </div>
-            )}
-          </Field>
+          <div className="checkout-field" style={{ width: '100%' }}>
+            <label className="label-input">Shipping Option</label>
+            <div className="checkout-checkbox-field" style={{ cursor: 'default' }}>
+              <input
+                checked
+                id="shipping-option-standard"
+                readOnly
+                type="checkbox"
+                disabled
+              />
+              <label className="d-flex w-100" htmlFor="shipping-option-standard" style={{ cursor: 'default' }}>
+                <h5 className="d-flex-grow-1 margin-0">
+                  &nbsp; Standard Shipping &nbsp;
+                  <span className="text-subtle">Domestic delivery 2-4 days</span>
+                </h5>
+                <h4 className="margin-0">{displayMoney(30000)}</h4>
+              </label>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   );

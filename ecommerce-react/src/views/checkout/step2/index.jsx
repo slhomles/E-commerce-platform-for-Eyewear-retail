@@ -24,32 +24,19 @@ const FormSchema = Yup.object().shape({
   email: Yup.string()
     .email('Email is not valid.')
     .required('Email is required.'),
-  address: Yup.string().when('isInternational', {
-    is: true,
-    then: Yup.string().required('Shipping address is required.')
-  }),
-  provinceCode: Yup.string().when('isInternational', {
-    is: false,
-    then: Yup.string().required('Vui lòng chọn Tỉnh/Thành phố.')
-  }),
-  districtCode: Yup.string().when('isInternational', {
-    is: false,
-    then: Yup.string().required('Vui lòng chọn Quận/Huyện.')
-  }),
-  wardCode: Yup.string().when('isInternational', {
-    is: false,
-    then: Yup.string().required('Vui lòng chọn Phường/Xã.')
-  }),
-  streetAddress: Yup.string().when('isInternational', {
-    is: false,
-    then: Yup.string().required('Vui lòng nhập địa chỉ chi tiết (số nhà, tên đường).')
-  }),
+  address: Yup.string(),
+  provinceCode: Yup.string().required('Vui lòng chọn Tỉnh/Thành phố.'),
+  districtCode: Yup.string().required('Vui lòng chọn Quận/Huyện.'),
+  wardCode: Yup.string().required('Vui lòng chọn Phường/Xã.'),
+  streetAddress: Yup.string().required('Vui lòng nhập địa chỉ chi tiết (số nhà, tên đường).'),
   mobile: Yup.object()
     .shape({
       country: Yup.string(),
       countryCode: Yup.string(),
       dialCode: Yup.string().required('Mobile number is required'),
-      value: Yup.string().required('Mobile number is required')
+      value: Yup.string()
+        .required('Mobile number is required')
+        .matches(/^(84[35789][0-9]{8}|0[35789][0-9]{8})$/, 'Số điện thoại di động Việt Nam không đúng định dạng (ví dụ: 0912345678).')
     })
     .required('Mobile number is required.'),
   isInternational: Yup.boolean(),
@@ -89,15 +76,12 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
     wardName: safeShipping.wardName || '',
     streetAddress: safeShipping.streetAddress || '',
     mobile: getMobileValue(safeShipping.mobile || safeProfile.mobile || safeProfile.phone),
-    isInternational: safeShipping.isInternational || false,
+    isInternational: false,
     isDone: safeShipping.isDone || false
   };
 
   const onSubmitForm = (form) => {
-    let finalAddress = form.address;
-    if (!form.isInternational) {
-      finalAddress = `${form.streetAddress}, ${form.wardName}, ${form.districtName}, ${form.provinceName}`;
-    }
+    const finalAddress = `${form.streetAddress}, ${form.wardName}, ${form.districtName}, ${form.provinceName}`;
     dispatch(setShippingDetails({
       fullname: form.fullname,
       email: form.email,
@@ -110,7 +94,7 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
       wardName: form.wardName,
       streetAddress: form.streetAddress,
       mobile: form.mobile,
-      isInternational: form.isInternational,
+      isInternational: false,
       isDone: true
     }));
     history.push(CHECKOUT_STEP_3);

@@ -59,7 +59,7 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
           address: shipping.address || '',
           ward: '',
           district: '',
-          city: shipping.isInternational ? 'International' : 'Vietnam',
+          city: 'Vietnam',
         },
         customerNote: '',
         voucherCode: cartState.voucherCode || null,
@@ -105,7 +105,6 @@ const Payment = ({ shipping, payment, subtotal, profile }) => {
             <VNPayPayment />
             <PayOsPayment />
             <Total
-              isInternational={shipping.isInternational}
               subtotal={displayTotal}
             />
             {isPlacingOrder && (

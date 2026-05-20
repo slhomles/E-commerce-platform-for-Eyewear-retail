@@ -8,12 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { setPaymentDetails } from '@/redux/actions/checkoutActions';
 
-const Total = ({ isInternational, subtotal }) => {
+const SHIPPING_FEE = 30000;
+
+const Total = ({ subtotal }) => {
   const { values, submitForm } = useFormikContext();
   const history = useHistory();
   const dispatch = useDispatch();
   const { discountAmount, voucherCode } = useSelector((state) => state.cart);
-  const shippingFee = isInternational ? 50 : 0;
+  const shippingFee = SHIPPING_FEE;
 
   const onClickBack = () => {
     // destructure to only select left fields omitting cardnumber and ccv
@@ -66,7 +68,6 @@ const Total = ({ isInternational, subtotal }) => {
 };
 
 Total.propTypes = {
-  isInternational: PropType.bool.isRequired,
   subtotal: PropType.number.isRequired
 };
 

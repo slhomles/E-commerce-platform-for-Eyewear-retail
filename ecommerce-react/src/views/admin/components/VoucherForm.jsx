@@ -41,6 +41,14 @@ const VoucherForm = ({ initialValues, onSubmit, isEdit }) => {
     }).catch(() => {});
   }, []);
 
+  const formattedInitial = initialValues
+    ? {
+        ...initialValues,
+        startDate: formatDateForInput(initialValues.startDate),
+        endDate: formatDateForInput(initialValues.endDate),
+      }
+    : {};
+
   const defaultValues = {
     code: '',
     description: '',
@@ -55,9 +63,7 @@ const VoucherForm = ({ initialValues, onSubmit, isEdit }) => {
     isActive: true,
     applicableTo: 'ALL',
     applicableItemIds: [],
-    ...initialValues,
-    startDate: formatDateForInput(initialValues?.startDate),
-    endDate: formatDateForInput(initialValues?.endDate),
+    ...formattedInitial,
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
