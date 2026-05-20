@@ -142,84 +142,89 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void seedMockReviews() {
-        List<Product> products = productRepository.findAll();
-        List<User> users = userRepository.findAll();
+        try {
+            List<Product> products = productRepository.findAll();
+            List<User> users = userRepository.findAll();
 
-        if (users.isEmpty() || products.isEmpty()) {
-            log.warn("Cannot seed reviews: users or products list is empty.");
-            return;
-        }
-
-        Random random = new Random();
-        String[] comments = {
-                "Sản phẩm rất tốt, đáng tiền!",
-                "Kính đeo nhẹ, form chuẩn, rất hợp với mặt mình.",
-                "Chất lượng ổn trong tầm giá. Giao hàng nhanh.",
-                "Đóng gói cẩn thận, hàng đẹp bá cháy bọ chét 10 điểm.",
-                "Hàng đẹp nhưng giao hơi lâu một chút.",
-                "Rất ưng ý, sẽ ủng hộ shop lần sau.",
-                "Kính thời trang, chống nắng tốt, viền chắc chắn.",
-                "Gọng kính cứng cáp, tròng kính trong suốt, đáng mua.",
-                "Shop tư vấn nhiệt tình, sản phẩm như hình.",
-                "Tốt quá trời quá đất luôn mọi người ơi."
-        };
-
-        for (Product product : products) {
-            // Chỉ tạo review nếu product có variant để mapping vào OrderItem
-            if (product.getVariants() == null || product.getVariants().isEmpty()) {
-                log.warn("Skipping product {} - no variants found", product.getId());
-                continue;
+            if (users.isEmpty() || products.isEmpty()) {
+                log.warn("Cannot seed reviews: users or products list is empty.");
+                return;
             }
-            ProductVariant firstVariant = product.getVariants().get(0);
 
-            int numReviews = random.nextInt(10) + 1; // 1 to 10 reviews per product
-            for (int i = 0; i < numReviews; i++) {
-                User user = users.get(random.nextInt(users.size()));
+            Random random = new Random();
+            String[] comments = {
+                    "Sản phẩm rất tốt, đáng tiền!",
+                    "Kính đeo nhẹ, form chuẩn, rất hợp với mặt mình.",
+                    "Chất lượng ổn trong tầm giá. Giao hàng nhanh.",
+                    "Đóng gói cẩn thận, hàng đẹp bá cháy bọ chét 10 điểm.",
+                    "Hàng đẹp nhưng giao hơi lâu một chút.",
+                    "Rất ưng ý, sẽ ủng hộ shop lần sau.",
+                    "Kính thời trang, chống nắng tốt, viền chắc chắn.",
+                    "Gọng kính cứng cáp, tròng kính trong suốt, đáng mua.",
+                    "Shop tư vấn nhiệt tình, sản phẩm như hình.",
+                    "Tốt quá trời quá đất luôn mọi người ơi."
+            };
 
-                // Tự động tạo một đơn hàng ảo (MOCK) có trạng thái DELIVERED
-                Order order = Order.builder()
-                        .userId(user.getId())
-                        .code("M-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase())
-                        .totalAmount(BigDecimal.ZERO)
-                        .finalAmount(BigDecimal.ZERO)
-                        .status(Order.OrderStatus.DELIVERED)
-                        .paymentStatus(Order.PaymentStatus.PAID)
-                        .shippingAddressJson("{}")
-                        .build();
+            for (Product product : products) {
+                // Chỉ tạo review nếu product có variant để mapping vào OrderItem
+                if (product.getVariants() == null || product.getVariants().isEmpty()) {
+                    log.warn("Skipping product {} - no variants found", product.getId());
+                    continue;
+                }
+                ProductVariant firstVariant = product.getVariants().get(0);
 
-                OrderItem item = OrderItem.builder()
-                        .order(order)
-                        .productId(product.getId())
-                        .productVariantId(firstVariant.getId())
-                        .productName(product.getName())
-                        .sku(firstVariant.getSku() != null ? firstVariant.getSku() : "MOCK-SKU")
-                        .quantity(1)
-                        .unitPrice(BigDecimal.ZERO)
-                        .subtotal(BigDecimal.ZERO)
-                        .build();
+                int numReviews = random.nextInt(10) + 1; // 1 to 10 reviews per product
+                for (int i = 0; i < numReviews; i++) {
+                    User user = users.get(random.nextInt(users.size()));
 
-                order.getItems().add(item);
-                order = orderRepository.save(order);
+                    // Tự động tạo một đơn hàng ảo (MOCK) có trạng thái DELIVERED
+                    Order order = Order.builder()
+                            .userId(user.getId())
+                            .code("M-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                            .totalAmount(BigDecimal.ZERO)
+                            .finalAmount(BigDecimal.ZERO)
+                            .status(Order.OrderStatus.DELIVERED)
+                            .paymentStatus(Order.PaymentStatus.PAID)
+                            .shippingAddressJson("{}")
+                            .build();
 
-                // Tạo review dựa trên Order MOCK
-                int rating = random.nextInt(2) + 4; // Ngẫu nhiên 4 hoặc 5 sao để seed cho đẹp, thay vì 1-5
-                String comment = comments[random.nextInt(comments.length)];
+                    OrderItem item = OrderItem.builder()
+                            .order(order)
+                            .productId(product.getId())
+                            .productVariantId(firstVariant.getId())
+                            .productName(product.getName())
+                            .sku(firstVariant.getSku() != null ? firstVariant.getSku() : "MOCK-SKU")
+                            .quantity(1)
+                            .unitPrice(BigDecimal.ZERO)
+                            .subtotal(BigDecimal.ZERO)
+                            .build();
 
-                Review review = Review.builder()
-                        .user(user)
-                        .product(product)
-                        .order(order)
-                        .rating(rating)
-                        .content(comment)
-                        .isVerifiedPurchase(true)
-                        .isDeleted(false)
-                        .build();
+                    order.getItems().add(item);
+                    order = orderRepository.save(order);
 
-                reviewRepository.save(review);
+                    // Tạo review dựa trên Order MOCK
+                    int rating = random.nextInt(2) + 4; // Ngẫu nhiên 4 hoặc 5 sao để seed cho đẹp, thay vì 1-5
+                    String comment = comments[random.nextInt(comments.length)];
+
+                    Review review = Review.builder()
+                            .user(user)
+                            .product(product)
+                            .order(order)
+                            .rating(rating)
+                            .content(comment)
+                            .isVerifiedPurchase(true)
+                            .isDeleted(false)
+                            .build();
+
+                    reviewRepository.save(review);
+                }
+                log.info("Seeded {} reviews for product {}", numReviews, product.getId());
             }
-            log.info("Seeded {} reviews for product {}", numReviews, product.getId());
+            log.info("Finished seeding mock reviews for all products.");
+        } catch (Exception e) {
+            log.error("Error during seeding mock reviews: ", e);
+            throw new IllegalArgumentException("Seeding failed: " + e.getMessage(), e);
         }
-        log.info("Finished seeding mock reviews for all products.");
     }
 
     @Override
