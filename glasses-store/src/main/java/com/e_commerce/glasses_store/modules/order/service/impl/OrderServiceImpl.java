@@ -170,13 +170,13 @@ public class OrderServiceImpl implements OrderService {
         // 9. Lưu order
         Order savedOrder = orderRepository.save(order);
 
-        // 9.5. Trừ tồn kho cho từng item
+        // 9.5. Trừ tồn kho cho từng item bằng UPDATE trực tiếp
         for (CartItem cartItem : cartItems) {
-            ProductVariant variant = cartItem.getProductVariant();
-            inventoryStockRepository.findByProductVariantId(variant.getId()).ifPresent(stock -> {
-                stock.setQuantityOnHand(stock.getQuantityOnHand() - cartItem.getQuantity());
-                inventoryStockRepository.save(stock);
-            });
+            String variantId = cartItem.getProductVariant().getId();
+            int updated = inventoryStockRepository.decrementStock(variantId, cartItem.getQuantity());
+            if (updated == 0) {
+                log.warn("Không tìm thấy inventory_stock cho variant: {} — bỏ qua trừ kho", variantId);
+            }
         }
 
         // 10. Increment voucher usedCount and record usage
