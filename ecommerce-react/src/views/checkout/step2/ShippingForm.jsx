@@ -191,36 +191,33 @@ const ShippingForm = () => {
           <>
             <div className="checkout-fieldset">
               <div className="d-block checkout-field">
-                <Field
+                <CustomSelect
                   name="provinceCode"
                   label="* Tỉnh / Thành phố"
                   placeholder={loadingProvinces ? "Đang tải..." : "Chọn Tỉnh / Thành phố"}
                   disabled={loadingProvinces || provinces.length === 0}
                   options={provinces}
-                  component={CustomSelect}
                 />
               </div>
               <div className="d-block checkout-field">
-                <Field
+                <CustomSelect
                   name="districtCode"
                   label="* Quận / Huyện"
                   placeholder={loadingDistricts ? "Đang tải..." : "Chọn Quận / Huyện"}
                   disabled={loadingDistricts || !values.provinceCode || districts.length === 0}
                   options={districts}
-                  component={CustomSelect}
                 />
               </div>
             </div>
             
             <div className="checkout-fieldset">
               <div className="d-block checkout-field">
-                <Field
+                <CustomSelect
                   name="wardCode"
                   label="* Phường / Xã"
                   placeholder={loadingWards ? "Đang tải..." : "Chọn Phường / Xã"}
                   disabled={loadingWards || !values.districtCode || wards.length === 0}
                   options={wards}
-                  component={CustomSelect}
                 />
               </div>
               <div className="d-block checkout-field">
