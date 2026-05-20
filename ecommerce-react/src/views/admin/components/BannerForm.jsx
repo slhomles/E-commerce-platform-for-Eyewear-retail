@@ -376,16 +376,12 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
                 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <label className="label" style={{ fontSize: '12px' }}>Display Location</label>
-                    <select className="input-form" name="displayLocation" value={form.displayLocation} onChange={handleChange}>
-                      <option value="HOME">Home Page</option>
-                      <option value="FEATURED">Featured Page</option>
-                      <option value="RECOMMENDED">Recommended Page</option>
+                    <label className="label" style={{ fontSize: '12px', fontWeight: 'bold', color: '#1a73e8' }}>Display Page (Where to show?)</label>
+                    <select className="input-form" name="displayLocation" value={form.displayLocation} onChange={handleChange} style={{ border: '2px solid #1a73e8', background: '#f4f8ff' }}>
+                      <option value="HOME">🏠 Home Page</option>
+                      <option value="FEATURED">⭐ Featured Page</option>
+                      <option value="RECOMMENDED">🔥 Recommended Page</option>
                     </select>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label className="label" style={{ fontSize: '12px' }}>Title Size (px)</label>
-                    <input className="input-form" type="number" name="titleFontSize" value={form.titleFontSize} onChange={handleChange} min="10" max="120" />
                   </div>
                 </div>
 
