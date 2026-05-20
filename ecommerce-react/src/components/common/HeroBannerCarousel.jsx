@@ -244,7 +244,7 @@ const ImageSlide = ({ banner, onClick }) => {
 };
 
 // ─── Carousel ─────────────────────────────────────────────────────────────────
-const HeroBannerCarousel = () => {
+const HeroBannerCarousel = ({ location = 'HOME' }) => {
   const [banners, setBanners] = useState([]);
   const [current, setCurrent] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -253,11 +253,11 @@ const HeroBannerCarousel = () => {
   const history = useHistory();
 
   useEffect(() => {
-    api.getActiveBanners()
+    api.getActiveBanners(location)
       .then(data => setBanners(data || []))
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [location]);
 
   const goNext = useCallback(() => setCurrent(p => (p + 1) % banners.length), [banners.length]);
   const goPrev = useCallback(() => setCurrent(p => (p - 1 + banners.length) % banners.length), [banners.length]);

@@ -27,9 +27,24 @@ public class BannerServiceImpl implements BannerService {
     @Override
     @Transactional(readOnly = true)
     public List<BannerResponse> getActiveBanners() {
+        return getActiveBannersByLocation("HOME");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BannerResponse> getActiveBannersByLocation(String locationStr) {
         LocalDateTime now = LocalDateTime.now();
-        List<Banner> banners = bannerRepository.findActiveBanners(now);
-        log.info("Found {} active banners at {}", banners.size(), now);
+        Banner.DisplayLocation location = Banner.DisplayLocation.HOME;
+        try {
+            if (locationStr != null) {
+                location = Banner.DisplayLocation.valueOf(locationStr.toUpperCase());
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid location: {}, defaulting to HOME", locationStr);
+        }
+        
+        List<Banner> banners = bannerRepository.findActiveBannersByLocation(now, location);
+        log.info("Found {} active banners for location {} at {}", banners.size(), location, now);
         return banners.stream()
                 .map(BannerResponse::fromEntity)
                 .toList();
@@ -75,6 +90,7 @@ public class BannerServiceImpl implements BannerService {
                 .titleFontSize(request.getTitleFontSize() != null ? request.getTitleFontSize() : 36)
                 .subtitleFontSize(request.getSubtitleFontSize() != null ? request.getSubtitleFontSize() : 18)
                 .fontFamily(request.getFontFamily() != null ? request.getFontFamily() : "'Tajawal', Helvetica, Arial, sans-serif")
+                .displayLocation(request.getDisplayLocation() != null ? request.getDisplayLocation() : Banner.DisplayLocation.HOME)
                 .build();
 
         banner = bannerRepository.save(banner);
@@ -139,6 +155,9 @@ public class BannerServiceImpl implements BannerService {
         }
         if (request.getFontFamily() != null) {
             banner.setFontFamily(request.getFontFamily());
+        }
+        if (request.getDisplayLocation() != null) {
+            banner.setDisplayLocation(request.getDisplayLocation());
         }
 
         // Validate và cập nhật ngày

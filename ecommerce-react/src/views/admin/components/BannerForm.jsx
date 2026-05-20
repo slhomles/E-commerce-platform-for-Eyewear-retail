@@ -20,12 +20,13 @@ const EMPTY_FORM = {
   title: '',
   subtitle: '',
   imageUrl: '',
-  linkType: 'CUSTOM_URL',
+  linkType: 'NONE',
   linkValue: '',
   position: 0,
   startDate: '',
   endDate: '',
   displayStyle: 'IMAGE',
+  displayLocation: 'HOME',
   tag: '',
   highlight: '',
   bgColor: '#E91E8C',
@@ -54,12 +55,13 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
         imageUrl: banner.imageUrl || '',
-        linkType: banner.linkType || 'CUSTOM_URL',
+        linkType: banner.linkType || 'NONE',
         linkValue: banner.linkValue || '',
         position: banner.position ?? 0,
         startDate: formatForInput(banner.startDate),
         endDate: formatForInput(banner.endDate),
         displayStyle: banner.displayStyle || 'IMAGE',
+        displayLocation: banner.displayLocation || 'HOME',
         tag: banner.tag || '',
         highlight: banner.highlight || '',
         bgColor: banner.bgColor || '#E91E8C',
@@ -116,7 +118,7 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
     const errs = {};
     if (!form.title.trim()) errs.title = 'Title is required';
     if (!form.imageUrl.trim()) errs.imageUrl = 'Please upload a banner image';
-    if (!form.linkValue.trim()) errs.linkValue = 'Link value is required';
+    if (form.linkType !== 'NONE' && !form.linkValue.toString().trim()) errs.linkValue = 'Link value is required';
     if (!form.startDate) errs.startDate = 'Start date is required';
     if (!form.endDate) errs.endDate = 'End date is required';
     if (form.startDate && form.endDate && new Date(form.endDate) <= new Date(form.startDate)) {
@@ -372,6 +374,21 @@ const BannerForm = ({ banner, isOpen, onSubmit, onCancel, isLoading }) => {
               <div style={{ padding: '16px', background: '#f8f8f8', borderRadius: '8px', marginBottom: '20px' }}>
                 <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 'bold' }}>Text Appearance & Position</h4>
                 
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Display Location</label>
+                    <select className="input-form" name="displayLocation" value={form.displayLocation} onChange={handleChange}>
+                      <option value="HOME">Home Page</option>
+                      <option value="FEATURED">Featured Page</option>
+                      <option value="RECOMMENDED">Recommended Page</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label className="label" style={{ fontSize: '12px' }}>Title Size (px)</label>
+                    <input className="input-form" type="number" name="titleFontSize" value={form.titleFontSize} onChange={handleChange} min="10" max="120" />
+                  </div>
+                </div>
+
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
                   <div style={{ flex: 1 }}>
                     <label className="label" style={{ fontSize: '12px' }}>Horizontal Align</label>

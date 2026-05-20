@@ -49,4 +49,6 @@ public class UpdateBannerRequest {
     private Integer titleFontSize;
     private Integer subtitleFontSize;
     private String fontFamily;
+
+    private Banner.DisplayLocation displayLocation;
 }

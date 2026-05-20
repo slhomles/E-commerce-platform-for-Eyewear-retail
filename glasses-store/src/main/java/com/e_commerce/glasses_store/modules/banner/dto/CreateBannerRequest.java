@@ -73,4 +73,7 @@ public class CreateBannerRequest {
 
     @Builder.Default
     private String fontFamily = "'Tajawal', Helvetica, Arial, sans-serif";
+
+    @Builder.Default
+    private Banner.DisplayLocation displayLocation = Banner.DisplayLocation.HOME;
 }

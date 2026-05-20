@@ -1,7 +1,7 @@
 import { MessageDisplay } from '@/components/common';
 import { ProductShowcaseGrid } from '@/components/product';
 import { useDocumentTitle, useRecommendedProducts, useScrollTop } from '@/hooks';
-import bannerImg from '@/images/banner-girl-1.png';
+import HeroBannerCarousel from '@/components/common/HeroBannerCarousel';
 import React, { useEffect, useState } from 'react';
 import api from '@/services/api';
 
@@ -31,34 +31,29 @@ const RecommendedProducts = () => {
   } = useRecommendedProducts(recommendedCount);
 
   return (
-    <main className="content">
-      <div className="featured">
-        <div className="banner">
-          <div className="banner-desc">
-            <h1>Recommended Products</h1>
-          </div>
-          <div className="banner-img">
-            <img src={bannerImg} alt="" />
-          </div>
-        </div>
-        <div className="display">
-          <div className="product-display-grid">
-            {(error && !isLoading) ? (
-              <MessageDisplay
-                message={error}
-                action={fetchRecommendedProducts}
-                buttonLabel="Try Again"
-              />
-            ) : (
-              <ProductShowcaseGrid
-                products={recommendedProducts}
-                skeletonCount={recommendedCount}
-              />
-            )}
+    <>
+      <HeroBannerCarousel location="RECOMMENDED" />
+      <main className="content">
+        <div className="featured">
+          <div className="display">
+            <div className="product-display-grid">
+              {(error && !isLoading) ? (
+                <MessageDisplay
+                  message={error}
+                  action={fetchRecommendedProducts}
+                  buttonLabel="Try Again"
+                />
+              ) : (
+                <ProductShowcaseGrid
+                  products={recommendedProducts}
+                  skeletonCount={recommendedCount}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 

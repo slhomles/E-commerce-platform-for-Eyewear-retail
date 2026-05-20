@@ -16,6 +16,11 @@ public interface BannerService {
     List<BannerResponse> getActiveBanners();
 
     /**
+     * Lấy danh sách banner public theo vị trí (HOME, FEATURED, RECOMMENDED).
+     */
+    List<BannerResponse> getActiveBannersByLocation(String location);
+
+    /**
      * Admin: lấy tất cả banner kèm phân trang.
      */
     Page<BannerResponse> getAllBanners(Pageable pageable);

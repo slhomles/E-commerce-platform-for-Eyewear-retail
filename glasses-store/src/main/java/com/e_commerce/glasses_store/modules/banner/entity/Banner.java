@@ -110,6 +110,11 @@ public class Banner extends BaseEntity {
     @Builder.Default
     private String fontFamily = "'Tajawal', Helvetica, Arial, sans-serif";
 
+    @Column(name = "display_location", length = 50)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private DisplayLocation displayLocation = DisplayLocation.HOME;
+
     // ==================== Enums ====================
 
     public enum LinkType {
@@ -121,6 +126,12 @@ public class Banner extends BaseEntity {
     public enum DisplayStyle {
         IMAGE,  // Full-width image slide (default)
         PROMO   // Split layout: image left, styled text panel right
+    }
+
+    public enum DisplayLocation {
+        HOME,
+        FEATURED,
+        RECOMMENDED
     }
 
     // ==================== Business Methods ====================

@@ -847,8 +847,8 @@ const bannerAPI = {
     /**
      * GET /api/v1/banners/active — Banner đang hiển thị (public, không cần auth).
      */
-    getActiveBanners: async () => {
-        const response = await request('/banners/active');
+    getActiveBanners: async (location = 'HOME') => {
+        const response = await request(`/banners/active?location=${location}`);
         return response.data || [];
     },
 

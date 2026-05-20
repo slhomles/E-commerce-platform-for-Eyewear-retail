@@ -45,6 +45,8 @@ public class BannerResponse {
     private Integer subtitleFontSize;
     private String fontFamily;
 
+    private String displayLocation;
+
     /**
      * Trạng thái hiển thị thực tế (computed field).
      * - ACTIVE: đang hiển thị
@@ -96,6 +98,7 @@ public class BannerResponse {
                 .titleFontSize(banner.getTitleFontSize())
                 .subtitleFontSize(banner.getSubtitleFontSize())
                 .fontFamily(banner.getFontFamily())
+                .displayLocation(banner.getDisplayLocation() != null ? banner.getDisplayLocation().name() : "HOME")
                 .build();
     }
 }
